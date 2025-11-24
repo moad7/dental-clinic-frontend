@@ -1,26 +1,32 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { registerUser } from '../services/authService';
+import { loginUser } from '../../../../services/authService';
+import { AuthContext } from '../../../../context/AuthContext';
 
-const Register = () => {
-  const [name, setName] = useState('');
+const Login = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setSuccess('');
 
     try {
-      await registerUser(name, phoneNumber, password);
-      setSuccess('ההרשמה הצליחה! אפשר להתחבר.');
-      setTimeout(() => navigate('/login'), 1500);
+      const data = await loginUser(phoneNumber, password);
+
+      login(data);
+      if (data.user.role == 'patient') {
+        navigate('/patient-dashboard');
+      } else if (data.user.role == 'doctor') {
+        navigate('/doctor-dashboard');
+      } else {
+        navigate('/secretary');
+      }
     } catch (err) {
-      setError(err.response?.data?.message || 'ההרשמה נכשלה');
+      setError(err.response?.data?.message || 'ההתחברות נכשלה');
     }
   };
 
@@ -37,24 +43,15 @@ const Register = () => {
       }}
     >
       <form
-        className="mx-auto"
-        style={{ maxWidth: '400px' }}
+        className="mx-auto row"
+        style={{
+          maxWidth: '400px',
+        }}
         onSubmit={handleSubmit}
       >
         {' '}
-        <h3 className="text-center mb-4">הרשמה</h3>
+        <h3 className="text-center mb-4">התחברות</h3>
         {error && <div className="alert alert-danger">{error}</div>}
-        {success && <div className="alert alert-success">{success}</div>}
-        <div className="mb-3">
-          <label className="form-label">שם מלא</label>
-          <input
-            type="text"
-            className="form-control"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-        </div>
         <div className="mb-3">
           <label className="form-label">מספר טלפון</label>
           <input
@@ -75,12 +72,20 @@ const Register = () => {
             required
           />
         </div>
-        <button type="submit" className="btn btn-success w-100">
-          הירשם
-        </button>
+        <button type="submit" className="btn btn-primary w-100">
+          התחבר
+        </button>{' '}
+        <div className="text-center">
+          <button
+            onClick={() => navigate('/register')}
+            className="btn btn-link"
+          >
+            אין לך חשבון? הירשם כאן
+          </button>
+        </div>
       </form>
     </div>
   );
 };
 
-export default Register;
+export default Login;

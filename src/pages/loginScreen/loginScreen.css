@@ -1,0 +1,76 @@
+.login-hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.login-hero-img {
+  max-width: 100%;
+  border-radius: 15px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+}
+
+.login-card {
+  max-width: 620px;
+  background-color: #f7f9fb;
+}
+
+.btn-google-apple {
+  padding: 8px 20px;
+  gap: 6px;
+  border-radius: 12px;
+  border: 1.5px solid #ebebeb;
+  color: black;
+  background-color: transparent;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.otp-group {
+  /* display: block; */
+  width: 100%;
+  direction: ltr;
+  display: flex;
+  justify-content: center;
+}
+
+.otp-input {
+  width: calc(40px + 1vw);
+  height: 60px;
+  margin: 2px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  border: 1px solid #bcbcbc;
+  color: #999999;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.otp-input:focus {
+  border-color: #0e94c9; /* Highlight border color on focus */
+  outline: none; /* Remove default outline */
+}
+
+.text-container {
+  margin-bottom: 0px;
+  max-width: 400px; /* Consistent width */
+  text-align: right; /* Align text properly in RTL */
+  direction: rtl; /* Ensure proper text direction for Hebrew */
+  margin-inline-end: auto; /* Center-align in the available space */
+  word-wrap: break-word; /* Prevent text overflow */
+  white-space: normal; /* Allow text to wrap naturally */
+}
+
+@media (max-width: 991.98px) {
+  .login-hero {
+    min-height: 260px;
+    text-align: center;
+  }
+
+  .login-card {
+    max-width: 100%;
+  }
+}

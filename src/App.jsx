@@ -6,8 +6,8 @@ import {
 } from 'react-router-dom';
 import { useContext } from 'react';
 import { AuthContext } from './context/AuthContext';
-import Login from './pages/Login.jsx';
-import Register from './pages/Register.jsx';
+import Login from './pages/loginScreen/components/login/Login.jsx';
+import Register from './pages/loginScreen/components/register/Register.jsx';
 import SecretaryDashboard from './pages/SecretaryDashboard.jsx';
 import Appointments from './pages/Appointments.jsx';
 import CreateAppointment from './pages/CreateAppointment.jsx';
@@ -24,7 +24,9 @@ import PatientDashboard from './pages/PatientDashboard.jsx';
 import PatientNavbar from './pages/PatientNavbar.jsx';
 import RedirectByRole from './components/RedirectByRole.jsx';
 import DoctorDashboard from './pages/doctorDashboard.js';
-
+import LoginScreen from './pages/loginScreen/LoginScreen.jsx';
+import { Slide, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 function App() {
   const { user } = useContext(AuthContext);
 
@@ -35,7 +37,7 @@ function App() {
     return (
       <Router>
         <Routes>
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<LoginScreen />} />
           <Route path="/register" element={<Register />} />
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>

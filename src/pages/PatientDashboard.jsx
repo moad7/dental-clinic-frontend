@@ -7,24 +7,24 @@ const PatientDashboard = () => {
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchAppointments = async () => {
-      try {
-        const res = await axios.get(
-          'http://localhost:5000/api/appointments/mine',
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        setAppointments(res.data);
-      } catch (err) {
-        console.error(err);
-        alert('שגיאה בטעינת הפגישות');
-      }
-    };
+  // useEffect(() => {
+  //   const fetchAppointments = async () => {
+  //     try {
+  //       const res = await axios.get(
+  //         'http://localhost:5000/api/appointments/mine',
+  //         {
+  //           headers: { Authorization: `Bearer ${token}` },
+  //         }
+  //       );
+  //       setAppointments(res.data);
+  //     } catch (err) {
+  //       console.error(err);
+  //       alert('שגיאה בטעינת הפגישות');
+  //     }
+  //   };
 
-    fetchAppointments();
-  }, []);
+  //   fetchAppointments();
+  // }, []);
 
   return (
     <div className="container mt-4" dir="rtl">
