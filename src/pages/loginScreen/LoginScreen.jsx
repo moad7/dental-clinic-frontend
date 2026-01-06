@@ -21,6 +21,7 @@ import { MdOutlineArrowBackIosNew } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import { validatePassword } from '../../utils/functions';
 import { SlReload } from 'react-icons/sl';
+import Login from './components/login/Login';
 
 const LoginScreen = () => {
   const [view, setView] = useState('login');
@@ -37,41 +38,41 @@ const LoginScreen = () => {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const logInHandler = async () => {
-    setIsPending(true);
+  // const logInHandler = async () => {
+  //   setIsPending(true);
 
-    const isPhone = validator.isMobilePhone(phone);
-    if (!phone) {
-      toast.error(textDictionary.phoneRequired);
-      return;
-    }
-    if (!isPhone) {
-      toast.error(textDictionary.phoneInvalid);
-      return;
-    }
+  //   const isPhone = validator.isMobilePhone(phone);
+  //   if (!phone) {
+  //     toast.error(textDictionary.phoneRequired);
+  //     return;
+  //   }
+  //   if (!isPhone) {
+  //     toast.error(textDictionary.phoneInvalid);
+  //     return;
+  //   }
 
-    try {
-      const res = await loginUser(phone, password);
+  //   try {
+  //     const res = await loginUser(phone, password);
 
-      if (res?.type == 'Sign in') {
-        setOtpId(res.otpId);
-        setOtpType(res.type);
-        setCodeValidation('');
-        setView('otp');
-      }
-    } catch (error) {
-      switch (error.response.data.message) {
-        case 'User not exist':
-          toast.error(textDictionary.phoneInvalid);
-          break;
-        case 'Incorrect password':
-          toast.error(textDictionary.errorPasswordCode);
-          break;
-      }
-    } finally {
-      setIsPending(false);
-    }
-  };
+  //     if (res?.type == 'Sign in') {
+  //       setOtpId(res.otpId);
+  //       setOtpType(res.type);
+  //       setCodeValidation('');
+  //       setView('otp');
+  //     }
+  //   } catch (error) {
+  //     switch (error.response.data.message) {
+  //       case 'User not exist':
+  //         toast.error(textDictionary.phoneInvalid);
+  //         break;
+  //       case 'Incorrect password':
+  //         toast.error(textDictionary.errorPasswordCode);
+  //         break;
+  //     }
+  //   } finally {
+  //     setIsPending(false);
+  //   }
+  // };
   const loginWithOtp = async () => {
     setIsPending(true);
     try {
@@ -174,11 +175,7 @@ const LoginScreen = () => {
       return;
     }
     try {
-      console.log(otpId + '   >>>>>>>>>  ' + codeValidation);
-
       const { data } = await verifyOtp(otpId, codeValidation);
-      console.log(JSON.stringify(data) + ' <<<<<<<<<<<<<<<<<<<<<<<<');
-
       if (data.success) {
         if (data.flow === 'password-recovery') {
           setView('newPassword');
@@ -333,10 +330,9 @@ const LoginScreen = () => {
               </span>
             </div>
           </div>
-          {
-            view === 'login' ? (
-              <>
-                <div className="login-card rounded-4 p-4 p-md-4 w-100 mx-auto">
+          {view === 'login' ? (
+            <>
+              {/* <div className="login-card rounded-4 p-4 p-md-4 w-100 mx-auto">
                   <h3 className="fw-bold mb-2 text-center">ברוכים הבאים</h3>
                   <p className="text-muted mb-4 text-center">
                     הזן את כתובת הדוא"ל והסיסמה שלך כדי לגשת לחשבונך
@@ -434,322 +430,331 @@ const LoginScreen = () => {
                       </button>
                     </div>
                   </div>
-                </div>
-              </>
-            ) : view === 'signup' ? (
-              <>
-                <div className="login-card rounded-4 p-4 p-md-4 w-100 mx-auto">
-                  <h3 className="fw-bold mb-2 text-center">צור חשבון</h3>
-                  <p className="text-muted mb-4 text-center">
-                    הצטרפו עכשיו לפאנל הבקרה של קליניקס
-                  </p>
+                </div> */}
+              <Login
+                setIsPending={setIsPending}
+                setPasswordConfirm={setPasswordConfirm}
+                setName={setName}
+                phone={phone}
+                setPhone={setPhone}
+                setPassword={setPassword}
+                password={password}
+                setView={setView}
+                setOtpType={setOtpType}
+                setOtpId={setOtpId}
+                setCodeValidation={setCodeValidation}
+              />
+            </>
+          ) : view === 'signup' ? (
+            <>
+              <div className="login-card rounded-4 p-4 p-md-4 w-100 mx-auto">
+                <h3 className="fw-bold mb-2 text-center">צור חשבון</h3>
+                <p className="text-muted mb-4 text-center">
+                  הצטרפו עכשיו לפאנל הבקרה של קליניקס
+                </p>
 
-                  <div className="login-card-inputs w-100">
-                    <div className="mb-3">
-                      <label htmlFor="nameInput" className="form-label">
-                        שם
-                      </label>
-                      <input
-                        onChange={(e) => setName(e.target.value)}
-                        type="text"
-                        value={name}
-                        className="form-control"
-                        id="name"
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label htmlFor="phoneInput" className="form-label">
-                        מספר נייד
-                      </label>
-                      <input
-                        type="tel"
-                        className="form-control"
-                        id="phoneInput"
-                        onChange={(e) => setPhone(e.target.value)}
-                        value={phone}
-                      />
-                    </div>
+                <div className="login-card-inputs w-100">
+                  <div className="mb-3">
+                    <label htmlFor="nameInput" className="form-label">
+                      שם
+                    </label>
+                    <input
+                      onChange={(e) => setName(e.target.value)}
+                      type="text"
+                      value={name}
+                      className="form-control"
+                      id="name"
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label htmlFor="phoneInput" className="form-label">
+                      מספר נייד
+                    </label>
+                    <input
+                      type="tel"
+                      className="form-control"
+                      id="phoneInput"
+                      onChange={(e) => setPhone(e.target.value)}
+                      value={phone}
+                    />
+                  </div>
 
-                    <div className="mb-3">
-                      <label htmlFor="passwordInput" className="form-label">
-                        סיסמה
-                      </label>
-                      <input
-                        type="password"
-                        className="form-control"
-                        id="passwordInput"
-                        onChange={(e) => setPassword(e.target.value)}
-                        value={password}
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label
-                        htmlFor="passwordConfirmInput"
-                        className="form-label"
-                      >
-                        אשר סיסמה
-                      </label>
-                      <input
-                        type="password"
-                        className="form-control"
-                        id="passwordConfirm"
-                        onChange={(e) => setPasswordConfirm(e.target.value)}
-                        value={passwordConfirm}
-                      />
-                    </div>
-                    <div>
-                      <ul>
-                        {validationResults.length > 0 ? (
-                          validationResults
-                            .filter(
-                              (result) =>
-                                result.message !==
-                                textDictionary.passwordCheckNoSpaces
-                            )
-                            .map((result, index) => (
-                              <li
-                                key={index}
-                                style={{
-                                  color: result.isMet ? 'green' : 'red',
-                                }}
-                              >
-                                {result.message}
-                              </li>
-                            ))
-                        ) : (
-                          <p>No validation results yet</p>
-                        )}
-                      </ul>
-                    </div>
-                    <button
-                      className="btn btn-success w-100 mb-3 border-0"
-                      style={{ backgroundColor: '#11D057' }}
-                      onClick={signup}
+                  <div className="mb-3">
+                    <label htmlFor="passwordInput" className="form-label">
+                      סיסמה
+                    </label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      id="passwordInput"
+                      onChange={(e) => setPassword(e.target.value)}
+                      value={password}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label
+                      htmlFor="passwordConfirmInput"
+                      className="form-label"
                     >
-                      התרשם
+                      אשר סיסמה
+                    </label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      id="passwordConfirm"
+                      onChange={(e) => setPasswordConfirm(e.target.value)}
+                      value={passwordConfirm}
+                    />
+                  </div>
+                  <div>
+                    <ul>
+                      {validationResults.length > 0 ? (
+                        validationResults
+                          .filter(
+                            (result) =>
+                              result.message !==
+                              textDictionary.passwordCheckNoSpaces
+                          )
+                          .map((result, index) => (
+                            <li
+                              key={index}
+                              style={{
+                                color: result.isMet ? 'green' : 'red',
+                              }}
+                            >
+                              {result.message}
+                            </li>
+                          ))
+                      ) : (
+                        <p>No validation results yet</p>
+                      )}
+                    </ul>
+                  </div>
+                  <button
+                    className="btn btn-success w-100 mb-3 border-0"
+                    style={{ backgroundColor: '#11D057' }}
+                    onClick={signup}
+                  >
+                    התרשם
+                  </button>
+
+                  <div className="text-center text-muted mb-3">
+                    או להירשם באמצעות
+                  </div>
+
+                  <div className="d-flex gap-3 mb-3 justify-content-center align-items-center ">
+                    <button className="w-50 btn-google-apple ">
+                      Google <FcGoogle />
                     </button>
+                    <button className="w-50 btn-google-apple">
+                      Apple
+                      <FaApple />
+                    </button>
+                  </div>
 
-                    <div className="text-center text-muted mb-3">
-                      או להירשם באמצעות
-                    </div>
-
-                    <div className="d-flex gap-3 mb-3 justify-content-center align-items-center ">
-                      <button className="w-50 btn-google-apple ">
-                        Google <FcGoogle />
-                      </button>
-                      <button className="w-50 btn-google-apple">
-                        Apple
-                        <FaApple />
-                      </button>
-                    </div>
-
-                    <div className="text-center">
-                      האם כבר יש לך חשבון?
-                      <button
-                        type="button"
-                        className="btn btn-link p-0"
-                        style={{ color: '#11D057' }}
-                        onClick={() => {
-                          setView('login');
-                        }}
-                      >
-                        התחבר
-                      </button>
-                    </div>
+                  <div className="text-center">
+                    האם כבר יש לך חשבון?
+                    <button
+                      type="button"
+                      className="btn btn-link p-0"
+                      style={{ color: '#11D057' }}
+                      onClick={() => {
+                        setView('login');
+                      }}
+                    >
+                      התחבר
+                    </button>
                   </div>
                 </div>
-              </>
-            ) : view === 'otp' ? (
-              <>
-                <div className="login-card rounded-4 p-4 p-md-4 w-100 mx-auto">
-                  <h3 className="fw-bold mb-4 text-center">קוד OTP</h3>
+              </div>
+            </>
+          ) : view === 'otp' ? (
+            <>
+              <div className="login-card rounded-4 p-4 p-md-4 w-100 mx-auto">
+                <h3 className="fw-bold mb-4 text-center">קוד OTP</h3>
 
-                  <p className="fw-semibold mb-2 text-center">הזן את הקוד </p>
-                  <p className="fw-light mb-3 text-center">
-                    שלחנו את הקוד למספר {phone}
-                  </p>
+                <p className="fw-semibold mb-2 text-center">הזן את הקוד </p>
+                <p className="fw-light mb-3 text-center">
+                  שלחנו את הקוד למספר {phone}
+                </p>
 
-                  <div className="login-card-inputs w-100">
-                    <div className="d-flex w-100 align-items-center p-10 mb-4 ">
-                      <OtpInput
-                        setOTPCode={setCodeValidation}
-                        otpCode={codeValidation}
-                      />
-                    </div>
+                <div className="login-card-inputs w-100">
+                  <div className="d-flex w-100 align-items-center p-10 mb-4 ">
+                    <OtpInput
+                      setOTPCode={setCodeValidation}
+                      otpCode={codeValidation}
+                    />
+                  </div>
+                  <button
+                    className="btn btn-success w-100 mb-3 border-0"
+                    style={{ backgroundColor: '#11D057' }}
+                    onClick={handleOtpClick}
+                  >
+                    {otpType === 'Verify Sign Up'
+                      ? 'אישור הרשמה'
+                      : otpType === 'Password recovery'
+                      ? 'אישור קוד'
+                      : otpType === 'Sign in'
+                      ? 'התחברות'
+                      : 'אישור'}
+                  </button>
+
+                  <div className="d-flex w-100 justify-content-betwen">
                     <button
-                      className="btn btn-success w-100 mb-3 border-0"
-                      style={{ backgroundColor: '#11D057' }}
-                      onClick={handleOtpClick}
+                      type="button"
+                      className="btn p-0"
+                      style={{ color: '#11D057' }}
+                      onClick={() => {
+                        setView('login');
+                      }}
                     >
-                      {otpType === 'Verify Sign Up'
-                        ? 'אישור הרשמה'
-                        : otpType === 'Password recovery'
-                        ? 'אישור קוד'
-                        : otpType === 'Sign in'
-                        ? 'התחברות'
-                        : 'אישור'}
+                      חזרה
+                      <MdOutlineArrowBackIosNew />
                     </button>
+                    <button
+                      type="button"
+                      className="btn p-0"
+                      style={{ color: '#364b3eff' }}
+                      onClick={resendOtp}
+                    >
+                      {textDictionary.resendVerificattionCode}
 
-                    <div className="d-flex w-100 justify-content-betwen">
-                      <button
-                        type="button"
-                        className="btn p-0"
-                        style={{ color: '#11D057' }}
-                        onClick={() => {
-                          setView('login');
-                        }}
-                      >
-                        חזרה
-                        <MdOutlineArrowBackIosNew />
-                      </button>
-                      <button
-                        type="button"
-                        className="btn p-0"
-                        style={{ color: '#364b3eff' }}
-                        onClick={resendOtp}
-                      >
-                        {textDictionary.resendVerificattionCode}
-
-                        <SlReload />
-                      </button>
-                    </div>
+                      <SlReload />
+                    </button>
                   </div>
                 </div>
-              </>
-            ) : view === 'newPassword' ? (
-              <>
-                <div className="login-card rounded-4 p-4 p-md-4 w-100 mx-auto">
-                  <h3 className="fw-bold mb-4 text-center"></h3>
+              </div>
+            </>
+          ) : view === 'newPassword' ? (
+            <>
+              <div className="login-card rounded-4 p-4 p-md-4 w-100 mx-auto">
+                <h3 className="fw-bold mb-4 text-center"></h3>
 
-                  <p className="fw-semibold mb-2 text-center">סיסמה חדשה</p>
-                  <p className="fw-light mb-3 text-center">
-                    הזן את הסיסמה החדשה שלך
-                  </p>
+                <p className="fw-semibold mb-2 text-center">סיסמה חדשה</p>
+                <p className="fw-light mb-3 text-center">
+                  הזן את הסיסמה החדשה שלך
+                </p>
 
-                  <div className="login-card-inputs w-100">
-                    <div className="mb-3">
-                      <label htmlFor="passwordInput" className="form-label">
-                        {textDictionary.newPassword}
-                      </label>
-                      <input
-                        type="password"
-                        className="form-control"
-                        id="passwordInput"
-                        onChange={(e) => setPassword(e.target.value)}
-                        value={password}
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label htmlFor="passwordInput" className="form-label">
-                        {textDictionary.newPasswordVerification}
-                      </label>
-                      <input
-                        type="password"
-                        className="form-control"
-                        id="passwordInputConfirm"
-                        onChange={(e) => setPasswordConfirm(e.target.value)}
-                        value={passwordConfirm}
-                      />
-                    </div>
-                    <div>
-                      <ul>
-                        {validationResults.length > 0 ? (
-                          validationResults
-                            .filter(
-                              (result) =>
-                                result.message !==
-                                textDictionary.passwordCheckNoSpaces
-                            )
-                            .map((result, index) => (
-                              <li
-                                key={index}
-                                style={{
-                                  color: result.isMet ? 'green' : 'red',
-                                }}
-                              >
-                                {result.message}
-                              </li>
-                            ))
-                        ) : (
-                          <p>No validation results yet</p>
-                        )}
-                      </ul>
-                    </div>
+                <div className="login-card-inputs w-100">
+                  <div className="mb-3">
+                    <label htmlFor="passwordInput" className="form-label">
+                      {textDictionary.newPassword}
+                    </label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      id="passwordInput"
+                      onChange={(e) => setPassword(e.target.value)}
+                      value={password}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label htmlFor="passwordInput" className="form-label">
+                      {textDictionary.newPasswordVerification}
+                    </label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      id="passwordInputConfirm"
+                      onChange={(e) => setPasswordConfirm(e.target.value)}
+                      value={passwordConfirm}
+                    />
+                  </div>
+                  <div>
+                    <ul>
+                      {validationResults.length > 0 ? (
+                        validationResults
+                          .filter(
+                            (result) =>
+                              result.message !==
+                              textDictionary.passwordCheckNoSpaces
+                          )
+                          .map((result, index) => (
+                            <li
+                              key={index}
+                              style={{
+                                color: result.isMet ? 'green' : 'red',
+                              }}
+                            >
+                              {result.message}
+                            </li>
+                          ))
+                      ) : (
+                        <p>No validation results yet</p>
+                      )}
+                    </ul>
+                  </div>
+                  <button
+                    className="btn btn-success w-100 mb-3 border-0"
+                    style={{ backgroundColor: '#11D057' }}
+                    onClick={modifyPasswordHandler}
+                  >
+                    המשך
+                  </button>
+                  <div className="d-flex w-100 justify-content-end">
                     <button
-                      className="btn btn-success w-100 mb-3 border-0"
-                      style={{ backgroundColor: '#11D057' }}
-                      onClick={modifyPasswordHandler}
+                      type="button"
+                      className="btn p-0"
+                      style={{ color: '#11D057' }}
+                      onClick={() => {
+                        setView('login');
+                      }}
                     >
-                      המשך
+                      חזרה
+                      <MdOutlineArrowBackIosNew />
                     </button>
-                    <div className="d-flex w-100 justify-content-end">
-                      <button
-                        type="button"
-                        className="btn p-0"
-                        style={{ color: '#11D057' }}
-                        onClick={() => {
-                          setView('login');
-                        }}
-                      >
-                        חזרה
-                        <MdOutlineArrowBackIosNew />
-                      </button>
-                    </div>
                   </div>
                 </div>
-              </>
-            ) : (
-              view === 'phoneInput' && (
-                <div className="login-card rounded-4 p-4 p-md-4 w-100 mx-auto">
-                  <h3 className="fw-bold mb-4 text-center"></h3>
+              </div>
+            </>
+          ) : (
+            view === 'phoneInput' && (
+              <div className="login-card rounded-4 p-4 p-md-4 w-100 mx-auto">
+                <h3 className="fw-bold mb-4 text-center"></h3>
 
-                  <p className="fw-semibold mb-2 text-center">
-                    הזן את מספר הטלפון{' '}
-                  </p>
-                  {/* <p className="fw-light mb-3 text-center">
+                <p className="fw-semibold mb-2 text-center">
+                  הזן את מספר הטלפון{' '}
+                </p>
+                {/* <p className="fw-light mb-3 text-center">
                   שלחנו את הקוד למספר {phone}
                 </p> */}
 
-                  <div className="login-card-inputs w-100">
-                    <div className="mb-3">
-                      <label htmlFor="phoneInput" className="form-label">
-                        מספר נייד
-                      </label>
-                      <input
-                        type="tel"
-                        className="form-control"
-                        id="phoneInput"
-                        onChange={(e) => setPhone(e.target.value)}
-                      />
-                    </div>
+                <div className="login-card-inputs w-100">
+                  <div className="mb-3">
+                    <label htmlFor="phoneInput" className="form-label">
+                      מספר נייד
+                    </label>
+                    <input
+                      type="tel"
+                      className="form-control"
+                      id="phoneInput"
+                      onChange={(e) => setPhone(e.target.value)}
+                    />
+                  </div>
+                  <button
+                    className="btn btn-success w-100 mb-3 border-0"
+                    style={{ backgroundColor: '#11D057' }}
+                    onClick={sendMeOTPHandler}
+                  >
+                    שלח קוד
+                  </button>
+                  <div className="d-flex w-100 justify-content-end">
                     <button
-                      className="btn btn-success w-100 mb-3 border-0"
-                      style={{ backgroundColor: '#11D057' }}
-                      onClick={sendMeOTPHandler}
+                      type="button"
+                      className="btn p-0"
+                      style={{ color: '#11D057' }}
+                      onClick={() => {
+                        setView('login');
+                      }}
                     >
-                      שלח קוד
+                      חזרה
+                      <MdOutlineArrowBackIosNew />
                     </button>
-                    <div className="d-flex w-100 justify-content-end">
-                      <button
-                        type="button"
-                        className="btn p-0"
-                        style={{ color: '#11D057' }}
-                        onClick={() => {
-                          setView('login');
-                        }}
-                      >
-                        חזרה
-                        <MdOutlineArrowBackIosNew />
-                      </button>
-                    </div>
                   </div>
                 </div>
-              )
+              </div>
             )
-            //: (
-            //   view === 'newPassword' && <></>
-            // )
-          }
+          )}
 
           <div className="mt-3 text-center text-lg-end text-muted small">
             Clinic Enterprises LTD 2025 ©

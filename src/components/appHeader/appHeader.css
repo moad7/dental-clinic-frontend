@@ -1,0 +1,84 @@
+.nav-btn {
+  display: flex;
+  background-color: #fff;
+  height: 52px;
+  padding: 12px 20px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 12px;
+  text-decoration: none;
+  color: #000;
+  font-size: 16px;
+  color: #818898;
+}
+
+.nav-btn.active {
+  background-color: #11d057;
+  color: #fff;
+}
+.nav .nav-btn:first-child {
+  color: #11d057;
+}
+.nav-btn.active:first-child {
+  color: #11d057;
+  background-color: #fff;
+}
+.left-nav {
+  display: flex;
+  justify-content: space-between;
+  width: 227px;
+  gap: 16px;
+}
+.user-box {
+  display: flex;
+  background-color: #fff;
+  height: 52px;
+  width: 159px;
+  padding: 7.5px 12px;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 12px;
+  text-decoration: none;
+  font-size: 16px;
+  color: #818898;
+  gap: 16px;
+}
+.person-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 7.5px;
+}
+.navigation-icon-box {
+  display: flex;
+  background-color: #fff;
+  height: 52px;
+  width: 52px;
+  padding: 16px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 12px;
+  text-decoration: none;
+  color: #000;
+  font-size: 16px;
+  gap: 8px;
+  cursor: pointer;
+}
+.avatar-box {
+  display: flex;
+  height: 32px;
+  width: 32px;
+}
+.person-name {
+  color: #000;
+  line-height: 16px;
+}
+.avatar {
+  border-radius: 50%;
+  height: 32px;
+  width: 32px;
+}
+.arrow-icon {
+  cursor: pointer;
+  color: #000;
+}

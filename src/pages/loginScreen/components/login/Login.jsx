@@ -1,89 +1,148 @@
-import { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+// import { useState, useContext } from 'react';
+// import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../../../../services/authService';
 import { AuthContext } from '../../../../context/AuthContext';
+import textDictionary from '../../../../dictionary/text';
+import { toast } from 'react-toastify';
+import validator from 'validator';
+import { FcGoogle } from 'react-icons/fc';
+import { FaApple } from 'react-icons/fa';
 
-const Login = () => {
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [password, setPassword] = useState('');
-  const { login } = useContext(AuthContext);
-  const navigate = useNavigate();
-  const [error, setError] = useState('');
+const Login = (props) => {
+  // const { login } = useContext(AuthContext);
+  // const [error, setError] = useState('');
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
+  const logInHandler = async () => {
+    props.setIsPending(true);
+
+    const isPhone = validator.isMobilePhone(props.phone);
+    if (!props.phone) {
+      toast.error(textDictionary.phoneRequired);
+      return;
+    }
+    if (!isPhone) {
+      toast.error(textDictionary.phoneInvalid);
+      return;
+    }
 
     try {
-      const data = await loginUser(phoneNumber, password);
+      const res = await loginUser(props.phone, props.password);
 
-      login(data);
-      if (data.user.role == 'patient') {
-        navigate('/patient-dashboard');
-      } else if (data.user.role == 'doctor') {
-        navigate('/doctor-dashboard');
-      } else {
-        navigate('/secretary');
+      if (res?.type == 'Sign in') {
+        props.setOtpId(res.otpId);
+        props.setOtpType(res.type);
+        props.setCodeValidation('');
+        props.setView('otp');
       }
-    } catch (err) {
-      setError(err.response?.data?.message || 'ההתחברות נכשלה');
+    } catch (error) {
+      switch (error.response.data.message) {
+        case 'User not exist':
+          toast.error(textDictionary.phoneInvalid);
+          break;
+        case 'Incorrect password':
+          toast.error(textDictionary.errorPasswordCode);
+          break;
+      }
+    } finally {
+      props.setIsPending(false);
     }
   };
-
   return (
-    <div
-      className="mt-5 row "
-      dir="rtl"
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '90vh',
-        width: '100%',
-      }}
-    >
-      <form
-        className="mx-auto row"
-        style={{
-          maxWidth: '400px',
-        }}
-        onSubmit={handleSubmit}
-      >
-        {' '}
-        <h3 className="text-center mb-4">התחברות</h3>
-        {error && <div className="alert alert-danger">{error}</div>}
+    <div className="login-card rounded-4 p-4 p-md-4 w-100 mx-auto">
+      <h3 className="fw-bold mb-2 text-center">ברוכים הבאים</h3>
+      <p className="text-muted mb-4 text-center">
+        הזן את כתובת הדוא"ל והסיסמה שלך כדי לגשת לחשבונך
+      </p>
+
+      <div className="login-card-inputs w-100">
         <div className="mb-3">
-          <label className="form-label">מספר טלפון</label>
+          <label htmlFor="phoneInput" className="form-label">
+            מספר נייד
+          </label>
           <input
             type="tel"
             className="form-control"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-            required
+            id="phoneInput"
+            value={props.phone}
+            onChange={(e) => props.setPhone(e.target.value)}
           />
         </div>
+
         <div className="mb-3">
-          <label className="form-label">סיסמה</label>
+          <label htmlFor="passwordInput" className="form-label">
+            סיסמה
+          </label>
           <input
             type="password"
             className="form-control"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
+            id="passwordInput"
+            value={props.password}
+            onChange={(e) => props.setPassword(e.target.value)}
           />
         </div>
-        <button type="submit" className="btn btn-primary w-100">
-          התחבר
-        </button>{' '}
-        <div className="text-center">
+
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <div className="form-check form-check-reverse">
+            <input
+              type="checkbox"
+              className="form-check-input"
+              id="rememberMe"
+            />
+            <label className="form-check-label" htmlFor="rememberMe">
+              זכור אותי
+            </label>
+          </div>
           <button
-            onClick={() => navigate('/register')}
-            className="btn btn-link"
+            type="button"
+            className="btn p-0"
+            style={{ color: '#11D057' }}
+            onClick={() => {
+              props.setView('phoneInput');
+              props.setOtpType('Sign in');
+            }}
           >
-            אין לך חשבון? הירשם כאן
+            שכחת את הסיסמה שלך?
           </button>
         </div>
-      </form>
+
+        <button
+          className="btn btn-success w-100 mb-3 border-0"
+          style={{ backgroundColor: '#11D057' }}
+          onClick={logInHandler}
+        >
+          התחברות
+        </button>
+
+        <div className="text-center text-muted mb-3">או התחבר באמצעות</div>
+
+        <div className="d-flex gap-3 mb-3 justify-content-center align-items-center ">
+          <button className="w-50 btn-google-apple ">
+            Google <FcGoogle />
+          </button>
+          <button className="w-50 btn-google-apple">
+            Apple
+            <FaApple />
+          </button>
+        </div>
+
+        <div className="text-center">
+          אין לך חשבון?
+          <button
+            type="button"
+            className="btn btn-link p-0"
+            style={{ color: '#11D057' }}
+            onClick={() => {
+              props.setView('signup');
+              props.setPassword('');
+              props.setPhone('');
+              props.setName('');
+              props.setPasswordConfirm('');
+            }}
+          >
+            הירשמו עכשיו
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

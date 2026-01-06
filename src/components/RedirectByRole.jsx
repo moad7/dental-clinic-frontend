@@ -8,13 +8,19 @@ const RedirectByRole = () => {
 
   if (!user) return <Navigate to="/login" replace />;
 
-  if (user?.role === 'patient')
-    return <Navigate to="/patient-dashboard" replace />;
-  if (user?.role === 'secretary') return <Navigate to="/secretary" replace />;
-  if (user?.role === 'doctor')
-    return <Navigate to="/doctor-dashboard" replace />;
+  switch (user.role) {
+    case 'patient':
+      return <Navigate to="/patient/dashboard" replace />;
 
-  return <NotAuthorized />;
+    case 'secretary':
+      return <Navigate to="/secretary/dashboard" replace />;
+
+    case 'doctor':
+      return <Navigate to="/doctor/dashboard" replace />;
+
+    default:
+      return <NotAuthorized />;
+  }
 };
 
 export default RedirectByRole;
