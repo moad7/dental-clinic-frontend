@@ -52,6 +52,26 @@ const SecretaryDashboard = () => {
     },
   ];
 
+  const tableToday = [
+    {
+      _id: 1,
+      timingName: '9:00 صباحًا - احمد محسن',
+      categoryDoctor: 'تنظيف دوري • د. جونسون',
+      status: 'confirmed',
+    },
+    {
+      _id: 2,
+      timingName: '10:30 صباحًا - ماجد ابراهيم',
+      categoryDoctor: 'قناة جذر • د. تشين',
+      status: 'onHold',
+    },
+    {
+      _id: 3,
+      timingName: '2:00 مساءً - سارة ديب',
+      categoryDoctor: 'استشارة • د. ديفيس',
+      status: 'confirmed',
+    },
+  ];
   return (
     <div className="main-container" dir="rtl">
       <div className="container-box header-box">
@@ -82,113 +102,143 @@ const SecretaryDashboard = () => {
         ))}
       </div>
       <div className="container-box nivg-order">
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span
-            style={{
-              fontWeight: '700',
-              fontStyle: 'Bold',
-              fontSize: '20px',
-              lineHeight: '28px',
-              letterSpacing: '0%',
-              alignItems: 'center',
-              color: '#111827',
-            }}
-          >
-            בקשות אישור ממתינות
-          </span>
-          <span
-            style={{
-              borderRadius: '9999px',
-              padding: '4px 12px',
-              backgroundColor: '#FFEDD5',
-              fontSize: '14px',
-              lineHeight: '20px',
-              letterSpacing: '0%',
-              alignItems: 'center',
-              color: '#9A3412',
-            }}
-          >
-            15 ממתינים
-          </span>
+        <div className="nivg-order-header">
+          <span className="nivg-order-title">בקשות אישור ממתינות</span>
+          <span className="nivg-order-badge">15 ממתינים</span>
         </div>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <div style={{ display: 'flex', gap: '12px' }}>
-            <div
-              style={{
-                display: 'flex',
-                height: '75px',
-                width: '75px',
-                borderRadius: '16px',
-                backgroundColor: '#FFEDD5',
-                justifyContent: 'center',
-                alignItems: 'center',
-                color: '#EA580C',
-              }}
-            >
+
+        <div className="nivg-order-content">
+          <div className="nivg-order-left">
+            <div className="nivg-order-iconBox">
               <BellRing size={27} />
             </div>
-            <div
-              style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}
-            >
-              <span
-                style={{
-                  fontWeight: '500',
-                  fontSize: '18px',
-                  lineHeight: '28px',
-                  letterSpacing: '0%',
-                  color: '#111827',
-                }}
-              >
+
+            <div className="nivg-order-texts">
+              <span className="nivg-order-mainText">
                 בקשות לפגישות דורשות את תשומת לבך
               </span>
-              <span
-                style={{
-                  fontWeight: '400',
-                  fontSize: '16px',
-                  lineHeight: '24px',
-                  letterSpacing: '0%',
-                  color: '#4B5563',
-                }}
-              >
+              <span className="nivg-order-subText">
                 סקירה ואישור של הזמנות חדשות
               </span>
-              <span
-                style={{
-                  fontWeight: '500',
-                  fontSize: '14px',
-                  lineHeight: '20px',
-                  letterSpacing: '0%',
-                  color: '#6B7280',
-                }}
-              >
+              <span className="nivg-order-metaText">
                 הזמנה אחרונה: לפני 15 דקות
               </span>
             </div>
           </div>
-          <div>
-            <button
-              style={{
-                width: '144px',
-                borderRadius: '8px',
-                padding: '8px 16px',
-                backgroundColor: '#11D057',
-                color: '#fff',
-                border: '1px solid var(--Main, #11D057)',
-              }}
-            >
-              בקשות סקירה
-            </button>
+
+          <div className="nivg-order-right">
+            <button className="nivg-order-btn">בקשות סקירה</button>
           </div>
         </div>
       </div>
 
-      <div className="container-box empty-box"></div>
+      <div className="" style={{ display: 'flex', gap: 24 }}>
+        <div
+          className="container-box "
+          style={{ width: '50%', height: '376px', padding: 24, gap: 16 }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span
+              style={{
+                fontSize: '20px',
+                lineHeight: '28px',
+                fontWeight: '700',
+                alignItems: 'center',
+                color: '#111827',
+                letterSpacing: '0%',
+              }}
+            >
+              جدول اليوم
+            </span>
+            <span
+              style={{
+                fontSize: '14px',
+                lineHeight: '20px',
+                fontWeight: '400',
+                alignItems: 'center',
+                color: '#6B7280',
+                letterSpacing: '0%',
+              }}
+            >
+              15 ديسمبر 2025
+            </span>
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              gap: 16,
+              height: '248px',
+              // overflowY: 'scroll',
+              flexDirection: 'column',
+            }}
+          >
+            {tableToday.map((item) => (
+              <div
+                style={{
+                  display: 'flex',
+                  height: '72px',
+
+                  borderRadius: '16px',
+                  backgroundColor: '#F9FAFB',
+                  padding: 12,
+                  width: '100%',
+                }}
+              >
+                <span
+                  style={{
+                    width: '8px',
+                    height: 48,
+                    borderRadius: 9999,
+                    backgroundColor:
+                      item.status == 'confirmed' ? '#11D057' : '#FB923C',
+                  }}
+                ></span>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    paddingRight: 12,
+                    width: '100%',
+                  }}
+                >
+                  <span>{item.categoryDoctor}</span>
+                  <span>{item.timingName}</span>
+                </div>
+                <button
+                  style={{
+                    display: 'flex',
+                    backgroundColor:
+                      item.status == 'confirmed' ? '#DCFCE7' : '#FFEDD5',
+                    borderRadius: 9999,
+                    padding: '8px 12px',
+                    border: 'solid 0px',
+                    width: 120,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: 14,
+                      lineHeight: 16,
+                      fontWeight: 500,
+                    }}
+                  >
+                    {item.status == 'confirmed' ? 'تم التأكيد' : 'قيد الانتظار'}
+                  </span>
+                </button>
+              </div>
+            ))}
+          </div>
+          <div>
+            <button>عرض التقويم الكامل</button>
+          </div>
+        </div>
+        <div
+          className="container-box"
+          style={{ width: '50%', height: '376px', padding: 24 }}
+        ></div>
+      </div>
     </div>
   );
 };
