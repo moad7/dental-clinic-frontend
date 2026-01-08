@@ -1,3 +1,7 @@
+.main-login {
+  background-color: #ffffff;
+}
+
 .login-hero {
   position: relative;
   overflow: hidden;
@@ -11,7 +15,7 @@
 
 .login-card {
   max-width: 620px;
-  background-color: #f7f9fb;
+  background-color: #f7f9fb !important;
 }
 
 .btn-google-apple {

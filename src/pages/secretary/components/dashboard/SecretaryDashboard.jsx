@@ -51,24 +51,27 @@ const SecretaryDashboard = () => {
       date: 'מאז 9 ביולי 2025',
     },
   ];
+  const isConfirmed = (item) => {
+    return item.status === 'confirmed';
+  };
 
   const tableToday = [
     {
       _id: 1,
-      timingName: '9:00 صباحًا - احمد محسن',
-      categoryDoctor: 'تنظيف دوري • د. جونسون',
+      timingName: '9:00 בבוקר - אחמד מוחסן',
+      categoryDoctor: 'ניקיון קבוע • ד"ר גונסון',
       status: 'confirmed',
     },
     {
       _id: 2,
-      timingName: '10:30 صباحًا - ماجد ابراهيم',
-      categoryDoctor: 'قناة جذر • د. تشين',
+      timingName: '10:30 בבוקר - מגיד איברהים',
+      categoryDoctor: 'טיפול שורש • ד"ר צן',
       status: 'onHold',
     },
     {
       _id: 3,
-      timingName: '2:00 مساءً - سارة ديب',
-      categoryDoctor: 'استشارة • د. ديفيس',
+      timingName: '14:00 - שרה דיב',
+      categoryDoctor: 'ייעוץ • ד"ר דיוויס',
       status: 'confirmed',
     },
   ];
@@ -132,112 +135,61 @@ const SecretaryDashboard = () => {
         </div>
       </div>
 
-      <div className="" style={{ display: 'flex', gap: 24 }}>
-        <div
-          className="container-box "
-          style={{ width: '50%', height: '376px', padding: 24, gap: 16 }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span
-              style={{
-                fontSize: '20px',
-                lineHeight: '28px',
-                fontWeight: '700',
-                alignItems: 'center',
-                color: '#111827',
-                letterSpacing: '0%',
-              }}
-            >
-              جدول اليوم
-            </span>
-            <span
-              style={{
-                fontSize: '14px',
-                lineHeight: '20px',
-                fontWeight: '400',
-                alignItems: 'center',
-                color: '#6B7280',
-                letterSpacing: '0%',
-              }}
-            >
-              15 ديسمبر 2025
-            </span>
+      <div className="today-layout">
+        <div className="container-box today-card">
+          <div className="today-card-header">
+            <span className="today-card-title">לוח הזמנים של היום</span>
+            <span className="today-card-date">15 בדצמבר, 2025</span>
           </div>
-          <div
-            style={{
-              display: 'flex',
-              gap: 16,
-              height: '248px',
-              // overflowY: 'scroll',
-              flexDirection: 'column',
-            }}
-          >
-            {tableToday.map((item) => (
-              <div
-                style={{
-                  display: 'flex',
-                  height: '72px',
 
-                  borderRadius: '16px',
-                  backgroundColor: '#F9FAFB',
-                  padding: 12,
-                  width: '100%',
-                }}
-              >
-                <span
-                  style={{
-                    width: '8px',
-                    height: 48,
-                    borderRadius: 9999,
-                    backgroundColor:
-                      item.status == 'confirmed' ? '#11D057' : '#FB923C',
-                  }}
-                ></span>
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    paddingRight: 12,
-                    width: '100%',
-                  }}
-                >
-                  <span>{item.categoryDoctor}</span>
-                  <span>{item.timingName}</span>
-                </div>
-                <button
-                  style={{
-                    display: 'flex',
-                    backgroundColor:
-                      item.status == 'confirmed' ? '#DCFCE7' : '#FFEDD5',
-                    borderRadius: 9999,
-                    padding: '8px 12px',
-                    border: 'solid 0px',
-                    width: 120,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: 14,
-                      lineHeight: 16,
-                      fontWeight: 500,
-                    }}
+          <div className="today-card-list">
+            {tableToday.map((item) => {
+              const confirmed = isConfirmed(item);
+
+              return (
+                <div className="today-item" key={item.id}>
+                  <div className="today-item-right">
+                    <span
+                      className={`today-item-indicator ${
+                        confirmed ? 'is-confirmed' : 'is-pending'
+                      }`}
+                    />
+                    <div className="today-item-info">
+                      <span>{item.categoryDoctor}</span>
+                      <span>{item.timingName}</span>
+                    </div>
+                  </div>
+
+                  <div
+                    className={`today-item-status ${
+                      confirmed ? 'is-confirmed' : 'is-pending'
+                    }`}
                   >
-                    {item.status == 'confirmed' ? 'تم التأكيد' : 'قيد الانتظار'}
-                  </span>
-                </button>
-              </div>
-            ))}
+                    <span>{confirmed ? 'אושר' : 'בהמתנה'}</span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-          <div>
-            <button>عرض التقويم الكامل</button>
+
+          <div className="today-card-footer">
+            <button className="today-card-link">הצג את לוח השנה המלא</button>
           </div>
         </div>
+
         <div
           className="container-box"
-          style={{ width: '50%', height: '376px', padding: 24 }}
-        ></div>
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            width: '50%',
+            gap: 16,
+            padding: 24,
+          }}
+        >
+          <span>נהלים מהירים</span>
+          <div></div>
+        </div>
       </div>
     </div>
   );

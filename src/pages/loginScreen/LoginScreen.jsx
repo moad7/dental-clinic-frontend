@@ -294,7 +294,7 @@ const LoginScreen = () => {
   }, [password]); // Dependency array: runs when `password` changes
 
   return (
-    <div className="container-fluid min-vh-100 d-flex align-items-center justify-content-center">
+    <div className="container-fluid min-vh-100 d-flex align-items-center justify-content-center main-login">
       <div className="row g-0 w-100" style={{ maxWidth: '1200px' }}>
         <div className="col-12 col-lg-5 p-5 d-flex flex-column justify-content-between">
           <div className="d-flex justify-content-lg-start justify-content-center mb-3">
