@@ -2,10 +2,13 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../../secretary.css';
 import './secretaryDashboard.css';
-import { MdOutlinePeopleAlt } from 'react-icons/md';
+import { MdArrowBack, MdOutlinePeopleAlt } from 'react-icons/md';
 import { FaUserDoctor } from 'react-icons/fa6';
 import { FaRegCalendarCheck, FaRegClock } from 'react-icons/fa';
 import { BellRing } from 'lucide-react';
+import { RiUserAddLine } from 'react-icons/ri';
+import { TbMessageCircle } from 'react-icons/tb';
+import { AiOutlinePlus } from 'react-icons/ai';
 
 const SecretaryDashboard = () => {
   const [stats, setStats] = useState(null);
@@ -73,6 +76,33 @@ const SecretaryDashboard = () => {
       timingName: '14:00 - שרה דיב',
       categoryDoctor: 'ייעוץ • ד"ר דיוויס',
       status: 'confirmed',
+    },
+  ];
+
+  const fastManagement = [
+    {
+      _id: 1,
+      mangName: 'קבע פגישה חדשה',
+      icon: <AiOutlinePlus />,
+      iconColor: '#FFFFFF',
+      backColor: '#2E90FA',
+      navigat: '',
+    },
+    {
+      _id: 2,
+      mangName: 'רישום מטופל חדש',
+      icon: <RiUserAddLine />,
+      iconColor: '#16A34A',
+      backColor: '#DCFCE7',
+      navigat: '',
+    },
+    {
+      _id: 3,
+      mangName: 'שלח הודעה לרופא',
+      icon: <TbMessageCircle />,
+      iconColor: '#2563EB',
+      backColor: '#DBEAFE',
+      navigat: '',
     },
   ];
   return (
@@ -187,10 +217,76 @@ const SecretaryDashboard = () => {
             padding: 24,
           }}
         >
-          <span>נהלים מהירים</span>
-          <div></div>
+          <span
+            style={{ fontSize: '20px', lineHeight: '28px', fontWeight: '700' }}
+          >
+            נהלים מהירים
+          </span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {fastManagement.map((item) => (
+              <div
+                key={item._id}
+                style={{
+                  display: 'flex',
+                  height: '76px',
+                  borderRadius: '16px',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '16px',
+                  backgroundColor: '#F9FAFB',
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    height: '44px',
+                    width: '180px',
+                  }}
+                >
+                  <span
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      height: '44px',
+                      width: '44px',
+                      borderRadius: '16px',
+                      backgroundColor: item.backColor,
+                      color: item.iconColor,
+                      fontSize: '18px',
+                    }}
+                  >
+                    {item.icon}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: '16px',
+                      fontWeight: '500',
+                      lineHeight: '24px',
+                      color: '#111827',
+                    }}
+                  >
+                    {item.mangName}
+                  </span>
+                </div>
+                <div
+                  style={{
+                    width: '22px',
+                    fontSize: '20px',
+                    color: '#9CA3AF',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <MdArrowBack />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
+      <div className="container-box"></div>
     </div>
   );
 };
