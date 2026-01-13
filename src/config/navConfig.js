@@ -25,10 +25,14 @@ export const NAV_BY_ROLE = {
     { label: '', to: '/secretary/dashboard', icon: Hospital },
 
     { label: 'לוח בקרה', to: '/secretary/dashboard', icon: LayoutGrid },
-    { label: 'פגישות', to: '/secretary/appointments', icon: Calendar },
-    { label: 'רופאים', to: '/secretary/doctors', icon: Stethoscope },
-    { label: 'חולים', to: '/secretary/patients', icon: Users },
-    { label: 'שירותים', to: '/secretary/services', icon: BriefcaseMedical },
+    { label: 'פגישות', to: '/secretary/meetingsManagement', icon: Calendar },
+    { label: 'רופאים', to: '/secretary/doctorsManagement', icon: Stethoscope },
+    { label: 'חולים', to: '/secretary/patientsManagement', icon: Users },
+    {
+      label: 'שירותים',
+      to: '/secretary/servicesManagement',
+      icon: BriefcaseMedical,
+    },
   ],
   doctor: [
     { label: '', to: '/doctor/dashboard', icon: Hospital },

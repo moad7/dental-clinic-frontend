@@ -9,6 +9,7 @@ import { BellRing } from 'lucide-react';
 import { RiUserAddLine } from 'react-icons/ri';
 import { TbMessageCircle } from 'react-icons/tb';
 import { AiOutlinePlus } from 'react-icons/ai';
+import WelcomeHeader from '../../../components/WelcomeHeader';
 
 const SecretaryDashboard = () => {
   const [stats, setStats] = useState(null);
@@ -188,12 +189,7 @@ const SecretaryDashboard = () => {
   };
   return (
     <div className="main-container" dir="rtl">
-      <div className="container-box header-box">
-        <span className="greeting-title">בוקר טוב, מואד!</span>
-        <span className="greeting-subtitle">
-          הנה סקירה כללית של ההזמנות שלך היום.
-        </span>
-      </div>
+      <WelcomeHeader />
 
       <div className="dashboard-cards">
         {arryDash.map((item) => (
