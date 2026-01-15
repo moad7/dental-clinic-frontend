@@ -13,7 +13,7 @@ export default function AppHeader({ user, onLogout }) {
         <nav className="nav" style={{ display: 'flex', gap: 16 }}>
           {navItems.map((item) => (
             <NavLink
-              key={item.to}
+              key={item.id}
               to={item.to}
               className={({ isActive }) =>
                 'nav-btn' + (isActive ? ' active' : '')

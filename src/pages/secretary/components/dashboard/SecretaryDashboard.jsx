@@ -1,61 +1,21 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+// import { useEffect, useState } from 'react';
+// import axios from 'axios';
 import '../../secretary.css';
 import './secretaryDashboard.css';
-import { MdArrowBack, MdOutlinePeopleAlt } from 'react-icons/md';
-import { FaUserDoctor } from 'react-icons/fa6';
-import { FaRegCalendarCheck, FaRegClock } from 'react-icons/fa';
+import { MdArrowBack } from 'react-icons/md';
 import { BellRing } from 'lucide-react';
 import { RiUserAddLine } from 'react-icons/ri';
 import { TbMessageCircle } from 'react-icons/tb';
 import { AiOutlinePlus } from 'react-icons/ai';
 import WelcomeHeader from '../../../components/WelcomeHeader';
 import MeetingTable from '../../../components/meetingTable/meetingTable';
+import DashboardStats from '../../../components/dashboardStats/DashboardStats';
 
 const SecretaryDashboard = () => {
-  const [stats, setStats] = useState(null);
-  const [todayAppointments, setTodayAppointments] = useState([]);
-  const token = localStorage.getItem('token');
-  const arryDash = [
-    {
-      _id: 1,
-      title: 'סך החולים',
-      body: '1,247 חולים',
-      icon: <MdOutlinePeopleAlt size={20} />,
-      color: '#6155F5',
-      backgroundColor: '#6155F514',
-      date: 'מאז 9 ביולי 2025',
-    },
-    {
-      _id: 2,
-      title: 'רופאים פעילים',
-      body: '8 רופאים',
-      icon: <FaUserDoctor size={20} />,
-      color: '#11D057',
-      backgroundColor: '#EFFCF4',
+  // const [stats, setStats] = useState(null);
+  // const [todayAppointments, setTodayAppointments] = useState([]);
+  // const token = localStorage.getItem('token');
 
-      date: 'מאז 22 באוקטובר 2025',
-    },
-    {
-      _id: 3,
-      title: 'בקשות חדשות',
-      body: '15 בקשות',
-      icon: <FaRegClock size={20} />,
-      color: '#EA580C',
-      backgroundColor: '#FFEDD5',
-      date: 'מאז 15 בדצמבר 2025',
-    },
-    {
-      _id: 4,
-      title: 'הזמנות היום',
-      body: '24 הזמנות',
-      icon: <FaRegCalendarCheck size={20} />,
-      color: '#0088FF',
-      backgroundColor: '#EAF4FF',
-
-      date: 'מאז 9 ביולי 2025',
-    },
-  ];
   const isConfirmed = (item) => {
     return item.status === 'confirmed';
   };
@@ -111,26 +71,7 @@ const SecretaryDashboard = () => {
   return (
     <div className="main-container" dir="rtl">
       <WelcomeHeader />
-      <div className="dashboard-cards">
-        {arryDash.map((item) => (
-          <div key={item._id} className="container-box dashboard-card">
-            <span className="card-title">{item.title}</span>
-
-            <div className="card-body">
-              <div
-                className="card-icon"
-                style={{ backgroundColor: item.backgroundColor }}
-              >
-                <span style={{ color: item.color }}>{item.icon}</span>
-              </div>
-
-              <span className="card-value">{item.body}</span>
-            </div>
-
-            <span className="card-date">{item.date}</span>
-          </div>
-        ))}
-      </div>
+      <DashboardStats />
       <div className="container-box nivg-order">
         <div className="nivg-order-header">
           <span className="nivg-order-title">בקשות אישור ממתינות</span>
@@ -173,7 +114,7 @@ const SecretaryDashboard = () => {
               const confirmed = isConfirmed(item);
 
               return (
-                <div className="today-item" key={item.id}>
+                <div className="today-item" key={item._id}>
                   <div className="today-item-right">
                     <span
                       className={`today-item-indicator ${

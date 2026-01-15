@@ -1,0 +1,57 @@
+/* Dashboard cards row */
+.dashboard-cards {
+  display: flex;
+  gap: 16px;
+  height: 180px;
+}
+
+/* Single card */
+.dashboard-card {
+  width: 100%;
+  gap: 18px;
+  padding: 24px 18px;
+}
+
+/* Card title */
+.card-title {
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 150%;
+  word-spacing: -2%;
+  color: #222222;
+}
+
+/* Card middle row */
+.card-body {
+  display: flex;
+  align-items: center;
+  gap: 8.5px;
+}
+
+/* Icon box */
+.card-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 45px;
+  width: 45px;
+  border-radius: 8px;
+  padding: 4px;
+}
+
+/* Value */
+.card-value {
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 130%;
+  color: #222222;
+}
+
+/* Date */
+.card-date {
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 150%;
+  word-spacing: -2%;
+  color: #222222;
+}

@@ -2,7 +2,6 @@
    Appointments Card
 --------------------------- */
 .appt-card {
-  height: 428px;
   gap: 24px;
   padding: 24px;
   display: flex;
@@ -51,6 +50,10 @@
 /* Rows wrapper */
 .appt-table-body {
   height: 274px;
+  overflow-y: scroll;
+}
+.appt-table-body-meetings-management {
+  height: 900px;
   overflow-y: scroll;
 }
 

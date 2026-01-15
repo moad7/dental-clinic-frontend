@@ -1,7 +1,10 @@
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './meetingTable.css';
-const MeetingTable = ({ moreBtn, headerTextTable }) => {
+const MeetingTable = ({ moreBtn, headerTextTable, filterSearch }) => {
+  const { pathname } = useLocation();
   const navigate = useNavigate();
+
+  const isMeetingsManagement = pathname.endsWith('/meetingsManagement');
   const appointmentsTable = [
     {
       _id: '1',
@@ -53,6 +56,86 @@ const MeetingTable = ({ moreBtn, headerTextTable }) => {
       doctorName: `ד"ר ג'ונסון`,
       status: 'rejected',
     },
+    {
+      _id: '6',
+      initials: 'AC',
+      patientName: 'אמנדה קלארק',
+      patientPhone: '052-999-2525',
+      serviceName: 'ניקוי שיניים',
+      requestDateText: '15 בדצמבר, 14:00',
+      doctorName: `ד"ר ג'ונסון`,
+      status: 'pending',
+    },
+    {
+      _id: '7',
+      initials: 'JM',
+      patientName: "ג'יימס מיטשל",
+      patientPhone: '052-999-2527',
+      serviceName: 'טיפול שורש',
+      requestDateText: '16 בדצמבר, 10:00',
+      doctorName: `ד"ר סמית`,
+      status: 'confirmed',
+    },
+    {
+      _id: '8',
+      initials: 'LT',
+      patientName: 'ליזה תומפסון',
+      patientPhone: '052-924-5549',
+      serviceName: 'ייעוץ',
+      requestDateText: '14 בדצמבר, 15:30',
+      doctorName: `ד"ר דיוויס`,
+      status: 'pending',
+    },
+    {
+      _id: '9',
+      initials: 'RK',
+      patientName: 'רוברט קים',
+      patientPhone: '052-921-4884',
+      serviceName: 'הלבנת שיניים',
+      requestDateText: '18 בדצמבר, 11:00',
+      doctorName: `ד"ר ג'ונסון`,
+      status: 'rejected',
+    },
+    {
+      _id: '10',
+      initials: 'RK',
+      patientName: 'רוברט קים',
+      patientPhone: '052-921-4884',
+      serviceName: 'הלבנת שיניים',
+      requestDateText: '18 בדצמבר, 11:00',
+      doctorName: `ד"ר ג'ונסון`,
+      status: 'rejected',
+    },
+    {
+      _id: '11',
+      initials: 'LT',
+      patientName: 'ליזה תומפסון',
+      patientPhone: '052-924-5549',
+      serviceName: 'ייעוץ',
+      requestDateText: '14 בדצמבר, 15:30',
+      doctorName: `ד"ר דיוויס`,
+      status: 'pending',
+    },
+    {
+      _id: '12',
+      initials: 'RK',
+      patientName: 'רוברט קים',
+      patientPhone: '052-921-4884',
+      serviceName: 'הלבנת שיניים',
+      requestDateText: '18 בדצמבר, 11:00',
+      doctorName: `ד"ר ג'ונסון`,
+      status: 'rejected',
+    },
+    {
+      _id: '13',
+      initials: 'RK',
+      patientName: 'רוברט קים',
+      patientPhone: '052-921-4884',
+      serviceName: 'הלבנת שיניים',
+      requestDateText: '18 בדצמבר, 11:00',
+      doctorName: `ד"ר ג'ונסון`,
+      status: 'rejected',
+    },
   ];
 
   const PillButton = ({ children, bg, color, onClick }) => (
@@ -77,7 +160,10 @@ const MeetingTable = ({ moreBtn, headerTextTable }) => {
     return map[type] || map.pending;
   };
   return (
-    <div className="container-box appt-card">
+    <div
+      className="container-box appt-card"
+      style={{ height: isMeetingsManagement ? '922px' : '428px' }}
+    >
       <div className="appt-card-top">
         <span className="appt-card-title">{headerTextTable}</span>
 
@@ -92,6 +178,14 @@ const MeetingTable = ({ moreBtn, headerTextTable }) => {
             הצג הכל
           </button>
         )}
+        {filterSearch && (
+          <div style={{ height: '478px', gap: 8.5 }}>
+            <div style={{ gap: 16 }}>
+              <input />
+              <div></div>
+            </div>
+          </div>
+        )}
       </div>
       {/* Header */}
       <div className="appt-table-header">
@@ -104,7 +198,13 @@ const MeetingTable = ({ moreBtn, headerTextTable }) => {
       </div>
 
       {/* Rows */}
-      <div className="appt-table-body">
+      <div
+        className={
+          isMeetingsManagement
+            ? 'appt-table-body-meetings-management'
+            : 'appt-table-body'
+        }
+      >
         {appointmentsTable.map((item) => {
           const st = badgeStyle(item.status);
 
