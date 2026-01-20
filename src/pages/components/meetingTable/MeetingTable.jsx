@@ -1,5 +1,10 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import './meetingTable.css';
+import { FiSearch } from 'react-icons/fi';
+import { IoIosArrowDown } from 'react-icons/io';
+import { MdOutlineFilterList } from 'react-icons/md';
+import { LuSettings2 } from 'react-icons/lu';
+import { RiDownloadCloud2Line } from 'react-icons/ri';
 const MeetingTable = ({ moreBtn, headerTextTable, filterSearch }) => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
@@ -179,10 +184,27 @@ const MeetingTable = ({ moreBtn, headerTextTable, filterSearch }) => {
           </button>
         )}
         {filterSearch && (
-          <div style={{ height: '478px', gap: 8.5 }}>
-            <div style={{ gap: 16 }}>
-              <input />
-              <div></div>
+          <div className="toolbar">
+            <div className="toolbar__left">
+              <div className="search-box">
+                <FiSearch className="search-icon" />
+                <input
+                  className="search-input"
+                  type="text"
+                  placeholder="למצוא את המטופל..."
+                />
+              </div>
+
+              <div className="filter-btn">
+                <LuSettings2 />
+                <span>הכל</span>
+                <IoIosArrowDown />
+              </div>
+            </div>
+
+            <div className="print-btn">
+              <RiDownloadCloud2Line />
+              <span>הדפסה</span>
             </div>
           </div>
         )}

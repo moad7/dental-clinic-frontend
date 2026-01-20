@@ -7,10 +7,10 @@ import { BellRing } from 'lucide-react';
 import { RiUserAddLine } from 'react-icons/ri';
 import { TbMessageCircle } from 'react-icons/tb';
 import { AiOutlinePlus } from 'react-icons/ai';
-import WelcomeHeader from '../../../components/WelcomeHeader';
+import BoxHeader from '../../../components/BoxHeader';
 import MeetingTable from '../../../components/meetingTable/meetingTable';
 import DashboardStats from '../../../components/dashboardStats/DashboardStats';
-
+import { secretaryStats } from '../../../../utils/dashboardDataStats/dataStats';
 const SecretaryDashboard = () => {
   // const [stats, setStats] = useState(null);
   // const [todayAppointments, setTodayAppointments] = useState([]);
@@ -70,8 +70,11 @@ const SecretaryDashboard = () => {
 
   return (
     <div className="main-container" dir="rtl">
-      <WelcomeHeader />
-      <DashboardStats />
+      <BoxHeader
+        title={'בוקר טוב, מואד!'}
+        subtitle={'הנה סקירה כללית של ההזמנות שלך היום.'}
+      />
+      <DashboardStats items={secretaryStats} />
       <div className="container-box nivg-order">
         <div className="nivg-order-header">
           <span className="nivg-order-title">בקשות אישור ממתינות</span>
