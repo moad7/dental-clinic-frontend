@@ -1,0 +1,20 @@
+.patients-table-header {
+  height: 44px;
+  padding: 0 24px;
+  display: grid;
+  align-items: center;
+  grid-template-columns: 1fr 1.2fr 1.2fr 1.2fr 1fr;
+  border-bottom: 1px solid #e5e7eb;
+  color: #4b5563;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 20px;
+}
+.patients-table-row {
+  padding: 0 24px;
+  height: 68px;
+  display: grid;
+  align-items: center;
+  grid-template-columns: 1fr 1.2fr 1.2fr 1.2fr 1fr;
+  border-bottom: 1px solid #f3f4f6;
+}
