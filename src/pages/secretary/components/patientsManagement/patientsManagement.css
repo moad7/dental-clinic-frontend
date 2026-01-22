@@ -3,7 +3,7 @@
   padding: 0 24px;
   display: grid;
   align-items: center;
-  grid-template-columns: 1fr 1.2fr 1.2fr 1.2fr 1fr;
+  grid-template-columns: 1fr 1.2fr 1.2fr 1.2fr 1.9fr;
   border-bottom: 1px solid #e5e7eb;
   color: #4b5563;
   font-size: 15px;
@@ -15,6 +15,83 @@
   height: 68px;
   display: grid;
   align-items: center;
-  grid-template-columns: 1fr 1.2fr 1.2fr 1.2fr 1fr;
+  grid-template-columns: 1fr 1.2fr 1.2fr 1.2fr 1.9fr;
   border-bottom: 1px solid #f3f4f6;
+}
+.appt-patient-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.appt-patient-name {
+  font-weight: 500;
+  font-size: 15px;
+  color: #111827;
+  line-height: 20px;
+}
+.appt-patient-id {
+  font-weight: 400;
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 16px;
+}
+
+.appt-patient-contacts {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.appt-patient-phone {
+  font-weight: 500;
+  font-size: 15px;
+  color: #111827;
+  line-height: 16px;
+}
+.appt-patient-email {
+  font-weight: 400;
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 16px;
+}
+.appt-last-visit {
+  color: #111827;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 20px;
+}
+.appt-patient-next-visit {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.appt-patient-date-time {
+  font-weight: 500;
+  font-size: 15px;
+  color: #111827;
+  line-height: 16px;
+}
+.appt-patient-treatment {
+  font-weight: 400;
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 16px;
+}
+.appt-patient-no-time {
+  font-weight: 500;
+  font-size: 15px;
+  color: #6b7280;
+  line-height: 16px;
+}
+.appt-patient-procedures {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 200px;
+}
+.appt-patient-procedures-btn {
+  border: 0px;
+  background-color: transparent;
+  font-size: 16px;
+  font-weight: 500;
 }

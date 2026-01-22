@@ -177,11 +177,59 @@ const PatientsManagement = () => {
                 </div>
 
                 <div className="appt-patient-info">
-                  <span className="appt-patient-name">{item.patientName}</span>
-                  <span className="appt-patient-phone">
-                    {item.patientPhone}
-                  </span>
+                  <span className="appt-patient-name">{item.name}</span>
+                  <span className="appt-patient-id">מזהה: #{item._id}</span>
                 </div>
+              </div>
+              <div className="appt-patient-contacts">
+                <span className="appt-patient-phone">{item.phone}</span>
+                <span className="appt-patient-email">{item.email}</span>
+              </div>
+              <div className="appt-last-visit ">{item.lastVisit}</div>
+              <div className="appt-patient-next-visit">
+                {item.nextAppointment ? (
+                  <>
+                    <span className="appt-patient-date-time">
+                      {item.nextAppointment.dateTime}
+                    </span>
+                    <span className="appt-patient-treatment">
+                      {item.nextAppointment.treatment}
+                    </span>
+                  </>
+                ) : (
+                  <span className="appt-patient-no-time">
+                    אין תאריכים קרובים
+                  </span>
+                )}
+              </div>
+              <div className="appt-patient-procedures">
+                <button
+                  className="appt-patient-procedures-btn"
+                  type="button"
+                  style={{
+                    color: '#EA580C',
+                  }}
+                >
+                  תזמון
+                </button>
+                <button
+                  className="appt-patient-procedures-btn"
+                  type="button"
+                  style={{
+                    color: '#4B5563',
+                  }}
+                >
+                  עריכה
+                </button>
+                <button
+                  className="appt-patient-procedures-btn"
+                  type="button"
+                  style={{
+                    color: '#2E90FA',
+                  }}
+                >
+                  הצג
+                </button>
               </div>
             </div>
           ))}
