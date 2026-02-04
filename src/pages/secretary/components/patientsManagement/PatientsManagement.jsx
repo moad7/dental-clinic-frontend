@@ -3,6 +3,7 @@ import BoxHeader from '../../../components/BoxHeader';
 import DashboardStats from '../../../components/dashboardStats/DashboardStats';
 import { secretaryPatientsStats } from '../../../../utils/dashboardDataStats/dataStats';
 import { FiPlus, FiSearch } from 'react-icons/fi';
+import { useEffect, useMemo, useState } from 'react';
 const PatientsManagement = () => {
   const patients = [
     {
@@ -123,7 +124,73 @@ const PatientsManagement = () => {
       },
     },
   ];
+  const [query, setQuery] = useState('');
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(50);
 
+  // فلترة البحث (اختياري)
+  const filteredPatients = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return patients;
+
+    return patients.filter((p) => {
+      return (
+        (p.name || '').toLowerCase().includes(q) ||
+        (p.email || '').toLowerCase().includes(q) ||
+        (p.phone || '').toLowerCase().includes(q) ||
+        String(p._id || '')
+          .toLowerCase()
+          .includes(q)
+      );
+    });
+  }, [patients, query]);
+
+  const total = filteredPatients.length;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
+  // لو تغيرت الفلترة/الحجم وخربطت الصفحة
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages);
+    if (page < 1) setPage(1);
+  }, [page, totalPages]);
+
+  const startIndex = (page - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, total);
+
+  const paginatedPatients = useMemo(() => {
+    return filteredPatients.slice(startIndex, endIndex);
+  }, [filteredPatients, startIndex, endIndex]);
+
+  // عشان سطر "عرض 1-10 من 1247"
+  const rangeText =
+    total === 0
+      ? 'عرض 0 من 0'
+      : `عرض ${startIndex + 1}-${endIndex} من ${total.toLocaleString()}`;
+
+  // توليد أزرار الصفحات (1 ... 3 2 1) بشكل نظيف
+  const getPages = () => {
+    const maxButtons = 5; // عدد أزرار حول الصفحة
+    const pages = [];
+
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+      return pages;
+    }
+
+    pages.push(1);
+
+    const left = Math.max(2, page - 1);
+    const right = Math.min(totalPages - 1, page + 1);
+
+    if (left > 2) pages.push('...');
+    for (let i = left; i <= right; i++) pages.push(i);
+    if (right < totalPages - 1) pages.push('...');
+
+    pages.push(totalPages);
+    return pages;
+  };
+
+  const pages = getPages();
   return (
     <div className="main-container" dir="rtl">
       <BoxHeader
@@ -155,6 +222,11 @@ const PatientsManagement = () => {
                   className="search-input"
                   type="text"
                   placeholder="למצוא את המטופל..."
+                  value={query}
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                    setPage(1); // أول صفحة بعد البحث
+                  }}
                 />
               </div>
             </div>
@@ -169,70 +241,139 @@ const PatientsManagement = () => {
           <div>נהלים</div>
         </div>
         <div>
-          {patients.map((item) => (
-            <div className="patients-table-row">
-              <div className="appt-patient">
-                <div className="appt-patient-avatar">
-                  {item.initials || 'AA'}
-                </div>
+          {paginatedPatients.length > 0 ? (
+            paginatedPatients.map((item, idx) => (
+              <div className="patients-table-row" key={`${item._id}-${idx}`}>
+                <div className="appt-patient">
+                  <div className="appt-patient-avatar">
+                    {item.initials || 'AA'}
+                  </div>
 
-                <div className="appt-patient-info">
-                  <span className="appt-patient-name">{item.name}</span>
-                  <span className="appt-patient-id">מזהה: #{item._id}</span>
+                  <div className="appt-patient-info">
+                    <span className="appt-patient-name">{item.name}</span>
+                    <span className="appt-patient-id">מזהה: #{item._id}</span>
+                  </div>
+                </div>
+                <div className="appt-patient-contacts">
+                  <span className="appt-patient-phone">{item.phone}</span>
+                  <span className="appt-patient-email">{item.email}</span>
+                </div>
+                <div className="appt-last-visit ">{item.lastVisit}</div>
+                <div className="appt-patient-next-visit">
+                  {item.nextAppointment ? (
+                    <>
+                      <span className="appt-patient-date-time">
+                        {item.nextAppointment.dateTime}
+                      </span>
+                      <span className="appt-patient-treatment">
+                        {item.nextAppointment.treatment}
+                      </span>
+                    </>
+                  ) : (
+                    <span className="appt-patient-no-time">
+                      אין תאריכים קרובים
+                    </span>
+                  )}
+                </div>
+                <div className="appt-patient-procedures">
+                  <button
+                    className="appt-patient-procedures-btn"
+                    type="button"
+                    style={{
+                      color: '#EA580C',
+                    }}
+                  >
+                    תזמון
+                  </button>
+                  <button
+                    className="appt-patient-procedures-btn"
+                    type="button"
+                    style={{
+                      color: '#4B5563',
+                    }}
+                  >
+                    עריכה
+                  </button>
+                  <button
+                    className="appt-patient-procedures-btn"
+                    type="button"
+                    style={{
+                      color: '#2E90FA',
+                    }}
+                  >
+                    הצג
+                  </button>
                 </div>
               </div>
-              <div className="appt-patient-contacts">
-                <span className="appt-patient-phone">{item.phone}</span>
-                <span className="appt-patient-email">{item.email}</span>
-              </div>
-              <div className="appt-last-visit ">{item.lastVisit}</div>
-              <div className="appt-patient-next-visit">
-                {item.nextAppointment ? (
-                  <>
-                    <span className="appt-patient-date-time">
-                      {item.nextAppointment.dateTime}
-                    </span>
-                    <span className="appt-patient-treatment">
-                      {item.nextAppointment.treatment}
-                    </span>
-                  </>
-                ) : (
-                  <span className="appt-patient-no-time">
-                    אין תאריכים קרובים
+            ))
+          ) : (
+            <>
+              <span
+                style={{
+                  height: 100,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                אין תוצואת
+              </span>
+            </>
+          )}
+        </div>
+        <div className="table-pagination">
+          <div className="table-pagination-left">
+            <button
+              className="page-btn"
+              disabled={page === 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+            >
+              السابق
+            </button>
+
+            <div className="pages">
+              {pages.map((p, idx) =>
+                p === '...' ? (
+                  <span className="dots" key={`dots-${idx}`}>
+                    …
                   </span>
-                )}
-              </div>
-              <div className="appt-patient-procedures">
-                <button
-                  className="appt-patient-procedures-btn"
-                  type="button"
-                  style={{
-                    color: '#EA580C',
-                  }}
-                >
-                  תזמון
-                </button>
-                <button
-                  className="appt-patient-procedures-btn"
-                  type="button"
-                  style={{
-                    color: '#4B5563',
-                  }}
-                >
-                  עריכה
-                </button>
-                <button
-                  className="appt-patient-procedures-btn"
-                  type="button"
-                  style={{
-                    color: '#2E90FA',
-                  }}
-                >
-                  הצג
-                </button>
-              </div>
+                ) : (
+                  <button
+                    key={p}
+                    className={`page-number ${page === p ? 'active' : ''}`}
+                    onClick={() => setPage(p)}
+                  >
+                    {p}
+                  </button>
+                )
+              )}
             </div>
-          ))}
+
+            <button
+              className="page-btn"
+              disabled={page === totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            >
+              التالي
+            </button>
+          </div>
+          <div className="table-pagination-right">
+            <select
+              className="page-size"
+              value={pageSize}
+              onChange={(e) => {
+                setPageSize(Number(e.target.value));
+                setPage(1);
+              }}
+            >
+              <option value={5}>5 في الصفحة</option>
+              <option value={15}>15 في الصفحة</option>
+              <option value={50}>50 في الصفحة</option>
+              <option value={100}>100 في الصفحة</option>
+            </select>
+
+            <span className="range-text">{rangeText}</span>
+          </div>
         </div>
       </div>
     </div>

@@ -260,3 +260,84 @@
   font-size: 15px;
   cursor: pointer;
 }
+.table-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  gap: 12px;
+  border-top: 1px solid #e5e7eb;
+  direction: rtl;
+}
+
+.table-pagination-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.page-size {
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.range-text {
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.table-pagination-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.page-btn {
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pages {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-number {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.page-number.active {
+  background: #22c55e; /* أخضر مثل الصورة */
+  border-color: #22c55e;
+  color: #fff;
+}
+
+.dots {
+  width: 24px;
+  text-align: center;
+  color: #6b7280;
+  font-weight: 700;
+}
