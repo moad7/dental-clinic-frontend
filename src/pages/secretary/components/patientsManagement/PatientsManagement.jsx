@@ -167,9 +167,7 @@ const PatientsManagement = () => {
       ? 'عرض 0 من 0'
       : `عرض ${startIndex + 1}-${endIndex} من ${total.toLocaleString()}`;
 
-  // توليد أزرار الصفحات (1 ... 3 2 1) بشكل نظيف
   const getPages = () => {
-    const maxButtons = 5; // عدد أزرار حول الصفحة
     const pages = [];
 
     if (totalPages <= 7) {
@@ -345,7 +343,7 @@ const PatientsManagement = () => {
                   >
                     {p}
                   </button>
-                )
+                ),
               )}
             </div>
 

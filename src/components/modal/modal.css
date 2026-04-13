@@ -1,0 +1,128 @@
+.modal-view-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 9999;
+}
+
+.modal-view-container {
+  background: #f7f9fb;
+  border-radius: 18px;
+  width: 100%;
+  max-height: calc(100vh - 32px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: modalIn 0.15s ease-out;
+  /* padding: 24px; */
+  gap: 28px;
+}
+
+/* Sizes */
+.modal-sm {
+  max-width: 420px;
+}
+.modal-md {
+  max-width: 640px;
+}
+.modal-lg {
+  max-width: 980px;
+}
+.modal-xl {
+  max-width: 1200px;
+}
+
+@keyframes modalIn {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-view-header {
+  background-color: #ffffff;
+  padding: 18px 24px;
+  border-bottom: 1px solid #f3f4f6;
+  display: flex;
+  align-items: center;
+  height: 66px;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.modal-view-title {
+  margin: 0;
+  font-size: 20px;
+  line-height: 29px;
+  font-weight: 700;
+  color: #222222;
+}
+
+.modal-view-close {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid #ffffff;
+  background: #fff;
+  cursor: pointer;
+}
+
+/* .modal-view-close:hover {
+  background: #f6f7f9;
+} */
+
+.modal-view-body {
+  padding: 18px;
+  overflow: auto;
+  padding: 0 24px 30px 24px;
+}
+
+.modal-view-footer {
+  padding: 14px 18px;
+  border-top: 1px solid #eef1f5;
+  background: #fff;
+}
+
+.label-modal {
+  margin: 10px 0 6px;
+  font-weight: 500;
+  font-style: Medium;
+  font-size: 16px;
+  line-height: 150%;
+  letter-spacing: -2%;
+}
+
+.input-modal {
+  height: 48px;
+}
+.textarea-modal {
+  height: 110px;
+}
+.input-modal,
+.textarea-modal {
+  background-color: #f7f9fb;
+  width: 100%;
+  border: 1px solid #e6eaf0;
+  border-radius: 8.5px;
+  padding: 14px;
+  gap: 17px;
+  outline: none;
+}
+.input-modal:focus,
+.textarea-modal:focus {
+  border-color: #16c45b;
+  box-shadow: 0 0 0 3px rgba(22, 196, 91, 0.15);
+}
+.modal-groub {
+  gap: 12px;
+  margin: 15px 0px;
+}
