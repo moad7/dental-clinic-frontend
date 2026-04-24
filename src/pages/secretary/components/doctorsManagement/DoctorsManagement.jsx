@@ -17,12 +17,12 @@ const DoctorsManagement = () => {
         title={'ניהול הרופאים'}
         subtitle={'ניהול וצפייה בכל רישומי הרופאים'}
         actionIcon={<FiPlus size={20} />}
-        actionLabel={'הוסף רופאה חדש'}
+        actionLabel={'הוסף רופא חדש'}
       />
       <Modal
         isOpen={open}
         onClose={() => setOpen(false)}
-        title="הוספת רופה חדש"
+        title="הוספת רופא חדש"
         size="xl"
       >
         <AddDoctorModal />

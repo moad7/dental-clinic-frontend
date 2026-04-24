@@ -1,0 +1,106 @@
+.doctor-form {
+  direction: rtl;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  width: 100%;
+}
+
+.doctor-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px 24px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.form-field label,
+.section-label {
+  font-size: 14px;
+  color: #111827;
+  font-weight: 500;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea,
+.working-row input[type='time'] {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: #f5f6f8;
+  border-radius: 7px;
+  padding: 0 14px;
+  min-height: 44px;
+  font-size: 14px;
+  color: #111827;
+}
+
+.form-field textarea {
+  padding: 14px;
+  min-height: 90px;
+  resize: vertical;
+}
+
+.form-field select[multiple] {
+  min-height: 110px;
+  padding: 10px 14px;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.working-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.working-row {
+  display: grid;
+  grid-template-columns: 110px 110px 1fr 1fr;
+  gap: 12px;
+  align-items: center;
+  background: #f9fafb;
+  padding: 10px;
+  border-radius: 9px;
+}
+
+.open-check {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 14px;
+}
+
+.submit-btn {
+  width: 100%;
+  border: none;
+  background: #12cf57;
+  color: white;
+  border-radius: 9px;
+  padding: 13px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 22px;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  background: #0fbd4e;
+}
+
+@media (max-width: 768px) {
+  .doctor-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .working-row {
+    grid-template-columns: 1fr;
+  }
+}
