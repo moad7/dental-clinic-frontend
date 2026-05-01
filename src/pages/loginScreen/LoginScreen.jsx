@@ -82,6 +82,8 @@ const LoginScreen = () => {
       }
 
       const res = await signInWithOtp(otpId, codeValidation);
+      console.log('sdfsdd   \n' + res);
+
       login(res);
       if (res.user.role == 'patient') {
         navigate('/patient-dashboard');
@@ -513,7 +515,7 @@ const LoginScreen = () => {
                           .filter(
                             (result) =>
                               result.message !==
-                              textDictionary.passwordCheckNoSpaces
+                              textDictionary.passwordCheckNoSpaces,
                           )
                           .map((result, index) => (
                             <li
@@ -593,10 +595,10 @@ const LoginScreen = () => {
                     {otpType === 'Verify Sign Up'
                       ? 'אישור הרשמה'
                       : otpType === 'Password recovery'
-                      ? 'אישור קוד'
-                      : otpType === 'Sign in'
-                      ? 'התחברות'
-                      : 'אישור'}
+                        ? 'אישור קוד'
+                        : otpType === 'Sign in'
+                          ? 'התחברות'
+                          : 'אישור'}
                   </button>
 
                   <div className="d-flex w-100 justify-content-betwen">
@@ -667,7 +669,7 @@ const LoginScreen = () => {
                           .filter(
                             (result) =>
                               result.message !==
-                              textDictionary.passwordCheckNoSpaces
+                              textDictionary.passwordCheckNoSpaces,
                           )
                           .map((result, index) => (
                             <li

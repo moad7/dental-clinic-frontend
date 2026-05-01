@@ -3,13 +3,13 @@ import './addDoctorModal.css';
 import { useState } from 'react';
 
 const days = [
-  { key: 'sunday', label: 'الأحد' },
-  { key: 'monday', label: 'الإثنين' },
-  { key: 'tuesday', label: 'الثلاثاء' },
-  { key: 'wednesday', label: 'الأربعاء' },
-  { key: 'thursday', label: 'الخميس' },
-  { key: 'friday', label: 'الجمعة' },
-  { key: 'saturday', label: 'السبت' },
+  { key: 'sunday', label: 'יום ראשון' },
+  { key: 'monday', label: 'יום שני' },
+  { key: 'tuesday', label: 'יום שלישי' },
+  { key: 'wednesday', label: 'יום רביעי' },
+  { key: 'thursday', label: 'יום חמישי' },
+  { key: 'friday', label: 'יום שישי' },
+  { key: 'saturday', label: 'יום שבת' },
 ];
 
 const defaultWorkingHours = days.map((d) => ({
@@ -285,19 +285,18 @@ const AddDoctorModal = () => {
 
     <form className="doctor-form" onSubmit={handleSubmit}>
       <div className="doctor-form-grid">
-        <div className="form-field">
-          <label>الاسم الكامل للطبيب</label>
+        <div className="form-field-add-doctor">
+          <label>שמו המלא של הרופא</label>
           <input
             name="name"
             value={formData.name}
             onChange={handleChange}
-            placeholder="د. أحمد محمود"
             required
           />
         </div>
 
-        <div className="form-field">
-          <label>الهاتف</label>
+        <div className="form-field-add-doctor">
+          <label>הטלפון</label>
           <input
             name="phoneNumber"
             value={formData.phoneNumber}
@@ -307,8 +306,8 @@ const AddDoctorModal = () => {
           />
         </div>
 
-        <div className="form-field">
-          <label>البريد الإلكتروني</label>
+        <div className="form-field-add-doctor">
+          <label>דוא"ל</label>
           <input
             name="email"
             value={formData.email}
@@ -317,21 +316,21 @@ const AddDoctorModal = () => {
           />
         </div>
 
-        <div className="form-field">
-          <label>الجنس</label>
+        <div className="form-field-add-doctor">
+          <label>מין</label>
           <select
             name="gender"
             value={formData.gender}
             onChange={handleChange}
             required
           >
-            <option value="">اختر الجنس</option>
-            <option value="male">ذكر</option>
-            <option value="female">أنثى</option>
+            <option value="">בחר מין</option>
+            <option value="male">זכר</option>
+            <option value="female">נקבה</option>
           </select>
         </div>
 
-        <div className="form-field">
+        {/* <div className="form-field">
           <label>رقم الترخيص</label>
           <input
             name="licenseNumber"
@@ -339,31 +338,32 @@ const AddDoctorModal = () => {
             onChange={handleChange}
             placeholder="123456"
           />
-        </div>
+        </div> */}
 
-        <div className="form-field">
-          <label>سنوات الخبرة</label>
+        <div className="form-field-add-doctor">
+          <label>שנים של ניסיון</label>
           <input
             type="number"
             name="yearsOfExperience"
             value={formData.yearsOfExperience}
             onChange={handleChange}
-            placeholder="5"
+            // placeholder="5"
           />
         </div>
 
-        <div className="form-field">
-          <label>اللغات</label>
+        {/* <div className="form-field">
+          <label>שפות</label>
           <input
             name="languages"
             value={formData.languages}
             onChange={handleChange}
             placeholder="Arabic, Hebrew, English"
           />
-        </div>
+        </div> */}
 
-        <div className="form-field">
-          <label>خدمات الطبيب</label>
+        <div className="form-field-add-doctor">
+          <label>שירותי רופא</label>
+
           <select
             multiple
             value={formData.services.map((s) => JSON.stringify(s))}
@@ -382,7 +382,7 @@ const AddDoctorModal = () => {
                 serviceId: 'SERVICE_ID_1',
               })}
             >
-              زراعة الأسنان
+              שתלים דנטליים
             </option>
             <option
               value={JSON.stringify({
@@ -390,7 +390,7 @@ const AddDoctorModal = () => {
                 serviceId: 'SERVICE_ID_2',
               })}
             >
-              تنظيف الأسنان
+              ניקוי שיניים
             </option>
             <option
               value={JSON.stringify({
@@ -398,23 +398,23 @@ const AddDoctorModal = () => {
                 serviceId: 'SERVICE_ID_3',
               })}
             >
-              تبييض الأسنان
+              הלבנת שיניים
             </option>
           </select>
         </div>
 
-        <div className="form-field full-width">
-          <label>نبذة عن الطبيب</label>
+        <div className="form-field-add-doctor full-width">
+          <label>אודות הרופא</label>
           <textarea
             name="bio"
             value={formData.bio}
             onChange={handleChange}
-            placeholder="اكتب نبذة قصيرة عن الطبيب"
+            placeholder="כתבו סיכום קצר על הרופא."
           />
         </div>
 
         <div className="working-box full-width">
-          <label className="section-label">أوقات العمل</label>
+          <label className="section-label">שעות עבודה</label>
 
           {formData.workingHours.map((item, index) => (
             <div className="working-row" key={item.day}>
@@ -432,7 +432,7 @@ const AddDoctorModal = () => {
                     )
                   }
                 />
-                مفتوح
+                פתוח
               </label>
 
               <input
@@ -458,7 +458,7 @@ const AddDoctorModal = () => {
       </div>
 
       <button className="submit-btn" type="submit">
-        إضافة الطبيب
+        הוסף רופא
       </button>
     </form>
   );

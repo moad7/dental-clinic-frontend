@@ -12,22 +12,22 @@
   gap: 22px 24px;
 }
 
-.form-field {
+.form-field-add-doctor {
   display: flex;
   flex-direction: column;
   gap: 9px;
 }
 
-.form-field label,
+.form-field-add-doctor label,
 .section-label {
-  font-size: 14px;
+  font-size: 16px;
   color: #111827;
   font-weight: 500;
 }
 
-.form-field input,
-.form-field select,
-.form-field textarea,
+.form-field-add-doctor input,
+.form-field-add-doctor select,
+.form-field-add-doctor textarea,
 .working-row input[type='time'] {
   width: 100%;
   border: none;
