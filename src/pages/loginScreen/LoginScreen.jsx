@@ -82,7 +82,6 @@ const LoginScreen = () => {
       }
 
       const res = await signInWithOtp(otpId, codeValidation);
-      console.log('sdfsdd   \n' + res);
 
       login(res);
       if (res.user.role == 'patient') {

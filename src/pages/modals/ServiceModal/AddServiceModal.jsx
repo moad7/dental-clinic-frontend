@@ -2,10 +2,14 @@ import { MdDelete, MdOutlineCloudUpload } from 'react-icons/md';
 import './serviceModal.css';
 import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { createServiceGroup } from '../../../services/service';
+import {
+  addItemToServiseGroup,
+  createServiceGroup,
+  fetchServices,
+} from '../../../services/service';
 import { AuthContext } from '../../../context/AuthContext';
 const AddServiceModal = () => {
-  const { user } = useContext(AuthContext);
+  const { token } = useContext(AuthContext);
 
   const [image, setImage] = useState(null);
   // const [activeDoctor, setActiveDoctor] = useState(null);
@@ -37,24 +41,21 @@ const AddServiceModal = () => {
     setImage(null);
   };
 
-  const fetchGroups = async () => {
-    const res = await axios.get('/api/services');
-    // setGroups(res.data);
-    setGroups(Array.isArray(res.data) ? res.data : []);
-  };
-
   useEffect(() => {
-    fetchGroups();
-  }, []);
+    const loadServices = async () => {
+      const services = await fetchServices(token);
+      setGroups(services);
+    };
+    loadServices();
+  }, [token]);
 
   const handleCreateGroup = async () => {
     if (!newGroupTitle.trim()) return alert('Enter group title');
-    console.log(user);
 
-    const res = await createServiceGroup(newGroupTitle, user.tokens[0].token);
+    const res = await createServiceGroup(newGroupTitle, token);
 
-    setGroups([res.data, ...groups]);
-    setSelectedGroupId(res.data._id);
+    setGroups([res, ...groups]);
+    setSelectedGroupId(res._id);
     setNewGroupTitle('');
     setShowNewGroup(false);
   };
@@ -78,15 +79,12 @@ const AddServiceModal = () => {
     const payload = {
       name: form.name,
       description: form.description,
-      durationMin: Number(form.durationMin),
       price: Number(form.price),
+      durationMin: Number(form.durationMin),
       photo: image?.preview || '',
     };
 
-    const res = await axios.post(
-      `/api/services/groups/${selectedGroupId}/services`,
-      payload,
-    );
+    const res = await addItemToServiseGroup(selectedGroupId, payload, token);
 
     setGroups((prev) =>
       prev.map((g) => (g._id === selectedGroupId ? res.data : g)),
@@ -118,9 +116,7 @@ const AddServiceModal = () => {
   };
 
   // const selectedGroup = groups.find((g) => g._id === selectedGroupId);
-  const selectedGroup = Array.isArray(groups)
-    ? groups.find((g) => g._id === selectedGroupId)
-    : null;
+  const selectedGroup = groups?.find((g) => g?._id === selectedGroupId);
   return (
     <div className="service-row">
       <div className="service-form">
@@ -270,7 +266,7 @@ const AddServiceModal = () => {
         <div className="modal-groub">
           <button
             className="btn-create-service full"
-            onClick={() => alert('create')}
+            onClick={handleCreateService}
           >
             צור שירות
           </button>
