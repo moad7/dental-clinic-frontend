@@ -265,3 +265,182 @@
 .image-link-box input:focus {
   border-color: #11d057;
 }
+.clinic-service-group-panel {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 0 12px 18px;
+}
+
+.clinic-service-group-header {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.clinic-service-group-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #222222;
+}
+
+.clinic-service-group-collapse-btn {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  color: #222222;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clinic-service-cards-row {
+  display: flex;
+  gap: 30px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.clinic-service-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 423px;
+  min-width: 423px;
+  /* height: 350px; */
+  background: #ffffff;
+  border: 1px solid #e7edf3;
+  border-radius: 14px;
+  padding: 12px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+}
+
+.clinic-service-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px #eceff3 solid;
+}
+
+.clinic-service-status-badge {
+  min-width: 73px;
+  height: 36px;
+  border-radius: 999px;
+  font-size: 16px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clinic-service-status-active {
+  color: #1473e6;
+  background: #e8f1ff;
+}
+
+.clinic-service-status-inactive {
+  color: #ef4444;
+  background: #fff1f2;
+}
+
+.clinic-service-name-wrap {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.clinic-service-name {
+  margin: 0;
+  color: #11d057;
+  font-size: 19px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.clinic-service-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #d7e0ea;
+}
+
+.clinic-service-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.clinic-service- div,
+.clinic-service-bottom-grid div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.clinic-service-info span,
+.clinic-service-bottom-grid span {
+  color: #9ca3af;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.clinic-service-info strong {
+  color: #111827;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.clinic-service-divider {
+  height: 1px;
+  background: #eceff3;
+  margin: 16px 0;
+}
+
+.clinic-service-bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 14px;
+}
+
+.clinic-service-bottom-grid strong {
+  color: #14c957;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.clinic-service-edit-btn {
+  width: 100%;
+  height: 44px;
+  border: 0;
+  border-radius: 6px;
+  background: #14c957;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: 0.2s;
+}
+
+.clinic-service-edit-btn:hover {
+  background: #10b94d;
+}
+
+@media (max-width: 768px) {
+  .clinic-service-cards-row {
+    gap: 14px;
+  }
+
+  .clinic-service-card {
+    width: 260px;
+    min-width: 260px;
+  }
+}
