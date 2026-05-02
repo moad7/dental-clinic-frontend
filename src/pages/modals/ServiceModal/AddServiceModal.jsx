@@ -17,13 +17,14 @@ const AddServiceModal = () => {
   const [selectedGroupId, setSelectedGroupId] = useState('');
   const [newGroupTitle, setNewGroupTitle] = useState('');
   const [showNewGroup, setShowNewGroup] = useState(false);
-
+  const [mode, setMode] = useState('upload'); // upload | link
   const [form, setForm] = useState({
     name: '',
     description: '',
     durationMin: '',
     price: '',
     photo: '',
+    imageUrl: '',
   });
   const handleSelectImage = (e) => {
     const file = e.target.files[0];
@@ -81,20 +82,19 @@ const AddServiceModal = () => {
       description: form.description,
       price: Number(form.price),
       durationMin: Number(form.durationMin),
-      photo: image?.preview || '',
+      photo: mode === 'link' ? form.imageUrl : image?.preview || '',
     };
 
     const res = await addItemToServiseGroup(selectedGroupId, payload, token);
 
-    setGroups((prev) =>
-      prev.map((g) => (g._id === selectedGroupId ? res.data : g)),
-    );
+    setGroups((prev) => prev.map((g) => (g._id === selectedGroupId ? res : g)));
 
     setForm({
       name: '',
       description: '',
       durationMin: '',
       price: '',
+      imageUrl: '',
     });
 
     setImage(null);
@@ -189,7 +189,7 @@ const AddServiceModal = () => {
             onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
         </div>
-        <div className="modal-groub">
+        {/* <div className="modal-groub">
           <label className="label-modal">תמונת שירות</label>
 
           <div className="upload-picture-service-box">
@@ -221,6 +221,85 @@ const AddServiceModal = () => {
                   <div className="image-delete-btn" onClick={handleRemove}>
                     <MdDelete size={18} />
                   </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div> */}
+        <div className="modal-groub">
+          <label className="label-modal">תמונת שירות</label>
+
+          {/* Tabs */}
+          <div className="upload-tabs">
+            <button
+              className={mode === 'upload' ? 'active' : ''}
+              onClick={() => setMode('upload')}
+            >
+              העלאת תמונה
+            </button>
+
+            <button
+              className={mode === 'link' ? 'active' : ''}
+              onClick={() => setMode('link')}
+            >
+              קישור תמונה
+            </button>
+          </div>
+
+          <div className="upload-picture-service-box">
+            <div className="upload-picture-service-content">
+              {mode === 'upload' && (
+                <>
+                  <input
+                    type="file"
+                    id="fileUpload"
+                    className="upload-input"
+                    onChange={handleSelectImage}
+                  />
+
+                  {!image ? (
+                    <>
+                      <label htmlFor="fileUpload" className="upload-icon-box">
+                        <MdOutlineCloudUpload size={22} />
+                      </label>
+
+                      <div className="upload-text-box">
+                        <small className="upload-title">
+                          העלה תמונה של השירות
+                        </small>
+                        <small className="upload-subtitle">
+                          JPG, PNG up to 10MB
+                        </small>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="image-preview-box">
+                      <img src={image.preview} className="image-preview" />
+
+                      <div className="image-delete-btn" onClick={handleRemove}>
+                        <MdDelete size={18} />
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+
+              {mode === 'link' && (
+                <div className="image-link-box">
+                  <input
+                    type="text"
+                    placeholder="הדבק קישור לתמונה..."
+                    value={form.imageUrl}
+                    onChange={(e) =>
+                      setForm({ ...form, imageUrl: e.target.value })
+                    }
+                  />
+
+                  {form.imageUrl && (
+                    <div className="image-preview-box">
+                      <img src={form.imageUrl} className="image-preview" />
+                    </div>
+                  )}
                 </div>
               )}
             </div>

@@ -222,3 +222,46 @@
 .image-preview-box:hover .image-delete-btn {
   opacity: 1;
 }
+/* Tabs */
+.upload-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.upload-tabs button {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+  background: #f3f4f6;
+  cursor: pointer;
+  font-size: 13px;
+  transition: 0.2s;
+}
+
+.upload-tabs button.active {
+  background: #11d057;
+  color: white;
+}
+
+/* Link input */
+.image-link-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.image-link-box input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #e6eaf0;
+  border-radius: 8px;
+  outline: none;
+  font-size: 13px;
+}
+
+.image-link-box input:focus {
+  border-color: #11d057;
+}
