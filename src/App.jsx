@@ -38,9 +38,11 @@ import PatientsManagement from './pages/secretary/components/patientsManagement/
 import ServicesManagement from './pages/secretary/components/servicesManagement/ServicesManagement.jsx';
 import CreateMyAppointment from './pages/CreateMyAppointment.jsx';
 import AppLayout from './layouts/AppLayout.jsx';
+import { AppDataContext } from './context/AppDataContext.jsx';
 
 function App() {
   const { user } = useContext(AuthContext);
+  // const {  } = useContext(AppDataContext);
 
   return (
     <Router>

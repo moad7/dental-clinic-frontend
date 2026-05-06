@@ -6,7 +6,7 @@ import {
   addItemToServiseGroup,
   createServiceGroup,
   fetchServices,
-} from '../../../services/service';
+} from '../../../api/serviceApi';
 import { AuthContext } from '../../../context/AuthContext';
 const AddServiceModal = () => {
   const { token } = useContext(AuthContext);

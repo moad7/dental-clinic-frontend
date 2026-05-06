@@ -13,7 +13,7 @@ import {
   signInWithOtp,
   updatePassword,
   verifyOtp,
-} from '../../services/authService';
+} from '../../api/authApi';
 import OtpInput from '../../components/OtpInput';
 import validator from 'validator';
 import { AuthContext } from '../../context/AuthContext';
