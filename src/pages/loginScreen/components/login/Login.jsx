@@ -35,12 +35,23 @@ const Login = (props) => {
         props.setView('otp');
       }
     } catch (error) {
-      switch (error.response.data.message) {
+      const message = error.response?.data?.message;
+
+      switch (message) {
         case 'User not exist':
           toast.error(textDictionary.phoneInvalid);
           break;
+
         case 'Incorrect password':
           toast.error(textDictionary.errorPasswordCode);
+          break;
+
+        case 'User is not activated':
+          toast.error('המשתמש לא פעיל');
+          break;
+
+        default:
+          toast.error(message || 'שגיאה בהתחברות');
           break;
       }
     } finally {

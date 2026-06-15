@@ -40,3 +40,10 @@ export const updatePassword = async (phoneNumber, newPassword) => {
   });
   return result.data;
 };
+
+export const setPassword = async (token, password) => {
+  const result = await axios.post(`${API_URL}/setpassword/${token}`, {
+    password,
+  });
+  return result.data;
+};

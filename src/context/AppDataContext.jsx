@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { AuthContext } from './AuthContext';
 
 import { fetchServices } from '../api/serviceApi';
+import { fetchAllClincis } from '../api/clinicApi';
 // import { getAllUsers } from '../api/userApi';
 
 export const AppDataContext = createContext();
@@ -11,6 +12,7 @@ export const AppDataProvider = ({ children }) => {
 
   const [serviceGroups, setServiceGroups] = useState([]);
   const [users, setUsers] = useState([]);
+  const [clinics, setClinics] = useState([]);
 
   const [loadingData, setLoadingData] = useState(false);
 
@@ -19,6 +21,10 @@ export const AppDataProvider = ({ children }) => {
     setServiceGroups(res || []);
   };
 
+  const loadClinics = async () => {
+    const res = await fetchAllClincis(token);
+    setClinics(res || []);
+  };
   //   const loadUsers = async () => {
   //     const res = await getAllUsers(token);
   //     setUsers(res.data.data || res.data || []);
@@ -32,6 +38,7 @@ export const AppDataProvider = ({ children }) => {
 
       await Promise.all([
         loadServiceGroups(),
+        loadClinics(),
         //  loadUsers()
       ]);
     } catch (error) {
@@ -55,7 +62,7 @@ export const AppDataProvider = ({ children }) => {
         users,
         setUsers,
         loadingData,
-
+        clinics,
         loadServiceGroups,
         // loadUsers,
         loadInitialData,

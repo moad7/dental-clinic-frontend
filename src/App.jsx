@@ -39,6 +39,7 @@ import ServicesManagement from './pages/secretary/components/servicesManagement/
 import CreateMyAppointment from './pages/CreateMyAppointment.jsx';
 import AppLayout from './layouts/AppLayout.jsx';
 import { AppDataContext } from './context/AppDataContext.jsx';
+import SetPassword from './components/publicPages/SetPassword.jsx';
 
 function App() {
   const { user } = useContext(AuthContext);
@@ -47,6 +48,9 @@ function App() {
   return (
     <Router>
       <Routes>
+        {/* Public route */}
+        <Route path="/set-password/:token" element={<SetPassword />} />
+
         {/* Public */}
         {!user && (
           <>

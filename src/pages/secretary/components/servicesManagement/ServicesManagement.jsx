@@ -10,7 +10,6 @@ import { AppDataContext } from '../../../../context/AppDataContext';
 const ServicesManagement = () => {
   const [open, setOpen] = useState(false);
   const { serviceGroups } = useContext(AppDataContext);
-  console.log('👀 serviceGroups:', serviceGroups);
   return (
     <>
       <div className="main-container" dir="rtl">
