@@ -15,5 +15,5 @@ export const DASHBOARD_SECRETARY_ICONS = {
   appointments: FaRegCalendarCheck,
   meetingsToday: FaRegCalendarAlt,
   pendingAppointment: FaRegClock,
-  activePatients: FaRegCircle,
+  activeCircle: FaRegCircle,
 };

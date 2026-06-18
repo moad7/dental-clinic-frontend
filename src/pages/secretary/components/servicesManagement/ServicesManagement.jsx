@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import BoxHeader from '../../../components/BoxHeader';
+import BoxHeader from '../../../components/boxHeader/BoxHeader';
 import { FiPlus } from 'react-icons/fi';
 import Modal from '../../../../components/modal/Modal';
 import AddServiceModal from '../../../modals/ServiceModal/AddServiceModal';

@@ -7,7 +7,7 @@ import { BellRing } from 'lucide-react';
 import { RiUserAddLine } from 'react-icons/ri';
 import { TbMessageCircle } from 'react-icons/tb';
 import { AiOutlinePlus } from 'react-icons/ai';
-import BoxHeader from '../../../components/BoxHeader';
+import BoxHeader from '../../../components/boxHeader/BoxHeader';
 import MeetingTable from '../../../components/meetingTable/meetingTable';
 import DashboardStats from '../../../components/dashboardStats/DashboardStats';
 import { secretaryStats } from '../../../../utils/dashboardDataStats/dataStats';

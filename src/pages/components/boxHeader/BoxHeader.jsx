@@ -18,7 +18,7 @@ const BoxHeader = ({
           <input
             className="search-input"
             type="text"
-            placeholder="למצוא את הרופא..."
+            placeholder=""
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);

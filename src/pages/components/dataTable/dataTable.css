@@ -1,0 +1,80 @@
+.data-table-header,
+.data-table-row,
+.patients-table-header,
+.patients-table-row {
+  padding: 0 24px;
+  display: grid;
+  align-items: center;
+}
+
+.data-table-header,
+.patients-table-header {
+  height: 44px;
+  border-bottom: 1px solid #e5e7eb;
+  color: #4b5563;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.data-table-row,
+.patients-table-row {
+  min-height: 68px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.data-table-cell,
+.patients-table-cell {
+  min-width: 0;
+}
+
+.data-table-empty,
+.patients-table-empty {
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  font-size: 15px;
+}
+
+.data-table-pagination,
+.patients-table-pagination {
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.data-table-pagination-left,
+.data-table-pagination-right,
+.patients-table-pagination-left,
+.patients-table-pagination-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.data-table-page-btn,
+.data-table-page-size,
+.patients-table-page-btn,
+.patients-table-page-size {
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.data-table-page-btn:disabled,
+.patients-table-page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.data-table-page-current,
+.data-table-range-text,
+.patients-table-page-current,
+.patients-table-range-text {
+  color: #6b7280;
+  font-size: 14px;
+}
