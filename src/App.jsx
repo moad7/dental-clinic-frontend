@@ -44,7 +44,6 @@ import SetPassword from './components/publicPages/SetPassword.jsx';
 function App() {
   const { user } = useContext(AuthContext);
   // const {  } = useContext(AppDataContext);
-
   return (
     <Router>
       <Routes>
@@ -63,7 +62,6 @@ function App() {
         {/* Protected */}
         {user && (
           <>
-            {/* أول ما يفوت يوديه حسب role */}
             <Route
               path="/"
               element={

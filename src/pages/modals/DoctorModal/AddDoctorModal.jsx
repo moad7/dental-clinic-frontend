@@ -35,8 +35,9 @@ const initialFormData = {
   workingHours: defaultWorkingHours,
 };
 
-const AddDoctorModal = () => {
-  const { serviceGroups, clinics } = useContext(AppDataContext);
+const AddDoctorModal = ({ setOpen, open }) => {
+  const { serviceGroups, clinics, addDoctorToState } =
+    useContext(AppDataContext);
   const { token } = useContext(AuthContext);
   const [formData, setFormData] = useState(initialFormData);
 
@@ -114,13 +115,12 @@ const AddDoctorModal = () => {
           workingHours: formData.workingHours,
         },
       };
-
-      const result = await createDoctorBySecretary(payload, token);
-      console.log(result);
+      const newDoctor = await createDoctorBySecretary(payload, token);
+      addDoctorToState(newDoctor.doctor);
+      setOpen(!open);
       toast.success('הרופא נוצר בהצלחה ונשלח ליינק ליצר סיססמה חדשה');
       setFormData(initialFormData);
     } catch (error) {
-      console.log(error);
       toast.error(error.response?.data?.message || 'אירעה שגיאה, נסה שוב');
     }
   };

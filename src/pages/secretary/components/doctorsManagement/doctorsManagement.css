@@ -81,10 +81,11 @@
   font-size: 15px;
   line-height: 20px;
 }
-.appt-doctor-next-visit {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+.appt-gender {
+  color: #111827;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 20px;
 }
 .appt-specialization {
   color: #111827;
@@ -93,24 +94,11 @@
   line-height: 20px;
 }
 
-.appt-doctor-date-time {
-  font-weight: 500;
-  font-size: 15px;
+.appt-status {
   color: #111827;
-  line-height: 16px;
-}
-.appt-doctor-treatment {
-  font-weight: 400;
-  font-size: 13px;
-  color: #6b7280;
-  line-height: 16px;
-}
-
-.appt-doctor-no-time {
   font-weight: 500;
   font-size: 15px;
-  color: #6b7280;
-  line-height: 16px;
+  line-height: 20px;
 }
 
 .doctors-management-top {

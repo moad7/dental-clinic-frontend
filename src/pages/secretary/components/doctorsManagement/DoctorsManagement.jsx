@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useContext } from 'react';
 import BoxHeader from '../../../components/boxHeader/BoxHeader';
 import { FiPlus, FiSearch } from 'react-icons/fi';
 import AddDoctorModal from '../../../modals/DoctorModal/AddDoctorModal';
@@ -7,52 +7,40 @@ import DashboardStats from '../../../components/dashboardStats/DashboardStats';
 import { secretaryDoctorsStats } from '../../../../utils/dashboardDataStats/dataStats';
 import DataTable from '../../../components/dataTable/DataTable';
 import './doctorsManagement.css';
-
+import { AppDataContext } from '../../../../context/AppDataContext';
 const DoctorsManagement = () => {
+  const { doctors } = useContext(AppDataContext);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
 
-  const doctors = [
-    {
-      _id: 'P001251',
-      name: 'د. إميلي تشين',
-      initials: 'אצ',
-      phone: '+1 (555) 123-4567',
-      email: 'emily.chen@email.com',
-      typeWork: 'full',
-      doctorAppointments: {
-        dateTime: '2024-12-15T09:00:00',
-        treatment: 'Routine Cleaning',
-      },
-      specialization: 'רפואת שיניים מונעת',
-    },
-    {
-      _id: 'P001252',
-      name: 'د. إميلي تشين',
-      initials: 'אצ',
-      phone: '+1 (555) 123-4567',
-      email: 'emily.chen@email.com',
-      typeWork: 'full',
-      doctorAppointments: {
-        dateTime: '2024-12-15T09:00:00',
-        treatment: 'Routine Cleaning',
-      },
-      specialization: 'רפואת שיניים מונעת',
-    },
-    {
-      _id: 'P001253',
-      name: 'د. إميلي تشين',
-      initials: 'אצ',
-      phone: '+1 (555) 123-4567',
-      email: 'emily.chen@email.com',
-      typeWork: 'full',
-      doctorAppointments: {
-        dateTime: '2024-12-15T09:00:00',
-        treatment: 'Routine Cleaning',
-      },
-      specialization: 'רפואת שיניים מונעת',
-    },
-  ];
+  const normalizedDoctors = useMemo(() => {
+    return (Array.isArray(doctors) ? doctors : []).map((doctor) => ({
+      _id: doctor._id,
+      name: doctor.name,
+      initials:
+        doctor.name
+          ?.split(' ')
+          .slice(0, 2)
+          .map((word) => word[0])
+          .join('') || 'DR',
+
+      phone: doctor.phoneNumber,
+      email: doctor.email,
+      gender: doctor.gender,
+      avatar: doctor.avatar,
+
+      status: doctor.isActive ? 'active' : 'inactive',
+
+      specialization:
+        doctor.doctor?.services
+          ?.map((s) => s.groupId?.title)
+          .filter(Boolean)
+          .join(', ') || 'ללא התמחות',
+
+      workingHours: doctor.doctor?.workingHours || [],
+      raw: doctor,
+    }));
+  }, [doctors]);
   const doctorColumns = [
     {
       key: 'doctor',
@@ -63,8 +51,8 @@ const DoctorsManagement = () => {
           <div className="appt-doctor-avatar">{item.initials || 'AA'}</div>
 
           <div className="appt-doctor-info">
-            <span className="appt-doctor-name">{item.name}</span>
-            <span className="appt-doctor-id">מזהה: #{item._id}</span>
+            <span className="appt-doctor-name">ד"ר {item.name}</span>
+            {/* <span className="appt-doctor-id">מזהה: #{item._id}</span> */}
           </div>
         </div>
       ),
@@ -81,32 +69,30 @@ const DoctorsManagement = () => {
       ),
     },
     {
-      key: 'typeWork',
-      title: 'סוג העבודה',
-      width: '1.2fr',
-      render: (item) => <div className="appt-typeWork">{item.typeWork}</div>,
-    },
-    {
-      key: 'nextAppointment',
-      title: 'הפגישה הבאה',
+      key: 'gender',
+      title: 'מיון',
       width: '1.2fr',
       render: (item) => (
-        <div className="appt-doctor-next-visit">
-          {item.nextAppointment ? (
-            <>
-              <span className="appt-doctor-date-time">
-                {item.nextAppointment.dateTime}
-              </span>
-              <span className="appt-doctor-treatment">
-                {item.nextAppointment.treatment}
-              </span>
-            </>
-          ) : (
-            <span className="appt-doctor-no-time">אין תאריכים קרובים</span>
-          )}
+        <div className="appt-gender">
+          {item.gender == 'male' ? 'זכר' : 'נקבה'}
         </div>
       ),
     },
+    {
+      key: 'typeWork',
+      title: 'סוג העבודה',
+      width: '1.2fr',
+      render: (item) => {
+        const activeDays =
+          item.workingHours?.filter((day) => !day.isClosed).length || 0;
+
+        return (
+          <span>{activeDays == 7 ? 'כל הימים' : activeDays + ' ימים'}</span>
+        );
+      },
+      // render: (item) => <div className="appt-typeWork">{item.typeWork}</div>,
+    },
+
     {
       key: 'specialization',
       title: 'התמחות',
@@ -115,14 +101,29 @@ const DoctorsManagement = () => {
         <div className="appt-specialization">{item.specialization}</div>
       ),
     },
+    {
+      key: 'status',
+      title: 'סטאטוס',
+      width: '1.2fr',
+      render: (item) => (
+        <span
+          style={{
+            color: item.status === 'active' ? '#16A34A' : '#DC2626',
+            fontWeight: 600,
+          }}
+        >
+          {item.status === 'active' ? 'פעיל' : 'לא פעיל'}
+        </span>
+      ),
+    },
   ];
 
   const filteredDoctor = useMemo(() => {
     const q = query.trim().toLowerCase();
 
-    if (!q) return doctors;
+    if (!q) return normalizedDoctors;
 
-    return doctors.filter((p) => {
+    return normalizedDoctors.filter((p) => {
       return (
         (p.name || '').toLowerCase().includes(q) ||
         (p.email || '').toLowerCase().includes(q) ||
@@ -132,7 +133,7 @@ const DoctorsManagement = () => {
           .includes(q)
       );
     });
-  }, [query]);
+  }, [query, normalizedDoctors]);
 
   return (
     <div className="main-container" dir="rtl">
@@ -153,7 +154,7 @@ const DoctorsManagement = () => {
         title="הוספת רופא חדש"
         size="xl"
       >
-        <AddDoctorModal />
+        <AddDoctorModal setOpen={setOpen} open={open} />
       </Modal>
 
       <div className="container-box">
@@ -175,12 +176,13 @@ const DoctorsManagement = () => {
             </div>
           </div>
         </div>
+
         <DataTable
           columns={doctorColumns}
           data={filteredDoctor}
           rowKey="_id"
           classPrefix="data-table"
-          emptyText="אין תוצאות"
+          emptyText="אין רופאים"
           defaultPageSize={5}
         />
       </div>
