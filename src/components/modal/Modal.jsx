@@ -7,9 +7,9 @@ const Modal = ({
   onClose,
   title,
   children,
-  footer,
+
   size = 'lg', // sm | md | lg | xl
-  closeOnOverlay = false, // or true
+  closeOnOverlay = false,
 }) => {
   useEffect(() => {
     if (!isOpen) return;
@@ -19,7 +19,7 @@ const Modal = ({
     };
 
     document.addEventListener('keydown', onKeyDown);
-    document.body.style.overflow = 'hidden'; // منع سكرول الخلفية
+    document.body.style.overflow = 'hidden';
 
     return () => {
       document.removeEventListener('keydown', onKeyDown);
@@ -53,8 +53,6 @@ const Modal = ({
         </div>
 
         <div className="modal-view-body">{children}</div>
-
-        {/* {footer && <div className="modal-view-footer">{footer}</div>} */}
       </div>
     </div>,
     document.body,

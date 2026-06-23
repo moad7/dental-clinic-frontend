@@ -1,7 +1,7 @@
 import { useMemo, useState, useContext } from 'react';
 import BoxHeader from '../../../components/boxHeader/BoxHeader';
 import { FiPlus, FiSearch } from 'react-icons/fi';
-import AddDoctorModal from '../../../modals/DoctorModal/AddDoctorModal';
+import AddDoctorModal from '../../../modals/doctorModal/AddDoctorModal';
 import Modal from '../../../../components/modal/Modal';
 import DashboardStats from '../../../components/dashboardStats/DashboardStats';
 import { secretaryDoctorsStats } from '../../../../utils/dashboardDataStats/dataStats';

@@ -3,78 +3,53 @@ import BoxHeader from '../../../../pages/components/boxHeader/BoxHeader';
 import DashboardStats from '../../../components/dashboardStats/DashboardStats';
 import { secretaryPatientsStats } from '../../../../utils/dashboardDataStats/dataStats';
 import { FiPlus, FiSearch } from 'react-icons/fi';
-import { useMemo, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import DataTable from '../../../components/dataTable/DataTable';
+import { AppDataContext } from '../../../../context/AppDataContext';
 
 const PatientsManagement = () => {
-  const patients = [
-    {
-      _id: 'P001251',
-      name: "אמילי צ'ן",
-      initials: 'אצ',
-      phone: '+1 (555) 123-4567',
-      email: 'emily.chen@email.com',
-      lastVisit: '2024-12-08',
-      nextAppointment: {
-        dateTime: '2024-12-15T09:00:00',
-        treatment: 'Routine Cleaning',
-      },
-    },
-    {
-      _id: 'P001252',
-      name: 'מרקוס רודריגז',
-      initials: 'מר',
-      phone: '+1 (555) 234-5678',
-      email: 'marcus.r@email.com',
-      lastVisit: '2024-11-28',
-      nextAppointment: {
-        dateTime: '2024-12-16T10:30:00',
-        treatment: 'Root Canal',
-      },
-    },
-    {
-      _id: 'P001253',
-      name: 'שרה ויליאמס',
-      initials: 'שו',
-      phone: '+1 (555) 345-6789',
-      email: 'sarah.w@email.com',
-      lastVisit: '2024-12-05',
-      nextAppointment: {
-        dateTime: '2024-12-18T14:00:00',
-        treatment: 'Consultation',
-      },
-    },
-    {
-      _id: 'P001254',
-      name: "ג'יימס דייוויס",
-      initials: 'גד',
-      phone: '+1 (555) 456-7890',
-      email: 'james.davis@email.com',
-      lastVisit: '2024-10-15',
-      nextAppointment: null,
-    },
-    {
-      _id: 'P001255',
-      name: 'אמנדה מילר',
-      initials: 'אמ',
-      phone: '+1 (555) 567-8901',
-      email: 'amanda.m@email.com',
-      lastVisit: '2024-12-10',
-      nextAppointment: {
-        dateTime: '2024-12-20T11:00:00',
-        treatment: 'Teeth Whitening',
-      },
-    },
-  ];
+  const { patientsBySecretry } = useContext(AppDataContext);
+  const normalizedPatients = useMemo(() => {
+    return (Array.isArray(patientsBySecretry) ? patientsBySecretry : []).map(
+      (patient) => ({
+        _id: patient.userId?._id || patient._id,
+        patientProfileId: patient._id,
 
+        name: patient.userId?.name || '',
+        initials:
+          patient.userId?.name
+            ?.split(' ')
+            .slice(0, 2)
+            .map((word) => word[0])
+            .join('') || 'AA',
+
+        phone: patient.userId?.phoneNumber || '-',
+        email: patient.userId?.email || '-',
+        gender: patient.userId?.gender || '-',
+
+        status: patient.userId?.isActive ? 'active' : 'inactive',
+
+        lastVisit: patient.lastVisit || '-',
+        nextAppointment: patient.nextAppointment || null,
+
+        treatments:
+          patient.treatments
+            ?.map((t) => t.groupId?.title)
+            .filter(Boolean)
+            .join(', ') || 'אין טיפולים',
+
+        raw: patient,
+      }),
+    );
+  }, [patientsBySecretry]);
   const [query, setQuery] = useState('');
 
   const filteredPatients = useMemo(() => {
     const q = query.trim().toLowerCase();
 
-    if (!q) return patients;
+    if (!q) return normalizedPatients;
 
-    return patients.filter((p) => {
+    return normalizedPatients.filter((p) => {
       return (
         (p.name || '').toLowerCase().includes(q) ||
         (p.email || '').toLowerCase().includes(q) ||
@@ -84,7 +59,7 @@ const PatientsManagement = () => {
           .includes(q)
       );
     });
-  }, [query]);
+  }, [query, normalizedPatients]);
 
   const patientColumns = [
     {

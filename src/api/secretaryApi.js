@@ -10,3 +10,21 @@ export const createDoctorBySecretary = async (formData, token) => {
   );
   return res.data;
 };
+
+export const fetchAllPatientBySecretary = async (token) => {
+  const res = await axios.get(
+    `${API_URL}/getAllPatientBySecretary`,
+    auth(token),
+  );
+  return res.data;
+};
+
+export const fetchAvailableDoctors = async (token, payload) => {
+  const res = await axios.post(
+    `${API_URL}/availableDoctors`,
+    { payload },
+    auth(token),
+  );
+
+  return res.data;
+};

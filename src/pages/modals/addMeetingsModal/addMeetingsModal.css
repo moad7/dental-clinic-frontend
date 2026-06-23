@@ -1,0 +1,366 @@
+.add-meeting-modal-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.add-meeting-modal-section {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 22px;
+  padding: 20px;
+}
+
+.add-meeting-modal-section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 14px;
+}
+
+.add-meeting-modal-section-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #111827;
+  line-height: 26px;
+}
+
+.add-meeting-modal-section-subtitle {
+  font-size: 14px;
+  font-weight: 400;
+  color: #6b7280;
+  line-height: 20px;
+}
+
+.add-meeting-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+.add-meeting-modal-full {
+  grid-column: 1 / -1;
+}
+
+.add-meeting-modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.add-meeting-modal-field label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+  line-height: 20px;
+}
+
+.add-meeting-modal-field input,
+.add-meeting-modal-field select,
+.add-meeting-modal-field textarea {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 0 14px;
+  font-size: 15px;
+  font-weight: 400;
+  color: #111827;
+  outline: none;
+  transition: 0.2s ease;
+}
+
+.add-meeting-modal-field textarea {
+  min-height: 105px;
+  padding: 14px;
+  resize: none;
+  line-height: 22px;
+}
+
+.add-meeting-modal-field input:focus,
+.add-meeting-modal-field select:focus,
+.add-meeting-modal-field textarea:focus,
+.add-meeting-modal-search-input:focus {
+  border-color: #11d057;
+  box-shadow: 0 0 0 4px rgba(17, 208, 87, 0.12);
+}
+
+.add-meeting-modal-search-box {
+  width: 100%;
+  margin-bottom: 14px;
+}
+
+.add-meeting-modal-search-input {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 0 14px;
+  font-size: 15px;
+  color: #111827;
+  outline: none;
+  transition: 0.2s ease;
+}
+
+.add-meeting-modal-search-input:disabled {
+  background: #f9fafb;
+  cursor: not-allowed;
+  color: #9ca3af;
+}
+
+.add-meeting-modal-patient-list,
+.add-meeting-modal-service-list,
+.add-meeting-modal-doctor-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  max-height: 270px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.add-meeting-modal-patient-list::-webkit-scrollbar,
+.add-meeting-modal-service-list::-webkit-scrollbar,
+.add-meeting-modal-doctor-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.add-meeting-modal-patient-list::-webkit-scrollbar-thumb,
+.add-meeting-modal-service-list::-webkit-scrollbar-thumb,
+.add-meeting-modal-doctor-list::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 999px;
+}
+
+.add-meeting-modal-patient-card,
+.add-meeting-modal-service-card,
+.add-meeting-modal-doctor-card {
+  width: 100%;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: right;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.add-meeting-modal-patient-card:hover,
+.add-meeting-modal-service-card:hover,
+.add-meeting-modal-doctor-card:hover {
+  border-color: #11d057;
+  background: #f6fff9;
+}
+
+.add-meeting-modal-patient-card.selected,
+.add-meeting-modal-service-card.selected,
+.add-meeting-modal-doctor-card.selected {
+  border-color: #11d057;
+  background: #f0fff5;
+  box-shadow: 0 0 0 3px rgba(17, 208, 87, 0.12);
+}
+
+.add-meeting-modal-patient-avatar,
+.add-meeting-modal-doctor-avatar {
+  min-width: 48px;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: rgba(17, 208, 87, 0.12);
+  color: #11d057;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 800;
+  overflow: hidden;
+}
+
+.add-meeting-modal-doctor-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.add-meeting-modal-patient-info,
+.add-meeting-modal-service-info,
+.add-meeting-modal-doctor-info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.add-meeting-modal-patient-info strong,
+.add-meeting-modal-service-info strong,
+.add-meeting-modal-doctor-info strong {
+  color: #111827;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 20px;
+}
+
+.add-meeting-modal-patient-info span,
+.add-meeting-modal-service-info span,
+.add-meeting-modal-doctor-info span {
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 18px;
+}
+
+.add-meeting-modal-service-info small {
+  color: #11d057;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 18px;
+}
+
+.add-meeting-modal-service-image-wrap {
+  min-width: 62px;
+  width: 62px;
+  height: 62px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #f3f4f6;
+}
+
+.add-meeting-modal-service-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.add-meeting-modal-service-image-placeholder {
+  width: 100%;
+  height: 100%;
+  background: rgba(17, 208, 87, 0.12);
+  color: #11d057;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.add-meeting-modal-empty-state {
+  grid-column: 1 / -1;
+  min-height: 78px;
+  border: 1px dashed #d1d5db;
+  border-radius: 16px;
+  background: #f9fafb;
+  color: #6b7280;
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 12px;
+}
+
+.add-meeting-modal-selected-service,
+.add-meeting-modal-selected-doctor {
+  margin-top: 14px;
+  border-radius: 14px;
+  background: #f0fff5;
+  border: 1px solid rgba(17, 208, 87, 0.18);
+  color: #111827;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.add-meeting-modal-selected-service span,
+.add-meeting-modal-selected-doctor span {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.add-meeting-modal-selected-service strong,
+.add-meeting-modal-selected-doctor strong {
+  color: #111827;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.add-meeting-modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  padding-top: 2px;
+}
+
+.add-meeting-modal-submit-btn,
+.add-meeting-modal-cancel-btn {
+  border: none;
+  border-radius: 14px;
+  height: 48px;
+  padding: 0 26px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.add-meeting-modal-submit-btn {
+  background: #11d057;
+  color: #ffffff;
+  box-shadow: 0 10px 22px rgba(17, 208, 87, 0.22);
+}
+
+.add-meeting-modal-submit-btn:hover {
+  background: #0fc24f;
+  transform: translateY(-1px);
+}
+
+.add-meeting-modal-submit-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.add-meeting-modal-cancel-btn {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.add-meeting-modal-cancel-btn:hover {
+  background: #e5e7eb;
+}
+
+.add-meeting-modal-cancel-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .add-meeting-modal-grid,
+  .add-meeting-modal-patient-list,
+  .add-meeting-modal-service-list,
+  .add-meeting-modal-doctor-list {
+    grid-template-columns: 1fr;
+  }
+
+  .add-meeting-modal-section {
+    padding: 16px;
+  }
+
+  .add-meeting-modal-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .add-meeting-modal-submit-btn,
+  .add-meeting-modal-cancel-btn {
+    width: 100%;
+  }
+}

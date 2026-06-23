@@ -26,11 +26,6 @@ const ServicesManagement = () => {
           onClose={() => setOpen(false)}
           title="הוספת שירות חדש"
           size="xl"
-          // footer={
-          //   <button className="btn-green full" onClick={() => alert('create')}>
-          //     إنشاء الخدمة
-          //   </button>
-          // }
         >
           <AddServiceModal />
         </Modal>
