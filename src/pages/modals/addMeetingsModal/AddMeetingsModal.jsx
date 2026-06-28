@@ -4,7 +4,11 @@ import { toast } from 'react-toastify';
 import './addMeetingsModal.css';
 import { AppDataContext } from '../../../context/AppDataContext';
 import { AuthContext } from '../../../context/AuthContext';
-import { fetchAvailableDoctors } from '../../../api/secretaryApi';
+import {
+  fetchDoctorAvailableSlots,
+  fetchDoctorsByService,
+} from '../../../api/doctorApi';
+import { useCalendar } from '../../../hooks/useCalendar';
 const initialFormData = {
   patientId: '',
   serviceGroupId: '',
@@ -30,6 +34,8 @@ const getPatientPhone = (patient) => {
 };
 
 const AddMeetingsModal = ({ setOpen }) => {
+  const { selectedMonth, setSelectedMonth, monthDays, today, isPastTimeSlot } =
+    useCalendar();
   const { patientsBySecretry, serviceGroups } = useContext(AppDataContext);
   const { token } = useContext(AuthContext);
 
@@ -41,6 +47,8 @@ const AddMeetingsModal = ({ setOpen }) => {
   const [doctorsLoading, setDoctorsLoading] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const [availableSlots, setAvailableSlots] = useState([]);
+  const [slotsLoading, setSlotsLoading] = useState(false);
   const patients = useMemo(() => {
     return Array.isArray(patientsBySecretry) ? patientsBySecretry : [];
   }, [patientsBySecretry]);
@@ -151,14 +159,23 @@ const AddMeetingsModal = ({ setOpen }) => {
       serviceGroupId: service.groupId,
       serviceItemId: service.serviceItemId,
       doctorId: '',
+      date: '',
+      time: '',
     }));
+
+    setAvailableDoctors([]);
+    setAvailableSlots([]);
   };
 
   const handleSelectDoctor = (doctor) => {
     setFormData((prev) => ({
       ...prev,
       doctorId: doctor._id,
+      date: '',
+      time: '',
     }));
+
+    setAvailableSlots([]);
   };
 
   const validateForm = () => {
@@ -254,18 +271,14 @@ const AddMeetingsModal = ({ setOpen }) => {
 
   useEffect(() => {
     const loadAvailableDoctors = async () => {
-      if (!formData.serviceGroupId || !formData.date || !formData.time) {
+      if (!formData.serviceGroupId) {
         setAvailableDoctors([]);
         return;
       }
-
       try {
         setDoctorsLoading(true);
-
-        const result = await fetchAvailableDoctors(token, {
+        const result = await fetchDoctorsByService(token, {
           serviceGroupId: formData.serviceGroupId,
-          date: formData.date,
-          time: formData.time,
         });
 
         setAvailableDoctors(result.doctors || []);
@@ -279,7 +292,39 @@ const AddMeetingsModal = ({ setOpen }) => {
     };
 
     loadAvailableDoctors();
-  }, [formData.serviceGroupId, formData.date, formData.time, token]);
+  }, [formData.serviceGroupId, token]);
+
+  useEffect(() => {
+    const loadDoctorSlots = async () => {
+      if (!formData.doctorId || !formData.date) {
+        setAvailableSlots([]);
+        return;
+      }
+
+      try {
+        setSlotsLoading(true);
+
+        const result = await fetchDoctorAvailableSlots(
+          {
+            doctorId: formData.doctorId,
+            date: formData.date,
+          },
+          token,
+        );
+
+        setAvailableSlots(result.slots || []);
+      } catch (error) {
+        console.log(error);
+        toast.error('שגיאה בטעינת שעות זמינות');
+        setAvailableSlots([]);
+      } finally {
+        setSlotsLoading(false);
+      }
+    };
+
+    loadDoctorSlots();
+  }, [formData.doctorId, formData.date, token]);
+
   return (
     <form className="add-meeting-modal-form" onSubmit={handleSubmit} dir="rtl">
       <div className="add-meeting-modal-section">
@@ -415,50 +460,187 @@ const AddMeetingsModal = ({ setOpen }) => {
           </div>
         )}
       </div>
+      <div className="add-meeting-modal-section">
+        <div className="add-meeting-modal-section-header">
+          <span className="add-meeting-modal-section-title">
+            בחירת רופא מתאים
+          </span>
+          <span className="add-meeting-modal-section-subtitle">
+            יוצגו רק רופאים שמתאימים לטיפול שנבחר
+          </span>
+        </div>
 
+        <div className="add-meeting-modal-search-box">
+          <input
+            className="add-meeting-modal-search-input"
+            type="text"
+            placeholder="חפש רופא..."
+            value={doctorSearch}
+            onChange={(e) => setDoctorSearch(e.target.value)}
+            disabled={
+              !formData.serviceGroupId || !formData.date || !formData.time
+            }
+          />
+        </div>
+
+        <div className="add-meeting-modal-doctor-list">
+          {doctorsLoading ? (
+            <div className="add-meeting-modal-empty-state">
+              טוען רופאים זמינים...
+            </div>
+          ) : !formData.serviceGroupId ? (
+            <div className="add-meeting-modal-empty-state">
+              יש לבחור טיפול, כדי לראות רופאים זמינים
+            </div>
+          ) : filteredAvailableDoctors.length > 0 ? (
+            filteredAvailableDoctors.map((doctor) => {
+              const isSelected = formData.doctorId === doctor._id;
+
+              return (
+                <button
+                  type="button"
+                  key={doctor._id}
+                  className={`add-meeting-modal-doctor-card ${
+                    isSelected ? 'selected' : ''
+                  }`}
+                  onClick={() => handleSelectDoctor(doctor)}
+                >
+                  <div className="add-meeting-modal-doctor-avatar">
+                    {doctor.avatar ? (
+                      <img
+                        className="add-meeting-modal-doctor-avatar-img"
+                        src={doctor.avatar}
+                        alt={doctor.name}
+                      />
+                    ) : (
+                      doctor.name
+                        ?.split(' ')
+                        .slice(0, 2)
+                        .map((word) => word[0])
+                        .join('') || 'DR'
+                    )}
+                  </div>
+
+                  <div className="add-meeting-modal-doctor-info">
+                    <strong>ד"ר {doctor.name}</strong>
+                    <span>{doctor.phoneNumber}</span>
+                  </div>
+                </button>
+              );
+            })
+          ) : (
+            <div className="add-meeting-modal-empty-state">
+              לא נמצאו רופאים לטיפול שנבחר
+            </div>
+          )}
+        </div>
+
+        {selectedDoctor && (
+          <div className="add-meeting-modal-selected-doctor">
+            <span>הרופא שנבחר:</span>
+            <strong>ד"ר {selectedDoctor.name}</strong>
+          </div>
+        )}
+      </div>
       <div className="add-meeting-modal-section">
         <div className="add-meeting-modal-section-header">
           <span className="add-meeting-modal-section-title">פרטי הפגישה</span>
           <span className="add-meeting-modal-section-subtitle">
-            בחר תאריך ושעה כדי להציג רופאים זמינים
+            בחר חודש, תאריך ושעה לפי זמינות הרופא
           </span>
         </div>
 
+        <div className="add-meeting-date-time-layout">
+          <div className="add-meeting-calendar-side">
+            <div className="add-meeting-modal-field">
+              <label>בחר חודש</label>
+              <input
+                type="month"
+                value={selectedMonth}
+                onChange={(e) => {
+                  setSelectedMonth(e.target.value);
+                  setFormData((prev) => ({
+                    ...prev,
+                    date: '',
+                    time: '',
+                  }));
+                  setAvailableSlots([]);
+                }}
+                disabled={!formData.doctorId}
+              />
+            </div>
+
+            <div className="add-meeting-days-grid">
+              {monthDays.map((item) => {
+                const isPastDate = item.dateValue < today;
+                return (
+                  <button
+                    type="button"
+                    key={item.dateValue}
+                    disabled={!formData.doctorId || isPastDate}
+                    className={`add-meeting-day-card ${
+                      formData.date === item.dateValue ? 'selected' : ''
+                    } ${isPastDate ? 'disabled' : ''}`}
+                    onClick={() =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        date: item.dateValue,
+                        time: '',
+                      }))
+                    }
+                  >
+                    <span>{item.dayName}</span>
+                    <strong>{item.day}</strong>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="add-meeting-time-side">
+            <label className="add-meeting-time-title">השעות הזמינות</label>
+
+            <div className="add-meeting-time-grid">
+              {!formData.doctorId ? (
+                <div className="add-meeting-time-empty">קודם יש לבחור רופא</div>
+              ) : !formData.date ? (
+                <div className="add-meeting-time-empty">יש לבחור תאריך</div>
+              ) : slotsLoading ? (
+                <div className="add-meeting-time-empty">
+                  טוען שעות זמינות...
+                </div>
+              ) : availableSlots.length > 0 ? (
+                availableSlots.map((slot) => {
+                  const isPastTime = isPastTimeSlot(formData.date, slot);
+                  return (
+                    <button
+                      type="button"
+                      key={slot}
+                      disabled={isPastTime}
+                      className={`add-meeting-time-card ${
+                        formData.time === slot ? 'selected' : ''
+                      } ${isPastTime ? 'disabled' : ''}`}
+                      onClick={() =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          time: slot,
+                        }))
+                      }
+                    >
+                      {slot}
+                    </button>
+                  );
+                })
+              ) : (
+                <div className="add-meeting-time-empty">
+                  אין שעות זמינות ביום זה
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
         <div className="add-meeting-modal-grid">
-          <div className="add-meeting-modal-field">
-            <label>תאריך</label>
-            <input
-              type="date"
-              name="date"
-              value={formData.date}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  date: e.target.value,
-                  doctorId: '',
-                }))
-              }
-              required
-            />
-          </div>
-
-          <div className="add-meeting-modal-field">
-            <label>שעה</label>
-            <input
-              type="time"
-              name="time"
-              value={formData.time}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  time: e.target.value,
-                  doctorId: '',
-                }))
-              }
-              required
-            />
-          </div>
-
           <div className="add-meeting-modal-field">
             <label>האם הטיפול דורש יותר מפגישה אחת?</label>
             <select
@@ -497,90 +679,6 @@ const AddMeetingsModal = ({ setOpen }) => {
           </div>
         </div>
       </div>
-
-      <div className="add-meeting-modal-section">
-        <div className="add-meeting-modal-section-header">
-          <span className="add-meeting-modal-section-title">
-            בחירת רופא מתאים
-          </span>
-          <span className="add-meeting-modal-section-subtitle">
-            יוצגו רק רופאים שמתאימים לטיפול ולזמן שנבחר
-          </span>
-        </div>
-
-        <div className="add-meeting-modal-search-box">
-          <input
-            className="add-meeting-modal-search-input"
-            type="text"
-            placeholder="חפש רופא..."
-            value={doctorSearch}
-            onChange={(e) => setDoctorSearch(e.target.value)}
-            disabled={
-              !formData.serviceGroupId || !formData.date || !formData.time
-            }
-          />
-        </div>
-
-        <div className="add-meeting-modal-doctor-list">
-          {doctorsLoading ? (
-            <div className="add-meeting-modal-empty-state">
-              טוען רופאים זמינים...
-            </div>
-          ) : !formData.serviceGroupId || !formData.date || !formData.time ? (
-            <div className="add-meeting-modal-empty-state">
-              יש לבחור טיפול, תאריך ושעה כדי לראות רופאים זמינים
-            </div>
-          ) : filteredAvailableDoctors.length > 0 ? (
-            filteredAvailableDoctors.map((doctor) => {
-              const isSelected = formData.doctorId === doctor._id;
-
-              return (
-                <button
-                  type="button"
-                  key={doctor._id}
-                  className={`add-meeting-modal-doctor-card ${
-                    isSelected ? 'selected' : ''
-                  }`}
-                  onClick={() => handleSelectDoctor(doctor)}
-                >
-                  <div className="add-meeting-modal-doctor-avatar">
-                    {doctor.avatar ? (
-                      <img
-                        className="add-meeting-modal-doctor-avatar-img"
-                        src={doctor.avatar}
-                        alt={doctor.name}
-                      />
-                    ) : (
-                      doctor.name
-                        ?.split(' ')
-                        .slice(0, 2)
-                        .map((word) => word[0])
-                        .join('') || 'DR'
-                    )}
-                  </div>
-
-                  <div className="add-meeting-modal-doctor-info">
-                    <strong>ד"ר {doctor.name}</strong>
-                    <span>{doctor.email || doctor.phoneNumber}</span>
-                  </div>
-                </button>
-              );
-            })
-          ) : (
-            <div className="add-meeting-modal-empty-state">
-              לא נמצאו רופאים זמינים בזמן שנבחר
-            </div>
-          )}
-        </div>
-
-        {selectedDoctor && (
-          <div className="add-meeting-modal-selected-doctor">
-            <span>הרופא שנבחר:</span>
-            <strong>ד"ר {selectedDoctor.name}</strong>
-          </div>
-        )}
-      </div>
-
       <div className="add-meeting-modal-actions">
         <button
           type="button"

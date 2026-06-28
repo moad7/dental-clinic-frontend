@@ -342,6 +342,136 @@
   cursor: not-allowed;
 }
 
+.add-meeting-date-time-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: 28px;
+  margin-bottom: 24px;
+}
+
+.add-meeting-calendar-side,
+.add-meeting-time-side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.add-meeting-days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+}
+
+.add-meeting-day-card {
+  height: 64px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.add-meeting-day-card span {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.add-meeting-day-card strong {
+  font-size: 16px;
+  color: #111827;
+}
+
+.add-meeting-day-card:hover {
+  border-color: #11d057;
+  background: #f6fff9;
+}
+
+.add-meeting-day-card.selected {
+  background: #11d057;
+  border-color: #11d057;
+}
+
+.add-meeting-day-card.selected span,
+.add-meeting-day-card.selected strong {
+  color: #ffffff;
+}
+
+.add-meeting-day-card:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.add-meeting-time-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #111827;
+  text-align: right;
+}
+
+.add-meeting-time-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.add-meeting-time-card {
+  height: 56px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.add-meeting-time-card:hover {
+  border-color: #11d057;
+  background: #f6fff9;
+}
+
+.add-meeting-time-card.selected {
+  background: #11d057;
+  border-color: #11d057;
+  color: #ffffff;
+}
+
+.add-meeting-time-empty {
+  grid-column: 1 / -1;
+  min-height: 96px;
+  border: 1px dashed #d1d5db;
+  border-radius: 16px;
+  background: #f9fafb;
+  color: #6b7280;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.add-meeting-time-card.disabled,
+.add-meeting-time-card:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: #f3f4f6;
+  color: #9ca3af;
+  border-color: #d1d5db;
+}
+@media (max-width: 900px) {
+  .add-meeting-date-time-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .add-meeting-time-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
   .add-meeting-modal-grid,
   .add-meeting-modal-patient-list,

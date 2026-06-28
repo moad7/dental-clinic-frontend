@@ -18,13 +18,3 @@ export const fetchAllPatientBySecretary = async (token) => {
   );
   return res.data;
 };
-
-export const fetchAvailableDoctors = async (token, payload) => {
-  const res = await axios.post(
-    `${API_URL}/availableDoctors`,
-    { payload },
-    auth(token),
-  );
-
-  return res.data;
-};
