@@ -9,6 +9,7 @@ import {
   fetchDoctorsByService,
 } from '../../../api/doctorApi';
 import { useCalendar } from '../../../hooks/useCalendar';
+import { createAppointments } from '../../../api/appointmentApi';
 const initialFormData = {
   patientId: '',
   serviceGroupId: '',
@@ -37,7 +38,7 @@ const AddMeetingsModal = ({ setOpen }) => {
   const { selectedMonth, setSelectedMonth, monthDays, today, isPastTimeSlot } =
     useCalendar();
   const { patientsBySecretry, serviceGroups } = useContext(AppDataContext);
-  const { token } = useContext(AuthContext);
+  const { token, user } = useContext(AuthContext);
 
   const [formData, setFormData] = useState(initialFormData);
   const [patientSearch, setPatientSearch] = useState('');
@@ -214,15 +215,15 @@ const AddMeetingsModal = ({ setOpen }) => {
 
     return true;
   };
-
   const buildPayload = () => {
     const requiresMultipleSessions =
       formData.requiresMultipleSessions === 'true';
 
     return {
-      userId: formData.patientId,
+      patientId: formData.patientId,
       doctorId: formData.doctorId,
-
+      secretaryId: user.id,
+      role: user.role,
       serviceGroupId: formData.serviceGroupId,
       serviceItemId: formData.serviceItemId,
 
@@ -251,10 +252,7 @@ const AddMeetingsModal = ({ setOpen }) => {
 
     try {
       setLoading(true);
-
-      console.log('Add meeting payload:', payload);
-
-      // await createTreatmentBySecretary(payload, token);
+      await createAppointments(payload, token);
 
       toast.success('הטיפול נוצר בהצלחה');
       setFormData(initialFormData);
@@ -263,7 +261,28 @@ const AddMeetingsModal = ({ setOpen }) => {
       setDoctorSearch('');
       setOpen(false);
     } catch (error) {
-      toast.error(error.response?.data?.message || 'אירעה שגיאה, נסה שוב');
+      const message = error?.response?.data?.message;
+
+      switch (message) {
+        case 'Doctor already has an appointment at this date and time':
+          toast.error('לרופא כבר קיים תור בשעה זו');
+          break;
+
+        case 'Patient already has an appointment on this day. Complete the existing appointment first.':
+          toast.error('למטופל כבר קיים תור פעיל באותו יום');
+          break;
+
+        case 'Patient not found':
+          toast.error('המטופל לא נמצא');
+          break;
+
+        case 'Doctor not found or does not provide this service':
+          toast.error('הרופא אינו מספק טיפול זה');
+          break;
+
+        default:
+          toast.error(message || 'אירעה שגיאה');
+      }
     } finally {
       setLoading(false);
     }

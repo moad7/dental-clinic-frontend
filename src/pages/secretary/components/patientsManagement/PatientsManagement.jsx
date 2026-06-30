@@ -9,37 +9,55 @@ import { AppDataContext } from '../../../../context/AppDataContext';
 
 const PatientsManagement = () => {
   const { patientsBySecretry } = useContext(AppDataContext);
+
   const normalizedPatients = useMemo(() => {
     return (Array.isArray(patientsBySecretry) ? patientsBySecretry : []).map(
-      (patient) => ({
-        _id: patient.userId?._id || patient._id,
-        patientProfileId: patient._id,
+      (patient) => {
+        const sessions =
+          patient.treatments?.flatMap((t) =>
+            (t.Sessions || []).map((s) => ({
+              ...s,
+              treatment: t.serviceGroupId?.title || 'טיפול',
+            })),
+          ) || [];
 
-        name: patient.userId?.name || '',
-        initials:
-          patient.userId?.name
-            ?.split(' ')
-            .slice(0, 2)
-            .map((word) => word[0])
-            .join('') || 'AA',
+        const nextSession =
+          sessions
+            .filter((s) => s.status === 'pending' || s.status === 'confirmed')
+            .sort((a, b) => new Date(a.date) - new Date(b.date))[0] || null;
 
-        phone: patient.userId?.phoneNumber || '-',
-        email: patient.userId?.email || '-',
-        gender: patient.userId?.gender || '-',
+        return {
+          _id: patient.userId?._id || patient._id,
+          patientProfileId: patient._id,
+          name: patient.userId?.name || '',
+          initials:
+            patient.userId?.name
+              ?.split(' ')
+              .slice(0, 2)
+              .map((word) => word[0])
+              .join('') || 'AA',
+          phone: patient.userId?.phoneNumber || '-',
+          email: patient.userId?.email || '-',
+          gender: patient.userId?.gender || '-',
+          status: patient.userId?.isActive ? 'active' : 'inactive',
+          lastVisit: patient.lastVisit || '-',
 
-        status: patient.userId?.isActive ? 'active' : 'inactive',
+          nextAppointment: nextSession
+            ? {
+                dateTime: `${new Date(nextSession.date).toLocaleDateString('he-IL')} ${nextSession.time}`,
+                treatment: nextSession.treatment,
+              }
+            : null,
 
-        lastVisit: patient.lastVisit || '-',
-        nextAppointment: patient.nextAppointment || null,
+          treatments:
+            patient.treatments
+              ?.map((t) => t.serviceGroupId?.title)
+              .filter(Boolean)
+              .join(', ') || 'אין טיפולים',
 
-        treatments:
-          patient.treatments
-            ?.map((t) => t.groupId?.title)
-            .filter(Boolean)
-            .join(', ') || 'אין טיפולים',
-
-        raw: patient,
-      }),
+          raw: patient,
+        };
+      },
     );
   }, [patientsBySecretry]);
   const [query, setQuery] = useState('');
