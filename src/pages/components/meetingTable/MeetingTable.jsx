@@ -5,143 +5,15 @@ import { IoIosArrowDown } from 'react-icons/io';
 import { MdOutlineFilterList } from 'react-icons/md';
 import { LuSettings2 } from 'react-icons/lu';
 import { RiDownloadCloud2Line } from 'react-icons/ri';
-const MeetingTable = ({ moreBtn, headerTextTable, filterSearch }) => {
+import { useContext } from 'react';
+import { AppDataContext } from '../../../context/AppDataContext';
+import { formatAppointmentDate } from '../../../utils/functions';
+const MeetingTable = ({ moreBtn, headerTextTable }) => {
+  const { appointments } = useContext(AppDataContext);
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
   const isMeetingsManagement = pathname.endsWith('/meetingsManagement');
-  const appointmentsTable = [
-    {
-      _id: '1',
-      initials: 'AC',
-      patientName: 'אמנדה קלארק',
-      patientPhone: '052-999-2525',
-      serviceName: 'ניקוי שיניים',
-      requestDateText: '15 בדצמבר, 14:00',
-      doctorName: `ד"ר ג'ונסון`,
-      status: 'pending',
-    },
-    {
-      _id: '2',
-      initials: 'JM',
-      patientName: "ג'יימס מיטשל",
-      patientPhone: '052-999-2527',
-      serviceName: 'טיפול שורש',
-      requestDateText: '16 בדצמבר, 10:00',
-      doctorName: `ד"ר סמית`,
-      status: 'confirmed',
-    },
-    {
-      _id: '3',
-      initials: 'LT',
-      patientName: 'ליזה תומפסון',
-      patientPhone: '052-924-5549',
-      serviceName: 'ייעוץ',
-      requestDateText: '14 בדצמבר, 15:30',
-      doctorName: `ד"ר דיוויס`,
-      status: 'pending',
-    },
-    {
-      _id: '4',
-      initials: 'RK',
-      patientName: 'רוברט קים',
-      patientPhone: '052-921-4884',
-      serviceName: 'הלבנת שיניים',
-      requestDateText: '18 בדצמבר, 11:00',
-      doctorName: `ד"ר ג'ונסון`,
-      status: 'rejected',
-    },
-    {
-      _id: '5',
-      initials: 'RK',
-      patientName: 'רוברט קים',
-      patientPhone: '052-921-4884',
-      serviceName: 'הלבנת שיניים',
-      requestDateText: '18 בדצמבר, 11:00',
-      doctorName: `ד"ר ג'ונסון`,
-      status: 'rejected',
-    },
-    {
-      _id: '6',
-      initials: 'AC',
-      patientName: 'אמנדה קלארק',
-      patientPhone: '052-999-2525',
-      serviceName: 'ניקוי שיניים',
-      requestDateText: '15 בדצמבר, 14:00',
-      doctorName: `ד"ר ג'ונסון`,
-      status: 'pending',
-    },
-    {
-      _id: '7',
-      initials: 'JM',
-      patientName: "ג'יימס מיטשל",
-      patientPhone: '052-999-2527',
-      serviceName: 'טיפול שורש',
-      requestDateText: '16 בדצמבר, 10:00',
-      doctorName: `ד"ר סמית`,
-      status: 'confirmed',
-    },
-    {
-      _id: '8',
-      initials: 'LT',
-      patientName: 'ליזה תומפסון',
-      patientPhone: '052-924-5549',
-      serviceName: 'ייעוץ',
-      requestDateText: '14 בדצמבר, 15:30',
-      doctorName: `ד"ר דיוויס`,
-      status: 'pending',
-    },
-    {
-      _id: '9',
-      initials: 'RK',
-      patientName: 'רוברט קים',
-      patientPhone: '052-921-4884',
-      serviceName: 'הלבנת שיניים',
-      requestDateText: '18 בדצמבר, 11:00',
-      doctorName: `ד"ר ג'ונסון`,
-      status: 'rejected',
-    },
-    {
-      _id: '10',
-      initials: 'RK',
-      patientName: 'רוברט קים',
-      patientPhone: '052-921-4884',
-      serviceName: 'הלבנת שיניים',
-      requestDateText: '18 בדצמבר, 11:00',
-      doctorName: `ד"ר ג'ונסון`,
-      status: 'rejected',
-    },
-    {
-      _id: '11',
-      initials: 'LT',
-      patientName: 'ליזה תומפסון',
-      patientPhone: '052-924-5549',
-      serviceName: 'ייעוץ',
-      requestDateText: '14 בדצמבר, 15:30',
-      doctorName: `ד"ר דיוויס`,
-      status: 'pending',
-    },
-    {
-      _id: '12',
-      initials: 'RK',
-      patientName: 'רוברט קים',
-      patientPhone: '052-921-4884',
-      serviceName: 'הלבנת שיניים',
-      requestDateText: '18 בדצמבר, 11:00',
-      doctorName: `ד"ר ג'ונסון`,
-      status: 'rejected',
-    },
-    {
-      _id: '13',
-      initials: 'RK',
-      patientName: 'רוברט קים',
-      patientPhone: '052-921-4884',
-      serviceName: 'הלבנת שיניים',
-      requestDateText: '18 בדצמבר, 11:00',
-      doctorName: `ד"ר ג'ונסון`,
-      status: 'rejected',
-    },
-  ];
 
   const PillButton = ({ children, bg, color, onClick }) => (
     <button
@@ -183,31 +55,6 @@ const MeetingTable = ({ moreBtn, headerTextTable, filterSearch }) => {
             הצג הכל
           </button>
         )}
-        {filterSearch && (
-          <div className="toolbar">
-            <div className="toolbar__left">
-              <div className="search-box">
-                <FiSearch className="search-icon" />
-                <input
-                  className="search-input"
-                  type="text"
-                  placeholder="למצוא את המטופל..."
-                />
-              </div>
-
-              <div className="filter-btn">
-                <LuSettings2 />
-                <span>הכל</span>
-                <IoIosArrowDown />
-              </div>
-            </div>
-
-            <div className="print-btn">
-              <RiDownloadCloud2Line />
-              <span>הדפסה</span>
-            </div>
-          </div>
-        )}
       </div>
       {/* Header */}
       <div className="appt-table-header">
@@ -227,33 +74,42 @@ const MeetingTable = ({ moreBtn, headerTextTable, filterSearch }) => {
             : 'appt-table-body'
         }
       >
-        {appointmentsTable.map((item) => {
+        {appointments.slice(0, 5).map((item) => {
           const st = badgeStyle(item.status);
-
           return (
             <div className="appt-row" key={item._id}>
               {/* patient */}
               <div className="appt-patient">
                 <div className="appt-patient-avatar">
-                  {item.initials || 'AA'}
+                  {item.treatmentId.userId.name
+                    ?.split(' ')
+                    .slice(0, 2)
+                    .map((word) => word[0])
+                    .join('') || 'AA'}
                 </div>
 
                 <div className="appt-patient-info">
-                  <span className="appt-patient-name">{item.patientName}</span>
+                  <span className="appt-patient-name">
+                    {item.treatmentId.userId.name}
+                  </span>
                   <span className="appt-patient-phone">
-                    {item.patientPhone}
+                    {item.treatmentId.userId.phoneNumber}
                   </span>
                 </div>
               </div>
 
               {/* service */}
-              <div className="appt-cell">{item.serviceName}</div>
+              <div className="appt-cell">
+                {item.treatmentId.serviceItemId.name}
+              </div>
 
               {/* date */}
-              <div className="appt-cell">{item.requestDateText}</div>
+              <div className="appt-cell">
+                {formatAppointmentDate(item.date, item.time)}
+              </div>
 
               {/* doctor */}
-              <div className="appt-cell">{item.doctorName}</div>
+              <div className="appt-cell">{item.doctorId.name}</div>
 
               {/* status */}
               <div>

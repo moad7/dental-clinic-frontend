@@ -116,6 +116,7 @@
   font-size: 15px;
   line-height: 20px;
   width: 90%;
+  gap: 8px;
 }
 
 /* Status badge */
@@ -236,7 +237,9 @@
     rgba(29, 156, 238, 0.21) 100%
   );
 
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
 

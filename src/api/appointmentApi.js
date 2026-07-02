@@ -11,3 +11,8 @@ export const createAppointments = async (payload, token) => {
   );
   return res.data;
 };
+
+export const fetchAllAppointments = async (token) => {
+  const res = await axios.get(`${API_URL}`, auth(token));
+  return res.data;
+};

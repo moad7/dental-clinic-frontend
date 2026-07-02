@@ -175,7 +175,7 @@ const SecretaryDashboard = () => {
           </div>
         </div>
       </div>
-      <MeetingTable headerTextTable={'בקשות אחרונות לפגישות'} moreBtn />
+      <MeetingTable headerTextTable={'בקשות אחרונות לפגישות'} moreBtn />/
     </div>
   );
 };

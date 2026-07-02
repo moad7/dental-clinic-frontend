@@ -37,3 +37,13 @@ export const validatePassword = (password) => {
     isMet: rule.condition(password),
   }));
 };
+export const formatAppointmentDate = (date, time) => {
+  const dateObj = new Date(date);
+
+  const formattedDate = dateObj.toLocaleDateString('he-IL', {
+    day: 'numeric',
+    month: 'long',
+  });
+
+  return `${formattedDate}, ${time}`;
+};

@@ -5,6 +5,7 @@ import { fetchServices } from '../api/serviceApi';
 import { fetchAllClincis } from '../api/clinicApi';
 import { fetchAllDoctors } from '../api/doctorApi';
 import { fetchAllPatientBySecretary } from '../api/secretaryApi';
+import { fetchAllAppointments } from '../api/appointmentApi';
 // import { getAllUsers } from '../api/userApi';
 
 export const AppDataContext = createContext();
@@ -17,6 +18,7 @@ export const AppDataProvider = ({ children }) => {
   const [clinics, setClinics] = useState([]);
   const [doctors, setDoctors] = useState([]);
   const [patientsBySecretry, setPatientsBySecretry] = useState([]);
+  const [appointments, setaApointments] = useState([]);
 
   const [loadingData, setLoadingData] = useState(false);
 
@@ -45,6 +47,11 @@ export const AppDataProvider = ({ children }) => {
     const res = await fetchAllPatientBySecretary(token);
     setPatientsBySecretry(res.patients || []);
   };
+
+  const loadAllAppointments = async () => {
+    const res = await fetchAllAppointments(token);
+    setaApointments(res.appointments);
+  };
   //   const loadUsers = async () => {
   //     const res = await getAllUsers(token);
   //     setUsers(res.data.data || res.data || []);
@@ -61,6 +68,8 @@ export const AppDataProvider = ({ children }) => {
         loadClinics(),
         loadDoctors(),
         loadAllPatientBySecretary(),
+        loadAllAppointments(),
+        loadAllAppointments(),
         //  loadUsers()
       ]);
     } catch (error) {
@@ -92,6 +101,7 @@ export const AppDataProvider = ({ children }) => {
         doctors,
         addDoctorToState,
         patientsBySecretry,
+        appointments,
       }}
     >
       {children}
