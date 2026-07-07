@@ -39,7 +39,7 @@ const MeetingsManagement = () => {
       requestTime: appt.time,
       doctorName: appt.doctorId.name,
 
-      status: appt.status,
+      status: appt.treatmentId.status,
       raw: appt,
     }));
   }, [appointments]);
@@ -108,7 +108,7 @@ const MeetingsManagement = () => {
       width: '1.3fr',
       render: (item) => (
         <div className="appt-actions">
-          {item.status === 'pending' ? (
+          {item.status === 'in_progress' ? (
             <>
               <PillButton bg="#DCFCE7" color="#166534" onClick={() => {}}>
                 הסכמה
@@ -222,9 +222,8 @@ const MeetingsManagement = () => {
           classPrefix="data-table"
           emptyText="אין תורים"
           defaultPageSize={5}
-        />{' '}
+        />
       </div>
-      {/* <MeetingTable filterSearch headerTextTable={'בקשות לפגישות'} /> */}
     </div>
   );
 };

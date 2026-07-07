@@ -226,7 +226,7 @@ const AddMeetingsModal = ({ setOpen }) => {
       role: user.role,
       serviceGroupId: formData.serviceGroupId,
       serviceItemId: formData.serviceItemId,
-
+      treatmentStatus: user.role === 'patient' ? 'in_progress' : 'confirmed',
       requiresMultipleSessions,
       totalSessions: requiresMultipleSessions
         ? Number(formData.totalSessions)

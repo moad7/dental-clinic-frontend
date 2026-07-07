@@ -18,3 +18,18 @@ export const fetchAllPatientBySecretary = async (token) => {
   );
   return res.data;
 };
+export const createPatientsBySecretary = async (payload, token) => {
+  const res = await axios.post(
+    `${API_URL}/createPatientsBySecretary`,
+    { payload },
+    auth(token),
+  );
+  return res.data;
+};
+export const fetchPatientFullDetailsBySecretary = async (patientId, token) => {
+  const res = await axios.get(
+    `${API_URL}/patients/${patientId}/full-details`,
+    auth(token),
+  );
+  return res.data;
+};

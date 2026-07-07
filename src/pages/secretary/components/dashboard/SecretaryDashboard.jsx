@@ -11,7 +11,13 @@ import BoxHeader from '../../../components/boxHeader/BoxHeader';
 import MeetingTable from '../../../components/meetingTable/meetingTable';
 import DashboardStats from '../../../components/dashboardStats/DashboardStats';
 import { secretaryStats } from '../../../../utils/dashboardDataStats/dataStats';
+import Modal from '../../../../components/modal/Modal';
+import { useState } from 'react';
+import AddMeetingsModal from '../../../modals/addMeetingsModal/AddMeetingsModal';
+import AddPatientModal from '../../../modals/patientModal/AddPatientModal';
 const SecretaryDashboard = () => {
+  const [Open, setOpen] = useState(false);
+  const [selectedAction, setSelectedAction] = useState(null);
   // const [stats, setStats] = useState(null);
   // const [todayAppointments, setTodayAppointments] = useState([]);
   // const token = localStorage.getItem('token');
@@ -45,18 +51,20 @@ const SecretaryDashboard = () => {
     {
       _id: 1,
       mangName: 'קבע פגישה חדשה',
+      modalTitle: 'הוספת בקשוה חדש',
       icon: <AiOutlinePlus />,
       iconColor: '#FFFFFF',
       backColor: '#2E90FA',
-      navigat: '',
+      component: <AddMeetingsModal />,
     },
     {
       _id: 2,
       mangName: 'רישום מטופל חדש',
+      modalTitle: 'הוספת מטופל חדש',
       icon: <RiUserAddLine />,
       iconColor: '#16A34A',
       backColor: '#DCFCE7',
-      navigat: '',
+      component: <AddPatientModal />,
     },
     {
       _id: 3,
@@ -152,7 +160,11 @@ const SecretaryDashboard = () => {
 
           <div className="quick-mgmt-list">
             {fastManagement.map((item) => (
-              <div className="quick-mgmt-item" key={item._id}>
+              <div
+                className="quick-mgmt-item"
+                key={item._id}
+                onClick={() => setSelectedAction(item)}
+              >
                 <div className="quick-mgmt-left">
                   <span
                     className="quick-mgmt-icon"
@@ -175,7 +187,18 @@ const SecretaryDashboard = () => {
           </div>
         </div>
       </div>
-      <MeetingTable headerTextTable={'בקשות אחרונות לפגישות'} moreBtn />/
+
+      <MeetingTable headerTextTable={'בקשות אחרונות לפגישות'} moreBtn />
+      {selectedAction && (
+        <Modal
+          isOpen
+          onClose={() => setSelectedAction(null)}
+          title={selectedAction.modalTitle}
+          size="xl"
+        >
+          {selectedAction.component}
+        </Modal>
+      )}
     </div>
   );
 };

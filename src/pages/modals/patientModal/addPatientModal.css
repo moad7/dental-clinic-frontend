@@ -1,0 +1,199 @@
+.add-patient-modal-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.add-patient-modal-section {
+  background: #ffffff;
+  /* border: 1px solid #e5e7eb; */
+  border-radius: 22px;
+  padding: 20px;
+}
+
+.add-patient-modal-section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 18px;
+}
+
+.add-patient-modal-section-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #111827;
+  line-height: 26px;
+}
+
+.add-patient-modal-section-subtitle {
+  font-size: 14px;
+  font-weight: 400;
+  color: #6b7280;
+  line-height: 20px;
+}
+
+.add-patient-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+.add-patient-modal-full {
+  grid-column: 1 / -1;
+}
+
+.add-patient-modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.add-patient-modal-field label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+  line-height: 20px;
+}
+
+.add-patient-modal-field input,
+.add-patient-modal-field select,
+.add-patient-modal-field textarea {
+  width: 100%;
+  min-height: 48px;
+  border: 0px solid #e5e7eb;
+  background-color: #f5f6f8;
+  border-radius: 7px;
+  padding: 0 14px;
+  font-size: 15px;
+  font-weight: 400;
+  color: #111827;
+  outline: none;
+  transition: 0.2s ease;
+}
+
+.add-patient-modal-field textarea {
+  min-height: 95px;
+  padding: 14px;
+  resize: none;
+  line-height: 22px;
+}
+
+.add-patient-modal-field input:focus,
+.add-patient-modal-field select:focus,
+.add-patient-modal-field textarea:focus {
+  border-color: #11d057;
+  box-shadow: 0 0 0 2px rgba(17, 208, 87, 0.297);
+}
+
+.add-patient-modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+}
+
+.add-patient-modal-submit-btn,
+.add-patient-modal-cancel-btn {
+  border: none;
+  border-radius: 14px;
+  height: 48px;
+  padding: 0 26px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.add-patient-modal-submit-btn {
+  background: #11d057;
+  color: #ffffff;
+  box-shadow: 0 10px 22px rgba(17, 208, 87, 0.22);
+}
+
+.add-patient-modal-submit-btn:hover {
+  background: #0fc24f;
+  transform: translateY(-1px);
+}
+
+.add-patient-modal-submit-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.add-patient-modal-cancel-btn {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.add-patient-modal-cancel-btn:hover {
+  background: #e5e7eb;
+}
+
+.add-patient-modal-cancel-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.add-patient-city-select__control {
+  min-height: 48px !important;
+  border-radius: 14px !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: none !important;
+  background-color: #f7f9fb !important;
+}
+
+.add-patient-city-select__control:hover {
+  border-color: #11d057 !important;
+}
+
+.add-patient-city-select__control--is-focused {
+  border-color: #11d057 !important;
+  box-shadow: 0 0 0 4px rgba(17, 208, 87, 0.12) !important;
+}
+
+.add-patient-city-select__menu {
+  border-radius: 14px !important;
+  overflow: hidden;
+  z-index: 9999 !important;
+}
+
+.add-patient-city-select__option--is-focused {
+  background: #f0fdf4 !important;
+}
+
+.add-patient-city-select__option--is-selected {
+  background: #11d057 !important;
+}
+.add-patient-city-select__input {
+  box-shadow: none !important;
+  background: transparent;
+
+  border: none !important;
+  outline: none !important;
+}
+
+.add-patient-city-select__input:focus {
+  box-shadow: none !important;
+  outline: none !important;
+}
+@media (max-width: 768px) {
+  .add-patient-modal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .add-patient-modal-section {
+    padding: 16px;
+  }
+
+  .add-patient-modal-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .add-patient-modal-submit-btn,
+  .add-patient-modal-cancel-btn {
+    width: 100%;
+  }
+}

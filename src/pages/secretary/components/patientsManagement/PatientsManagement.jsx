@@ -6,9 +6,17 @@ import { FiPlus, FiSearch } from 'react-icons/fi';
 import { useContext, useMemo, useState } from 'react';
 import DataTable from '../../../components/dataTable/DataTable';
 import { AppDataContext } from '../../../../context/AppDataContext';
+import Modal from '../../../../components/modal/Modal';
+import AddPatientModal from '../../../modals/patientModal/AddPatientModal';
+import PatientModalSecretary from '../../../modals/patientModal/patientModalSevretary/PatientModalSecretary';
 
 const PatientsManagement = () => {
   const { patientsBySecretry } = useContext(AppDataContext);
+  const [open, setOpen] = useState(false);
+  const [openAddPatient, setOpenAddPatient] = useState(false);
+  const [patientId, setPatientId] = useState(null);
+
+  console.log(patientId);
 
   const normalizedPatients = useMemo(() => {
     return (Array.isArray(patientsBySecretry) ? patientsBySecretry : []).map(
@@ -27,7 +35,8 @@ const PatientsManagement = () => {
             .sort((a, b) => new Date(a.date) - new Date(b.date))[0] || null;
 
         return {
-          _id: patient.userId?._id || patient._id,
+          _id: patient.userId._id,
+          idNumber: patient.userId?.idNumber,
           patientProfileId: patient._id,
           name: patient.userId?.name || '',
           initials:
@@ -69,6 +78,7 @@ const PatientsManagement = () => {
 
     return normalizedPatients.filter((p) => {
       return (
+        (p.idNumber || '').toLowerCase().includes(q) ||
         (p.name || '').toLowerCase().includes(q) ||
         (p.email || '').toLowerCase().includes(q) ||
         (p.phone || '').toLowerCase().includes(q) ||
@@ -85,12 +95,20 @@ const PatientsManagement = () => {
       title: 'המטופל',
       width: '1fr',
       render: (item) => (
-        <div className="appt-patient">
+        <div
+          className="appt-patient"
+          onClick={() => {
+            setPatientId(item._id);
+            setOpen(true);
+          }}
+        >
           <div className="appt-patient-avatar">{item.initials || 'AA'}</div>
 
           <div className="appt-patient-info">
             <span className="appt-patient-name">{item.name}</span>
-            <span className="appt-patient-id">מזהה: #{item._id}</span>
+            <span className="appt-patient-id">
+              מזהה: #{item.idNumber ?? '-'}
+            </span>
           </div>
         </div>
       ),
@@ -101,8 +119,8 @@ const PatientsManagement = () => {
       width: '1.2fr',
       render: (item) => (
         <div className="appt-patient-contacts">
-          <span className="appt-patient-phone">{item.phone}</span>
-          <span className="appt-patient-email">{item.email}</span>
+          <span className="appt-patient-phone">{item.phone ?? '-'}</span>
+          <span className="appt-patient-email">{item.email ?? '-'}</span>
         </div>
       ),
     },
@@ -110,7 +128,9 @@ const PatientsManagement = () => {
       key: 'lastVisit',
       title: 'ביקור אחרון',
       width: '1.2fr',
-      render: (item) => <div className="appt-last-visit">{item.lastVisit}</div>,
+      render: (item) => (
+        <div className="appt-last-visit">{item.lastVisit ?? '-'}</div>
+      ),
     },
     {
       key: 'nextAppointment',
@@ -137,7 +157,7 @@ const PatientsManagement = () => {
       key: 'actions',
       title: 'נהלים',
       width: '1.9fr',
-      render: () => (
+      render: (item) => (
         <div className="appt-patient-procedures">
           <button
             className="appt-patient-procedures-btn"
@@ -159,6 +179,10 @@ const PatientsManagement = () => {
             className="appt-patient-procedures-btn"
             type="button"
             style={{ color: '#2E90FA' }}
+            onClick={() => {
+              setPatientId(item._id);
+              setOpen(true);
+            }}
           >
             הצג
           </button>
@@ -174,8 +198,18 @@ const PatientsManagement = () => {
         subtitle="ניהול וצפייה בכל רישומי המטופלים"
         actionIcon={<FiPlus size={20} />}
         actionLabel="הוסף מטופל חדש"
+        onAction={() => {
+          setOpenAddPatient(true);
+        }}
       />
-
+      <Modal
+        isOpen={openAddPatient}
+        onClose={() => setOpenAddPatient(false)}
+        title="הוספת מטופל חדש"
+        size="xl"
+      >
+        <AddPatientModal setOpen={setOpenAddPatient} open={openAddPatient} />
+      </Modal>
       <DashboardStats items={secretaryPatientsStats} />
 
       <div className="container-box">
@@ -207,6 +241,16 @@ const PatientsManagement = () => {
           defaultPageSize={5}
         />
       </div>
+      {patientId && (
+        <Modal
+          isOpen={open}
+          onClose={() => setOpen(false)}
+          title="פרטי מטופל"
+          size="xl"
+        >
+          <PatientModalSecretary patientId={patientId} />
+        </Modal>
+      )}
     </div>
   );
 };

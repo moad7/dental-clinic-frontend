@@ -40,6 +40,13 @@
   color: #111827;
 }
 
+.form-field-add-doctor input:focus,
+.form-field-add-doctor select:focus,
+.form-field-add-doctor textarea:focus {
+  border-color: #11d057;
+  box-shadow: 0 0 0 2px rgba(17, 208, 87, 0.297);
+}
+
 .form-field textarea {
   padding: 14px;
   min-height: 90px;

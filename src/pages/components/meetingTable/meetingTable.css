@@ -73,6 +73,7 @@
   align-items: center;
   gap: 12px;
   width: 90%;
+  cursor: pointer;
 }
 
 .appt-patient-avatar {

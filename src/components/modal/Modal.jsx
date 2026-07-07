@@ -7,7 +7,6 @@ const Modal = ({
   onClose,
   title,
   children,
-
   size = 'lg', // sm | md | lg | xl
   closeOnOverlay = false,
 }) => {

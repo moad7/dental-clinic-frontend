@@ -23,6 +23,7 @@ const defaultWorkingHours = days.map((d) => ({
   end: '17:00',
 }));
 const initialFormData = {
+  idNumber: '',
   name: '',
   phoneNumber: '',
   email: '',
@@ -60,7 +61,10 @@ const AddDoctorModal = ({ setOpen, open }) => {
 
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]:
+        name === 'idNumber' || name === 'phoneNumber'
+          ? value.replace(/\D/g, '')
+          : value,
     }));
   };
 
@@ -129,7 +133,22 @@ const AddDoctorModal = ({ setOpen, open }) => {
     <form className="doctor-form" onSubmit={handleSubmit}>
       <div className="doctor-form-grid">
         <div className="form-field-add-doctor">
-          <label>שמו המלא של הרופא</label>
+          <label>מספר תעודת זהות</label>
+          <input
+            type="text"
+            name="idNumber"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            maxLength={9}
+            placeholder="030000000"
+            value={formData.idNumber}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="form-field-add-doctor">
+          <label>שם המלא של הרופא</label>
           <input
             name="name"
             value={formData.name}
@@ -142,6 +161,7 @@ const AddDoctorModal = ({ setOpen, open }) => {
           <label>הטלפון</label>
           <input
             name="phoneNumber"
+            maxLength={10}
             value={formData.phoneNumber}
             onChange={handleChange}
             placeholder="+972 50 000 0000"
