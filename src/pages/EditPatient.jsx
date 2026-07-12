@@ -20,12 +20,10 @@ const EditPatient = () => {
           `http://localhost:5000/api/users/patients`,
           {
             headers: { Authorization: `Bearer ${token}` },
-          }
+          },
         );
         const patient = res.data.find((p) => p.id === parseInt(id));
         if (!patient) throw new Error('לא נמצא מטופל');
-        console.log(patient);
-
         setName(patient.name);
         setPhoneNumber(patient.phoneNumber);
         setRole(patient.role);
@@ -43,7 +41,7 @@ const EditPatient = () => {
       await axios.put(
         `http://localhost:5000/api/users/${id}`,
         { name, phoneNumber, role },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
       alert('הפרטים עודכנו בהצלחה');
       navigate('/patients');

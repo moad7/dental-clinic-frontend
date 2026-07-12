@@ -8,11 +8,11 @@ import { RiDownloadCloud2Line } from 'react-icons/ri';
 import { useContext } from 'react';
 import { AppDataContext } from '../../../context/AppDataContext';
 import { formatAppointmentDate } from '../../../utils/functions';
+import { StatusBadge } from '../statusBadge/StatusBadge';
 const MeetingTable = ({ moreBtn, headerTextTable }) => {
   const { appointments } = useContext(AppDataContext);
   const { pathname } = useLocation();
   const navigate = useNavigate();
-
   const isMeetingsManagement = pathname.endsWith('/meetingsManagement');
 
   const PillButton = ({ children, bg, color, onClick }) => (
@@ -28,14 +28,6 @@ const MeetingTable = ({ moreBtn, headerTextTable }) => {
       {children}
     </button>
   );
-  const badgeStyle = (type) => {
-    const map = {
-      confirmed: { bg: '#DCFCE7', color: '#166534', text: 'אושר' },
-      pending: { bg: '#FFEDD5', color: '#9A3412', text: 'תליה' },
-      rejected: { bg: '#FEE2E2', color: '#991B1B', text: 'נדחה' },
-    };
-    return map[type] || map.pending;
-  };
   return (
     <div
       className="container-box appt-card"
@@ -62,7 +54,8 @@ const MeetingTable = ({ moreBtn, headerTextTable }) => {
         <div>שירות</div>
         <div>תאריך הזמנה</div>
         <div>רופא</div>
-        <div>המצב</div>
+        <div>סטטוס טיפול</div>
+        <div>סטטוס מפגש</div>
         <div>נהלים</div>
       </div>
 
@@ -75,7 +68,6 @@ const MeetingTable = ({ moreBtn, headerTextTable }) => {
         }
       >
         {appointments.slice(0, 5).map((item) => {
-          const st = badgeStyle(item.status);
           return (
             <div className="appt-row" key={item._id}>
               {/* patient */}
@@ -90,38 +82,36 @@ const MeetingTable = ({ moreBtn, headerTextTable }) => {
 
                 <div className="appt-patient-info">
                   <span className="appt-patient-name">
-                    {item.treatmentId.userId.name}
+                    {item.treatmentId.userId.name ?? '-'}
                   </span>
                   <span className="appt-patient-phone">
-                    {item.treatmentId.userId.phoneNumber}
+                    {item.treatmentId.userId.phoneNumber ?? '-'}
                   </span>
                 </div>
               </div>
 
               {/* service */}
               <div className="appt-cell">
-                {item.treatmentId.serviceItemId.name}
+                {item.treatmentId.serviceItem.name ?? '-'}
               </div>
 
               {/* date */}
               <div className="appt-cell">
-                {formatAppointmentDate(item.date, item.time)}
+                {formatAppointmentDate(item.date, item.time) ?? '-'}
               </div>
 
               {/* doctor */}
-              <div className="appt-cell">{item.doctorId.name}</div>
+              <div className="appt-cell">{item.doctorId.name ?? '-'}</div>
 
               {/* status */}
               <div>
-                <span
-                  className="appt-badge"
-                  style={{
-                    '--bg': st.bg,
-                    '--color': st.color,
-                  }}
-                >
-                  {st.text}
-                </span>
+                <StatusBadge
+                  type="treatment"
+                  status={item.treatmentId.status}
+                />
+              </div>
+              <div>
+                <StatusBadge type="session" status={item.status} />
               </div>
 
               {/* actions */}

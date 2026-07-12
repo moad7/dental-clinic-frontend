@@ -13,8 +13,6 @@ export const fetchServices = async (token) => {
 };
 
 export const addItemToServiseGroup = async (groupId, payload, token) => {
-  console.log(payload);
-
   const res = await axios.post(
     `${API_URL}/${groupId}/items`,
     payload,

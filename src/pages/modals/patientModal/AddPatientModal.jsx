@@ -35,24 +35,6 @@ const AddPatientModal = ({ setOpen }) => {
     }));
   };
 
-  const calculateAge = (birthDate) => {
-    if (!birthDate) return null;
-
-    const today = new Date();
-    const birth = new Date(birthDate);
-
-    let age = today.getFullYear() - birth.getFullYear();
-    const monthDiff = today.getMonth() - birth.getMonth();
-
-    if (
-      monthDiff < 0 ||
-      (monthDiff === 0 && today.getDate() < birth.getDate())
-    ) {
-      age -= 1;
-    }
-
-    return age;
-  };
   const cityOptions = israelCities.map((city) => ({
     value: city,
     label: city,
@@ -77,7 +59,7 @@ const AddPatientModal = ({ setOpen }) => {
       email: formData.email,
       gender: formData.gender,
       city: formData.city,
-      age: calculateAge(formData.birth),
+      birth: formData.birth,
       allergies: formData.allergies,
       notes: formData.notes,
     };

@@ -15,12 +15,10 @@ const PatientsManagement = () => {
   const [open, setOpen] = useState(false);
   const [openAddPatient, setOpenAddPatient] = useState(false);
   const [patientId, setPatientId] = useState(null);
-
-  console.log(patientId);
-
   const normalizedPatients = useMemo(() => {
-    return (Array.isArray(patientsBySecretry) ? patientsBySecretry : []).map(
-      (patient) => {
+    return (Array.isArray(patientsBySecretry) ? patientsBySecretry : [])
+      .filter((patient) => patient?.userId?._id)
+      .map((patient) => {
         const sessions =
           patient.treatments?.flatMap((t) =>
             (t.Sessions || []).map((s) => ({
@@ -36,7 +34,7 @@ const PatientsManagement = () => {
 
         return {
           _id: patient.userId._id,
-          idNumber: patient.userId?.idNumber,
+          idNumber: patient.userId?.idNumber || '-',
           patientProfileId: patient._id,
           name: patient.userId?.name || '',
           initials:
@@ -53,7 +51,9 @@ const PatientsManagement = () => {
 
           nextAppointment: nextSession
             ? {
-                dateTime: `${new Date(nextSession.date).toLocaleDateString('he-IL')} ${nextSession.time}`,
+                dateTime: `${new Date(nextSession.date).toLocaleDateString(
+                  'he-IL',
+                )} ${nextSession.time}`,
                 treatment: nextSession.treatment,
               }
             : null,
@@ -66,8 +66,7 @@ const PatientsManagement = () => {
 
           raw: patient,
         };
-      },
-    );
+      });
   }, [patientsBySecretry]);
   const [query, setQuery] = useState('');
 
@@ -151,6 +150,21 @@ const PatientsManagement = () => {
             <span className="appt-patient-no-time">אין תאריכים קרובים</span>
           )}
         </div>
+      ),
+    },
+    {
+      key: 'status',
+      title: 'סטאטוס',
+      width: '1.2fr',
+      render: (item) => (
+        <span
+          style={{
+            color: item.status === 'active' ? '#16A34A' : '#DC2626',
+            fontWeight: 600,
+          }}
+        >
+          {item.status === 'active' ? 'פעיל' : 'לא פעיל'}
+        </span>
       ),
     },
     {

@@ -39,7 +39,7 @@
   padding: 0 24px;
   display: grid;
   align-items: center;
-  grid-template-columns: 2.2fr 1.6fr 1.8fr 1.4fr 1fr 1.4fr;
+  grid-template-columns: 2.2fr 1.6fr 1.8fr 1.4fr 1fr 1fr 1.4fr;
   border-bottom: 1px solid #e5e7eb;
   color: #4b5563;
   font-size: 15px;
@@ -63,7 +63,7 @@
   height: 68px;
   display: grid;
   align-items: center;
-  grid-template-columns: 2.2fr 1.6fr 1.8fr 1.4fr 1fr 1.4fr;
+  grid-template-columns: 2.2fr 1.6fr 1.8fr 1.4fr 1fr 1fr 1.4fr;
   border-bottom: 1px solid #f3f4f6;
 }
 

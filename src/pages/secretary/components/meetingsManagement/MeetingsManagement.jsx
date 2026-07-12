@@ -13,11 +13,15 @@ import Modal from '../../../../components/modal/Modal';
 import { AppDataContext } from '../../../../context/AppDataContext';
 import DataTable from '../../../components/dataTable/DataTable';
 import { formatAppointmentDate } from '../../../../utils/functions';
+import { StatusBadge } from '../../../components/statusBadge/StatusBadge';
+import MeetingsDetailsModal from '../../../modals/addMeetingsModal/meetingsDetailsModal/MeetingsDetailsModal';
 const MeetingsManagement = () => {
   const { appointments } = useContext(AppDataContext);
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
-  console.log(appointments);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [isUpdatingAppointment, setIsUpdatingAppointment] = useState(false);
+  const [isDeletingAppointment, setIsDeletingAppointment] = useState(false);
 
   const normalizedAppointments = useMemo(() => {
     return (Array.isArray(appointments) ? appointments : []).map((appt) => ({
@@ -34,15 +38,18 @@ const MeetingsManagement = () => {
           .join('') ||
         'AA',
 
-      serviceName: appt.treatmentId.serviceItemId.name,
+      serviceName: appt.treatmentId.serviceItem.name ?? '-',
       requestDate: appt.date,
       requestTime: appt.time,
       doctorName: appt.doctorId.name,
-
-      status: appt.treatmentId.status,
+      sessions: appt.treatmentId.totalSessions,
+      treatmentStatus: appt.treatmentId?.status,
+      sessionStatus: appt.status,
       raw: appt,
     }));
   }, [appointments]);
+
+  console.log(normalizedAppointments);
 
   const appointmentColumns = [
     {
@@ -83,24 +90,26 @@ const MeetingsManagement = () => {
       render: (item) => <div className="appt-cell">{item.doctorName}</div>,
     },
     {
-      key: 'status',
-      title: 'המצב',
+      key: 'treatmentStatus',
+      title: 'סטטוס טיפול',
       width: '1fr',
-      render: (item) => {
-        const st = badgeStyle(item.status);
-
-        return (
-          <span
-            className="appt-badge"
-            style={{
-              '--bg': st.bg,
-              '--color': st.color,
-            }}
-          >
-            {st.text}
-          </span>
-        );
-      },
+      render: (item) => (
+        <StatusBadge type="treatment" status={item.treatmentStatus} />
+      ),
+    },
+    {
+      key: 'sessionStatus',
+      title: 'סטטוס מפגש',
+      width: '1fr',
+      render: (item) => (
+        <StatusBadge type="session" status={item.sessionStatus} />
+      ),
+    },
+    {
+      key: 'sessions',
+      title: 'מפגשים',
+      width: '1fr',
+      render: (item) => <div className="appt-cell">{item.sessions}</div>,
     },
     {
       key: 'actions',
@@ -108,7 +117,7 @@ const MeetingsManagement = () => {
       width: '1.3fr',
       render: (item) => (
         <div className="appt-actions">
-          {item.status === 'in_progress' ? (
+          {item.status === 'pending' ? (
             <>
               <PillButton bg="#DCFCE7" color="#166534" onClick={() => {}}>
                 הסכמה
@@ -119,7 +128,13 @@ const MeetingsManagement = () => {
               </PillButton>
             </>
           ) : (
-            <button className="appt-link" type="button" onClick={() => {}}>
+            <button
+              className="appt-link"
+              type="button"
+              onClick={() => {
+                setSelectedAppointment(item);
+              }}
+            >
               הצג פרטים
             </button>
           )}
@@ -127,14 +142,6 @@ const MeetingsManagement = () => {
       ),
     },
   ];
-  const badgeStyle = (type) => {
-    const map = {
-      confirmed: { bg: '#DCFCE7', color: '#166534', text: 'אושר' },
-      pending: { bg: '#FFEDD5', color: '#9A3412', text: 'תליה' },
-      rejected: { bg: '#FEE2E2', color: '#991B1B', text: 'נדחה' },
-    };
-    return map[type] || map.pending;
-  };
   const PillButton = ({ children, bg, color, onClick }) => (
     <button
       type="button"
@@ -166,7 +173,53 @@ const MeetingsManagement = () => {
       );
     });
   }, [query, normalizedAppointments]);
+  const handleUpdateAppointment = async (appointmentId, updateData) => {
+    try {
+      setIsUpdatingAppointment(true);
 
+      // const response = await updateTreatmentSession(
+      //   appointmentId,
+      //   updateData,
+      // );
+
+      // setAppointments((prev) =>
+      //   prev.map((appointment) =>
+      //     appointment._id === appointmentId
+      //       ? {
+      //           ...appointment,
+      //           ...response.session,
+      //         }
+      //       : appointment,
+      //   ),
+      // );
+
+      setSelectedAppointment(null);
+    } catch (error) {
+      console.error('Failed to update appointment:', error);
+    } finally {
+      setIsUpdatingAppointment(false);
+    }
+  };
+
+  const handleDeleteAppointment = async (appointmentId) => {
+    try {
+      setIsDeletingAppointment(true);
+
+      // await deleteTreatmentSession(appointmentId);
+
+      // setAppointments((prev) =>
+      //   prev.filter(
+      //     (appointment) => appointment._id !== appointmentId,
+      //   ),
+      // );
+
+      setSelectedAppointment(null);
+    } catch (error) {
+      console.error('Failed to delete appointment:', error);
+    } finally {
+      setIsDeletingAppointment(false);
+    }
+  };
   return (
     <div className="main-container" dir="rtl">
       <BoxHeader
@@ -187,6 +240,23 @@ const MeetingsManagement = () => {
       >
         <AddMeetingsModal setOpen={setOpen} open={open} />
       </Modal>
+      {selectedAppointment && (
+        <Modal
+          isOpen={Boolean(selectedAppointment)}
+          onClose={() => setSelectedAppointment(null)}
+          title="פרטי המפגש"
+          size="xl"
+        >
+          <MeetingsDetailsModal
+            appointment={selectedAppointment}
+            isUpdating={isUpdatingAppointment}
+            isDeleting={isDeletingAppointment}
+            onClose={() => setSelectedAppointment(null)}
+            onUpdate={handleUpdateAppointment}
+            onDelete={handleDeleteAppointment}
+          />
+        </Modal>
+      )}
       <div className="container-box">
         <div className="doctors-management-top">
           <span className="doctors-management-title">בקשות לפגישות</span>

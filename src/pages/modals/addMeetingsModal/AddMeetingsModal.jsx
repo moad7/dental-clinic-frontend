@@ -226,16 +226,15 @@ const AddMeetingsModal = ({ setOpen }) => {
       role: user.role,
       serviceGroupId: formData.serviceGroupId,
       serviceItemId: formData.serviceItemId,
-      treatmentStatus: user.role === 'patient' ? 'in_progress' : 'confirmed',
+      treatmentStatus: 'in_progress',
       requiresMultipleSessions,
       totalSessions: requiresMultipleSessions
         ? Number(formData.totalSessions)
         : 1,
-
       session: {
         date: formData.date,
         time: formData.time,
-        status: 'pending',
+        status: user.role === 'patient' ? 'pending' : 'confirmed',
         note: formData.note,
       },
 
@@ -253,7 +252,6 @@ const AddMeetingsModal = ({ setOpen }) => {
     try {
       setLoading(true);
       await createAppointments(payload, token);
-
       toast.success('הטיפול נוצר בהצלחה');
       setFormData(initialFormData);
       setPatientSearch('');
@@ -279,7 +277,9 @@ const AddMeetingsModal = ({ setOpen }) => {
         case 'Doctor not found or does not provide this service':
           toast.error('הרופא אינו מספק טיפול זה');
           break;
-
+        case 'The patient is inactive':
+          toast.error('המטופל אינו פעיל');
+          break;
         default:
           toast.error(message || 'אירעה שגיאה');
       }

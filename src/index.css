@@ -35,3 +35,6 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background-color: rgba(0, 0, 0, 0.5); /* Adjust the transparency as needed */
 }
+.toastContainer {
+  z-index: 9999;
+}

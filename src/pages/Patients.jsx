@@ -36,8 +36,6 @@ const Patients = () => {
       }
     }
   };
-  console.log(user.role);
-
   return (
     <div className="container mt-4" dir="rtl">
       <h3 className="mb-4 text-center">ניהול מטופלים</h3>

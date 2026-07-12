@@ -28,6 +28,7 @@ const initialFormData = {
   phoneNumber: '',
   email: '',
   gender: '',
+  birth: '',
   avatar: '',
   yearsOfExperience: '',
   bio: '',
@@ -100,13 +101,14 @@ const AddDoctorModal = ({ setOpen, open }) => {
       e.preventDefault();
 
       const payload = {
+        idNumber: formData.idNumber,
         name: formData.name,
         phoneNumber: formData.phoneNumber,
         email: formData.email,
+        birth: formData.birth,
         gender: formData.gender,
         avatar: formData.avatar,
         role: 'doctor',
-
         doctor: {
           servicesGroupIds: formData.servicesGroupIds,
           yearsOfExperience: Number(formData.yearsOfExperience),
@@ -178,7 +180,15 @@ const AddDoctorModal = ({ setOpen, open }) => {
             placeholder="doctor@email.com"
           />
         </div>
-
+        <div className="form-field-add-doctor">
+          <label>תאריך לידה</label>
+          <input
+            type="date"
+            name="birth"
+            value={formData.birth}
+            onChange={handleChange}
+          />
+        </div>
         <div className="form-field-add-doctor">
           <label>מין</label>
           <select

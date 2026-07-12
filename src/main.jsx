@@ -26,6 +26,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           pauseOnHover
           theme="light"
           transition={Slide}
+          className="toastContainer"
         />
       </AppDataProvider>
     </AuthProvider>
