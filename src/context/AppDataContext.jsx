@@ -18,7 +18,7 @@ export const AppDataProvider = ({ children }) => {
   const [clinics, setClinics] = useState([]);
   const [doctors, setDoctors] = useState([]);
   const [patientsBySecretry, setPatientsBySecretry] = useState([]);
-  const [appointments, setaApointments] = useState([]);
+  const [appointments, setaAppointments] = useState([]);
 
   const [loadingData, setLoadingData] = useState(false);
 
@@ -50,7 +50,7 @@ export const AppDataProvider = ({ children }) => {
 
   const loadAllAppointments = async () => {
     const res = await fetchAllAppointments(token);
-    setaApointments(res.appointments);
+    setaAppointments(res.appointments);
   };
   //   const loadUsers = async () => {
   //     const res = await getAllUsers(token);
@@ -68,7 +68,6 @@ export const AppDataProvider = ({ children }) => {
         loadClinics(),
         loadDoctors(),
         loadAllPatientBySecretary(),
-        loadAllAppointments(),
         loadAllAppointments(),
         //  loadUsers()
       ]);
@@ -94,14 +93,18 @@ export const AppDataProvider = ({ children }) => {
         setUsers,
         loadingData,
         clinics,
-        loadServiceGroups,
-        loadDoctors,
-        // loadUsers,
-        loadInitialData,
+
         doctors,
         addDoctorToState,
+
         patientsBySecretry,
+
         appointments,
+        loadAllAppointments,
+
+        loadServiceGroups,
+        loadDoctors,
+        loadInitialData,
       }}
     >
       {children}

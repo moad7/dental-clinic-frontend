@@ -20,15 +20,14 @@ const MeetingsManagement = () => {
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
-  const [isUpdatingAppointment, setIsUpdatingAppointment] = useState(false);
   const [isDeletingAppointment, setIsDeletingAppointment] = useState(false);
 
   const normalizedAppointments = useMemo(() => {
     return (Array.isArray(appointments) ? appointments : []).map((appt) => ({
       _id: appt._id,
 
-      patientName: appt.treatmentId.userId.name,
-      patientPhone: appt.treatmentId.userId.phoneNumber,
+      patientName: appt.treatmentId?.userId?.name || '-',
+      patientPhone: appt.treatmentId?.userId?.phoneNumber || '-',
       initials:
         appt.initials ||
         appt.treatmentId.userId.name
@@ -38,10 +37,10 @@ const MeetingsManagement = () => {
           .join('') ||
         'AA',
 
-      serviceName: appt.treatmentId.serviceItem.name ?? '-',
+      serviceName: appt.treatmentId?.serviceItem?.name || '-',
       requestDate: appt.date,
       requestTime: appt.time,
-      doctorName: appt.doctorId.name,
+      doctorName: appt.doctorId?.name || '-',
       sessions: appt.treatmentId.totalSessions,
       treatmentStatus: appt.treatmentId?.status,
       sessionStatus: appt.status,
@@ -117,7 +116,7 @@ const MeetingsManagement = () => {
       width: '1.3fr',
       render: (item) => (
         <div className="appt-actions">
-          {item.status === 'pending' ? (
+          {item.sessionStatus === 'pending' ? (
             <>
               <PillButton bg="#DCFCE7" color="#166534" onClick={() => {}}>
                 הסכמה
@@ -166,40 +165,13 @@ const MeetingsManagement = () => {
         (appt.patientPhone || '').toLowerCase().includes(q) ||
         (appt.serviceName || '').toLowerCase().includes(q) ||
         (appt.doctorName || '').toLowerCase().includes(q) ||
-        (appt.status || '').toLowerCase().includes(q) ||
+        (appt.sessionStatus || '').toLowerCase().includes(q) ||
         String(appt._id || '')
           .toLowerCase()
           .includes(q)
       );
     });
   }, [query, normalizedAppointments]);
-  const handleUpdateAppointment = async (appointmentId, updateData) => {
-    try {
-      setIsUpdatingAppointment(true);
-
-      // const response = await updateTreatmentSession(
-      //   appointmentId,
-      //   updateData,
-      // );
-
-      // setAppointments((prev) =>
-      //   prev.map((appointment) =>
-      //     appointment._id === appointmentId
-      //       ? {
-      //           ...appointment,
-      //           ...response.session,
-      //         }
-      //       : appointment,
-      //   ),
-      // );
-
-      setSelectedAppointment(null);
-    } catch (error) {
-      console.error('Failed to update appointment:', error);
-    } finally {
-      setIsUpdatingAppointment(false);
-    }
-  };
 
   const handleDeleteAppointment = async (appointmentId) => {
     try {
@@ -249,10 +221,8 @@ const MeetingsManagement = () => {
         >
           <MeetingsDetailsModal
             appointment={selectedAppointment}
-            isUpdating={isUpdatingAppointment}
             isDeleting={isDeletingAppointment}
             onClose={() => setSelectedAppointment(null)}
-            onUpdate={handleUpdateAppointment}
             onDelete={handleDeleteAppointment}
           />
         </Modal>

@@ -1,5 +1,4 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-
+import { useCallback, useContext, useState, useEffect } from 'react';
 import {
   FiCalendar,
   FiClock,
@@ -9,30 +8,21 @@ import {
   FiUser,
   FiX,
 } from 'react-icons/fi';
-
 import { toast } from 'react-toastify';
-
 import './meetingsDetailsModal.css';
-
 import { StatusBadge } from '../../../components/statusBadge/StatusBadge';
+import MeetingSchedulePicker from '../../../components/meetingSchedulePicker/MeetingSchedulePicker';
+
 import { AppDataContext } from '../../../../context/AppDataContext';
 import { AuthContext } from '../../../../context/AuthContext';
-import { useCalendar } from '../../../../hooks/useCalendar';
+
 import { fetchDoctorAvailableSlots } from '../../../../api/doctorApi';
+import { updateAppointmentById } from '../../../../api/appointmentApi';
 
-const SESSION_STATUS_OPTIONS = [
-  { value: 'pending', label: 'ממתין' },
-  { value: 'confirmed', label: 'מאושר' },
-  { value: 'completed', label: 'הושלם' },
-  { value: 'cancelled', label: 'בוטל' },
-  { value: 'rejected', label: 'נדחה' },
-];
-
-const CREATOR_ROLES = {
-  secretary: 'מזכיר/ה',
-  doctor: 'רופא/ה',
-  patient: 'מטופל/ת',
-};
+import {
+  CREATOR_ROLES,
+  SESSION_STATUS_OPTIONS,
+} from '../../../../utils/constants';
 
 const getDateParts = (date) => {
   if (!date) return null;
@@ -54,14 +44,6 @@ const formatDateForInput = (date) => {
   if (!parts) return '';
 
   return `${parts.year}-${parts.month}-${parts.day}`;
-};
-
-const formatMonthForInput = (date) => {
-  const parts = getDateParts(date);
-
-  if (!parts) return '';
-
-  return `${parts.year}-${parts.month}`;
 };
 
 const formatDisplayDate = (date) => {
@@ -101,20 +83,20 @@ const getCreatorRoleText = (role) => {
 const MeetingsDetailsModal = ({
   appointment,
   onClose,
-  onUpdate,
   onDelete,
   isUpdating = false,
   isDeleting = false,
 }) => {
   const { token } = useContext(AuthContext);
-  const { doctors } = useContext(AppDataContext);
 
-  const { selectedMonth, setSelectedMonth, monthDays, today, isPastTimeSlot } =
-    useCalendar();
+  const { loadAllAppointments } = useContext(AppDataContext);
 
   const [isEditing, setIsEditing] = useState(false);
+
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
   const [slotsLoading, setSlotsLoading] = useState(false);
+
   const [availableSlots, setAvailableSlots] = useState([]);
 
   const [formData, setFormData] = useState({
@@ -125,90 +107,69 @@ const MeetingsDetailsModal = ({
     note: '',
   });
 
-  const raw = appointment?.raw || {};
+  const raw = appointment.raw || {};
   const treatment = raw.treatmentId || {};
   const patient = treatment.userId || {};
   const currentDoctor = raw.doctorId || {};
   const serviceGroup = treatment.serviceGroupId || {};
   const serviceItem = treatment.serviceItem || {};
 
-  const patientName =
-    appointment?.patientName || patient.name || 'מטופל ללא שם';
+  const patientName = appointment.patientName || patient.name || 'מטופל ללא שם';
 
-  const patientPhone = appointment?.patientPhone || patient.phoneNumber || '-';
+  const patientPhone = appointment.patientPhone || patient.phoneNumber || '-';
 
   const doctorName =
-    appointment?.doctorName || currentDoctor.name || 'לא נבחר רופא';
+    appointment.doctorName || currentDoctor.name || 'לא נבחר רופא';
 
-  const originalDate = formatDateForInput(appointment?.requestDate || raw.date);
+  const originalDate = formatDateForInput(appointment.requestDate || raw.date);
 
-  const originalTime = appointment?.requestTime || raw.time || '';
+  const originalTime = appointment.requestTime || raw.time || '';
 
   const originalDoctorId = currentDoctor?._id || '';
 
-  const currentServiceGroupId = serviceGroup?._id || null;
+  const serviceGroupId = serviceGroup?._id || null;
+
+  const requiresSchedule =
+    formData.status === 'pending' || formData.status === 'confirmed';
+
+  const canSave =
+    Boolean(formData.status) &&
+    (!requiresSchedule ||
+      (Boolean(formData.doctorId) &&
+        Boolean(formData.date) &&
+        Boolean(formData.time))) &&
+    !isUpdating;
 
   const createInitialFormData = useCallback(() => {
     return {
       date: originalDate,
       time: originalTime,
       doctorId: originalDoctorId,
-      status: appointment?.sessionStatus || raw.status || 'pending',
+      status: raw.status || 'pending',
       note: raw.note || '',
     };
-  }, [
-    appointment?.sessionStatus,
-    originalDate,
-    originalDoctorId,
-    originalTime,
-    raw.note,
-    raw.status,
-  ]);
-
-  const availableDoctors = useMemo(() => {
-    if (!currentServiceGroupId) return [];
-
-    return (Array.isArray(doctors) ? doctors : []).filter((doctorItem) => {
-      const belongsToSpecialty = doctorItem?.doctor?.services?.some(
-        (service) => {
-          const groupId = service?.groupId?._id || service?.groupId;
-
-          return String(groupId) === String(currentServiceGroupId);
-        },
-      );
-
-      return belongsToSpecialty && doctorItem?.isActive;
-    });
-  }, [doctors, currentServiceGroupId]);
-
-  const selectedDoctor = useMemo(() => {
-    return availableDoctors.find(
-      (doctorItem) => String(doctorItem._id) === String(formData.doctorId),
-    );
-  }, [availableDoctors, formData.doctorId]);
-
-  const canSave =
-    Boolean(formData.doctorId) &&
-    Boolean(formData.date) &&
-    Boolean(formData.time) &&
-    Boolean(formData.status) &&
-    !isUpdating;
+  }, [originalDate, originalTime, originalDoctorId, raw.status, raw.note]);
 
   useEffect(() => {
     if (!appointment) return;
 
     setFormData(createInitialFormData());
-    setSelectedMonth(formatMonthForInput(appointment.requestDate || raw.date));
-
-    setIsEditing(false);
-    setShowDeleteConfirm(false);
     setAvailableSlots([]);
-  }, [appointment, createInitialFormData, raw.date, setSelectedMonth]);
+    setShowDeleteConfirm(false);
+    setIsEditing(false);
+  }, [appointment, createInitialFormData]);
 
   useEffect(() => {
-    if (!isEditing || !formData.doctorId || !formData.date) {
+    const canLoadSlots =
+      Boolean(appointment?._id) &&
+      isEditing &&
+      requiresSchedule &&
+      Boolean(formData.doctorId) &&
+      Boolean(formData.date);
+
+    if (!canLoadSlots) {
       setAvailableSlots([]);
-      return undefined;
+      return;
     }
 
     let ignoreResult = false;
@@ -221,10 +182,7 @@ const MeetingsDetailsModal = ({
           {
             doctorId: formData.doctorId,
             date: formData.date,
-
-            // أرسله للباك حتى يستثني الموعد الحالي
-            // من فحص تعارض المواعيد.
-            sessionId: appointment?._id,
+            sessionId: appointment._id,
           },
           token,
         );
@@ -238,11 +196,6 @@ const MeetingsDetailsModal = ({
 
         const isOriginalDate = formData.date === originalDate;
 
-        /*
-         * إذا كان الباك لا يستثني الموعد الحالي،
-         * نحافظ على وقته ضمن الخيارات عند تعديل
-         * نفس الطبيب ونفس التاريخ.
-         */
         if (
           isOriginalDoctor &&
           isOriginalDate &&
@@ -259,6 +212,7 @@ const MeetingsDetailsModal = ({
         console.error('Failed to load doctor slots:', error);
 
         setAvailableSlots([]);
+
         toast.error('שגיאה בטעינת השעות הזמינות');
       } finally {
         if (!ignoreResult) {
@@ -274,66 +228,34 @@ const MeetingsDetailsModal = ({
     };
   }, [
     appointment?._id,
-    formData.date,
     formData.doctorId,
+    formData.date,
     isEditing,
-    originalDate,
+    requiresSchedule,
     originalDoctorId,
+    originalDate,
     originalTime,
     token,
   ]);
 
-  if (!appointment) return null;
+  // ✅ هنا مكانها الصحيح
+  if (!appointment) {
+    return null;
+  }
 
-  const handleFieldChange = (event) => {
-    const { name, value } = event.target;
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleDoctorChange = (event) => {
-    const doctorId = event.target.value;
+  const handleStatusChange = (event) => {
+    const status = event.target.value;
 
     setFormData((prev) => ({
       ...prev,
-      doctorId,
-      date: '',
-      time: '',
+      status,
     }));
 
-    setAvailableSlots([]);
-  };
+    const usesSchedule = status === 'pending' || status === 'confirmed';
 
-  const handleMonthChange = (event) => {
-    const month = event.target.value;
-
-    setSelectedMonth(month);
-
-    setFormData((prev) => ({
-      ...prev,
-      date: '',
-      time: '',
-    }));
-
-    setAvailableSlots([]);
-  };
-
-  const handleDateSelect = (dateValue) => {
-    setFormData((prev) => ({
-      ...prev,
-      date: dateValue,
-      time: '',
-    }));
-  };
-
-  const handleTimeSelect = (time) => {
-    setFormData((prev) => ({
-      ...prev,
-      time,
-    }));
+    if (!usesSchedule) {
+      setAvailableSlots([]);
+    }
   };
 
   const handleStartEdit = () => {
@@ -342,40 +264,68 @@ const MeetingsDetailsModal = ({
   };
 
   const handleCancelEdit = () => {
-    const initialData = createInitialFormData();
-
-    setFormData(initialData);
-    setSelectedMonth(formatMonthForInput(appointment.requestDate || raw.date));
-
+    setFormData(createInitialFormData());
     setAvailableSlots([]);
     setIsEditing(false);
   };
 
   const handleSave = async () => {
-    if (!canSave) {
-      toast.warning('יש לבחור רופא, תאריך, שעה וסטטוס');
+    if (!formData.status) {
+      toast.warning('יש לבחור סטטוס מפגש');
+      return;
+    }
+
+    if (
+      requiresSchedule &&
+      (!formData.doctorId || !formData.date || !formData.time)
+    ) {
+      toast.warning('יש לבחור רופא, תאריך ושעה');
       return;
     }
 
     const updateData = {
-      doctorId: formData.doctorId,
-      date: formData.date,
-      time: formData.time,
-      status: formData.status,
+      sessionStatus: formData.status,
       note: formData.note.trim(),
+
+      ...(requiresSchedule && {
+        doctorId: formData.doctorId,
+        date: formData.date,
+        time: formData.time,
+      }),
     };
 
     try {
-      await onUpdate?.(appointment._id, updateData);
+      await updateAppointmentById(updateData, appointment._id, token);
+
+      await loadAllAppointments?.();
+
+      toast.success('המפגש עודכן בהצלחה');
+
       setIsEditing(false);
     } catch (error) {
       console.error('Failed to update appointment:', error);
+
+      const message = error?.response?.data?.message;
+
+      switch (message) {
+        case 'Doctor already has an appointment at this date and time':
+          toast.error('לרופא כבר קיים תור בשעה זו');
+          break;
+
+        case 'Doctor does not provide this treatment service':
+          toast.error('הרופא אינו מספק את הטיפול הזה');
+          break;
+
+        default:
+          toast.error(message || 'אירעה שגיאה בעדכון המפגש');
+      }
     }
   };
 
   const handleDelete = async () => {
     try {
       await onDelete?.(appointment._id);
+
       setShowDeleteConfirm(false);
     } catch (error) {
       console.error('Failed to delete appointment:', error);
@@ -395,6 +345,7 @@ const MeetingsDetailsModal = ({
 
             <div className="meeting-details__phone">
               <FiPhone />
+
               <span>{patientPhone}</span>
             </div>
           </div>
@@ -450,172 +401,82 @@ const MeetingsDetailsModal = ({
 
               <InfoItem
                 label="מספר מפגשים"
-                value={appointment.sessions || treatment.totalSessions || 0}
+                value={treatment.totalSessions || appointment.sessions || 0}
               />
             </div>
           ) : (
             <div className="meeting-details__edit-content">
-              <div className="meeting-details__edit-row">
-                <label className="meeting-details__field">
-                  <span>רופא מטפל</span>
+              <label className="meeting-details__field">
+                <span>סטטוס מפגש</span>
 
-                  {availableDoctors.length > 0 ? (
-                    <select
-                      name="doctorId"
-                      value={formData.doctorId}
-                      onChange={handleDoctorChange}
-                    >
-                      <option value="">בחר רופא</option>
+                <select
+                  name="status"
+                  value={formData.status}
+                  onChange={handleStatusChange}
+                >
+                  {SESSION_STATUS_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
 
-                      {availableDoctors.map((doctorItem) => (
-                        <option key={doctorItem._id} value={doctorItem._id}>
-                          ד"ר {doctorItem.name}
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
-                    <div className="meeting-details__field-message meeting-details__field-message--warning">
-                      לא נמצאו רופאים פעילים בתחום הטיפול הזה
-                    </div>
-                  )}
-                </label>
+              {requiresSchedule && (
+                <MeetingSchedulePicker
+                  serviceGroupId={serviceGroupId}
+                  doctorId={formData.doctorId}
+                  date={formData.date}
+                  time={formData.time}
+                  availableSlots={availableSlots}
+                  loadingSlots={slotsLoading}
+                  onDoctorChange={(doctorId) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      doctorId,
+                      date: '',
+                      time: '',
+                    }));
 
-                <label className="meeting-details__field">
-                  <span>סטטוס מפגש</span>
+                    setAvailableSlots([]);
+                  }}
+                  onDateChange={(date) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      date,
+                      time: '',
+                    }));
+                  }}
+                  onTimeChange={(time) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      time,
+                    }));
+                  }}
+                  onMonthChange={() => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      date: '',
+                      time: '',
+                    }));
 
-                  <select
-                    name="status"
-                    value={formData.status}
-                    onChange={handleFieldChange}
-                    required
-                  >
-                    {SESSION_STATUS_OPTIONS.map((statusOption) => (
-                      <option
-                        key={statusOption.value}
-                        value={statusOption.value}
-                      >
-                        {statusOption.label}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
+                    setAvailableSlots([]);
+                  }}
+                />
+              )}
 
-              <div className="meeting-details__schedule">
-                <div className="meeting-details__calendar">
-                  <div className="meeting-details__schedule-heading">
-                    <div>
-                      <h5>בחירת תאריך</h5>
-                      <p>בחר חודש ולאחר מכן יום פנוי</p>
-                    </div>
+              {!requiresSchedule && (
+                <div className="meeting-details__field-message">
+                  {formData.status === 'completed' &&
+                    'המפגש הושלם ואין צורך לבחור מועד חדש'}
 
-                    {formData.date && (
-                      <span className="meeting-details__selected-value">
-                        {formatDisplayDate(formData.date)}
-                      </span>
-                    )}
-                  </div>
+                  {formData.status === 'cancelled' &&
+                    'המפגש בוטל ואין צורך לבחור מועד חדש'}
 
-                  <label className="meeting-details__field">
-                    <span>חודש</span>
-
-                    <input
-                      type="month"
-                      value={selectedMonth}
-                      onChange={handleMonthChange}
-                      disabled={!formData.doctorId}
-                    />
-                  </label>
-
-                  <div className="meeting-details__days-grid">
-                    {monthDays.map((dayItem) => {
-                      const isPastDate = dayItem.dateValue < today;
-
-                      const isSelected = formData.date === dayItem.dateValue;
-
-                      return (
-                        <button
-                          type="button"
-                          key={dayItem.dateValue}
-                          disabled={!formData.doctorId || isPastDate}
-                          className={[
-                            'meeting-details__day',
-                            isSelected ? 'meeting-details__day--selected' : '',
-                            isPastDate ? 'meeting-details__day--disabled' : '',
-                          ]
-                            .filter(Boolean)
-                            .join(' ')}
-                          onClick={() => handleDateSelect(dayItem.dateValue)}
-                        >
-                          <span>{dayItem.dayName}</span>
-                          <strong>{dayItem.day}</strong>
-                        </button>
-                      );
-                    })}
-                  </div>
+                  {formData.status === 'rejected' &&
+                    'המפגש נדחה ואין צורך לבחור מועד חדש'}
                 </div>
-
-                <div className="meeting-details__times">
-                  <div className="meeting-details__schedule-heading">
-                    <div>
-                      <h5>שעות זמינות</h5>
-
-                      <p>
-                        {selectedDoctor
-                          ? `ד"ר ${selectedDoctor.name}`
-                          : 'יש לבחור רופא תחילה'}
-                      </p>
-                    </div>
-
-                    {formData.time && (
-                      <span className="meeting-details__selected-value">
-                        {formData.time}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="meeting-details__times-grid">
-                    {!formData.doctorId ? (
-                      <ScheduleEmpty text="יש לבחור רופא תחילה" />
-                    ) : !formData.date ? (
-                      <ScheduleEmpty text="יש לבחור תאריך" />
-                    ) : slotsLoading ? (
-                      <ScheduleEmpty text="טוען שעות זמינות..." loading />
-                    ) : availableSlots.length > 0 ? (
-                      availableSlots.map((slot) => {
-                        const isPastTime = isPastTimeSlot(formData.date, slot);
-
-                        const isSelected = formData.time === slot;
-
-                        return (
-                          <button
-                            type="button"
-                            key={slot}
-                            disabled={isPastTime}
-                            className={[
-                              'meeting-details__time',
-                              isSelected
-                                ? 'meeting-details__time--selected'
-                                : '',
-                              isPastTime
-                                ? 'meeting-details__time--disabled'
-                                : '',
-                            ]
-                              .filter(Boolean)
-                              .join(' ')}
-                            onClick={() => handleTimeSelect(slot)}
-                          >
-                            <FiClock />
-                            {slot}
-                          </button>
-                        );
-                      })
-                    ) : (
-                      <ScheduleEmpty text="אין שעות זמינות ביום זה" />
-                    )}
-                  </div>
-                </div>
-              </div>
+              )}
 
               <label className="meeting-details__field">
                 <span>הערות</span>
@@ -624,7 +485,12 @@ const MeetingsDetailsModal = ({
                   name="note"
                   rows="4"
                   value={formData.note}
-                  onChange={handleFieldChange}
+                  onChange={(event) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      note: event.target.value,
+                    }))
+                  }
                   placeholder="הוסף הערה למפגש..."
                 />
               </label>
@@ -823,6 +689,7 @@ const StatusItem = ({ label, type, status }) => {
   return (
     <div className="meeting-details__status-item">
       <span>{label}</span>
+
       <StatusBadge type={type} status={status} />
     </div>
   );
@@ -836,16 +703,6 @@ const InfoItem = ({ label, value, customValue }) => {
       <div className="meeting-details__info-value">
         {customValue ?? value ?? '-'}
       </div>
-    </div>
-  );
-};
-
-const ScheduleEmpty = ({ text, loading = false }) => {
-  return (
-    <div className="meeting-details__schedule-empty">
-      {loading && <span className="meeting-details__loader" />}
-
-      <span>{text}</span>
     </div>
   );
 };

@@ -16,3 +16,16 @@ export const fetchAllAppointments = async (token) => {
   const res = await axios.get(`${API_URL}`, auth(token));
   return res.data;
 };
+
+export const updateAppointmentById = async (
+  updateData,
+  appointmentId,
+  token,
+) => {
+  const res = await axios.patch(
+    `${API_URL}/updateAppointment/${appointmentId}`,
+    updateData,
+    auth(token),
+  );
+  return res.data;
+};
