@@ -598,7 +598,258 @@
   font-size: 13px;
   font-weight: 600;
 }
+.meeting-details__sessions-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
 
+.meeting-details__sessions-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 3px;
+}
+
+.meeting-details__sessions-summary span {
+  color: #667085;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.meeting-details__sessions-summary strong {
+  padding: 6px 10px;
+
+  background: #edfcf2;
+  border-radius: 999px;
+
+  color: #0eaa48;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.meeting-details__sessions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.meeting-details__session-card {
+  min-height: 82px;
+
+  display: grid;
+  grid-template-columns:
+    72px
+    minmax(0, 1fr)
+    auto;
+
+  align-items: center;
+
+  gap: 18px;
+
+  padding: 14px 16px;
+
+  border: 1px solid #e4e7ec;
+  border-radius: 14px;
+
+  background: #ffffff;
+}
+
+.meeting-details__session-card--scheduled {
+  border-color: #e4e7ec;
+}
+
+.meeting-details__session-card--empty {
+  border-style: dashed;
+  background: #f9fafb;
+}
+
+.meeting-details__session-number {
+  width: 58px;
+  height: 58px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 14px;
+
+  background: #edfcf2;
+
+  color: #0eaa48;
+}
+
+.meeting-details__session-number span {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.meeting-details__session-number strong {
+  font-size: 20px;
+  line-height: 22px;
+}
+
+.meeting-details__session-main {
+  min-width: 0;
+
+  display: grid;
+  grid-template-columns:
+    minmax(160px, 0.8fr)
+    minmax(180px, 1fr);
+
+  gap: 24px;
+  align-items: center;
+}
+
+.meeting-details__session-date,
+.meeting-details__session-doctor {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.meeting-details__session-date strong,
+.meeting-details__session-doctor strong {
+  color: #101828;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.meeting-details__session-date span,
+.meeting-details__session-doctor span,
+.meeting-details__session-main > span {
+  color: #667085;
+  font-size: 13px;
+}
+
+.meeting-details__session-not-set {
+  color: #344054;
+  font-size: 15px;
+}
+
+.meeting-details__session-status {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.meeting-details__sessions-empty {
+  min-height: 100px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px dashed #d0d5dd;
+  border-radius: 14px;
+
+  background: #f9fafb;
+
+  color: #667085;
+
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.meeting-details__new-session {
+  margin-top: 20px;
+  padding: 20px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  border: 1px solid rgba(17, 208, 87, 0.25);
+  border-radius: 16px;
+
+  background: #fbfffc;
+
+  box-shadow: 0 8px 24px rgba(17, 208, 87, 0.06);
+}
+
+.meeting-details__new-session-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  padding-bottom: 14px;
+
+  border-bottom: 1px solid #e4e7ec;
+}
+
+.meeting-details__new-session-header h4 {
+  margin: 0 0 4px;
+
+  color: #101828;
+
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.meeting-details__new-session-header p {
+  margin: 0;
+
+  color: #667085;
+
+  font-size: 14px;
+}
+
+.meeting-details__new-session-close {
+  width: 38px;
+  height: 38px;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid #e4e7ec;
+  border-radius: 10px;
+
+  background: #ffffff;
+  color: #667085;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.meeting-details__new-session-close:hover {
+  border-color: #11d057;
+  color: #11d057;
+}
+
+.meeting-details__new-session-actions {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+
+  padding-top: 4px;
+}
+@media (max-width: 850px) {
+  .meeting-details__session-card {
+    grid-template-columns:
+      60px
+      minmax(0, 1fr);
+  }
+
+  .meeting-details__session-status,
+  .meeting-details__session-card > .meeting-details__button {
+    grid-column: 2;
+    justify-self: flex-start;
+  }
+
+  .meeting-details__session-main {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .meeting-details__sessions-header {
+    flex-direction: column;
+  }
+}
 @media (max-width: 1050px) {
   .meeting-details__content-grid {
     grid-template-columns: 1fr;
