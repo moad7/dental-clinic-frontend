@@ -11,6 +11,15 @@ export const createDoctorBySecretary = async (formData, token) => {
   return res.data;
 };
 
+export const updateDoctorBySecretary = async (doctorId, formData, token) => {
+  const res = await axios.put(
+    `${API_URL}/updateDoctorBySecretary/${doctorId}`,
+    { formData },
+    auth(token),
+  );
+  return res.data;
+};
+
 export const fetchAllPatientBySecretary = async (token) => {
   const res = await axios.get(
     `${API_URL}/getAllPatientBySecretary`,

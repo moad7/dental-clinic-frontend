@@ -131,7 +131,7 @@ const MeetingsDetailsModal = ({
     note: '',
   });
 
-  const raw = appointment.raw || {};
+  const raw = appointment.raw || appointment || {};
   const treatment = raw.treatmentId || {};
   const treatmentId = treatment?._id || null;
   const patient = treatment.userId || {};
@@ -574,13 +574,15 @@ const MeetingsDetailsModal = ({
           <StatusItem
             label="סטטוס טיפול"
             type="treatment"
-            status={appointment.treatmentStatus}
+            status={
+              appointment.treatmentStatus || appointment.treatmentId.status
+            }
           />
 
           <StatusItem
             label="סטטוס מפגש"
             type="session"
-            status={appointment.sessionStatus}
+            status={appointment.sessionStatus || appointment.status}
           />
         </div>
       </header>
@@ -613,7 +615,7 @@ const MeetingsDetailsModal = ({
                 customValue={
                   <StatusBadge
                     type="session"
-                    status={appointment.sessionStatus}
+                    status={appointment.sessionStatus || appointment.status}
                   />
                 }
               />
@@ -769,7 +771,10 @@ const MeetingsDetailsModal = ({
               customValue={
                 <StatusBadge
                   type="treatment"
-                  status={appointment.treatmentStatus}
+                  status={
+                    appointment.treatmentStatus ||
+                    appointment.treatmentId.status
+                  }
                 />
               }
             />

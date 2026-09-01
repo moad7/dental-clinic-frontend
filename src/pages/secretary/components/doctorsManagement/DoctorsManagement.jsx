@@ -2,6 +2,7 @@ import { useMemo, useState, useContext } from 'react';
 import BoxHeader from '../../../components/boxHeader/BoxHeader';
 import { FiPlus, FiSearch } from 'react-icons/fi';
 import AddDoctorModal from '../../../modals/doctorModal/AddDoctorModal';
+import DoctorDetailsModal from '../../../modals/doctorModal/doctorDetailsModal/DoctorDetailsModal';
 import Modal from '../../../../components/modal/Modal';
 import DashboardStats from '../../../components/dashboardStats/DashboardStats';
 import { secretaryDoctorsStats } from '../../../../utils/dashboardDataStats/dataStats';
@@ -11,6 +12,8 @@ import { AppDataContext } from '../../../../context/AppDataContext';
 const DoctorsManagement = () => {
   const { doctors } = useContext(AppDataContext);
   const [open, setOpen] = useState(false);
+  const [doctorsModalOpen, setDoctorsModalOpen] = useState(false);
+  const [doctor, setDoctor] = useState(null);
   const [query, setQuery] = useState('');
 
   const normalizedDoctors = useMemo(() => {
@@ -23,14 +26,11 @@ const DoctorsManagement = () => {
           .slice(0, 2)
           .map((word) => word[0])
           .join('') || 'DR',
-
       phone: doctor.phoneNumber,
       email: doctor.email,
       gender: doctor.gender,
       avatar: doctor.avatar,
-
       status: doctor.isActive ? 'active' : 'inactive',
-
       specialization:
         doctor.doctor?.services
           ?.map((s) => s.groupId?.title)
@@ -107,22 +107,34 @@ const DoctorsManagement = () => {
       width: '1.2fr',
       render: (item) => (
         <span
-          style={{
-            color: item.status === 'active' ? '#16A34A' : '#DC2626',
-            fontWeight: 600,
-          }}
+          className={`appt-status ${item.status === 'active' ? 'active' : 'inactive'}`}
         >
           {item.status === 'active' ? 'פעיל' : 'לא פעיל'}
         </span>
+      ),
+    },
+    {
+      key: 'actions',
+      title: 'נהלים',
+      width: '1.3fr',
+      render: (item) => (
+        <button
+          className="appt-link"
+          type="button"
+          onClick={() => {
+            setDoctor(item.raw);
+            setDoctorsModalOpen(true);
+          }}
+        >
+          הצג פרטים
+        </button>
       ),
     },
   ];
 
   const filteredDoctor = useMemo(() => {
     const q = query.trim().toLowerCase();
-
     if (!q) return normalizedDoctors;
-
     return normalizedDoctors.filter((p) => {
       return (
         (p.name || '').toLowerCase().includes(q) ||
@@ -156,7 +168,18 @@ const DoctorsManagement = () => {
       >
         <AddDoctorModal setOpen={setOpen} open={open} />
       </Modal>
-
+      <Modal
+        isOpen={doctorsModalOpen}
+        onClose={() => setDoctorsModalOpen(false)}
+        title="פרטי רופא"
+        size="xl"
+      >
+        <DoctorDetailsModal
+          setOpen={setDoctorsModalOpen}
+          open={doctorsModalOpen}
+          doctor={doctor}
+        />
+      </Modal>
       <div className="container-box">
         <div className="doctors-management-top">
           <span className="doctors-management-title"> הרופאים</span>

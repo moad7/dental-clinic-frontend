@@ -5,10 +5,13 @@ import { fetchServices } from '../api/serviceApi';
 import { fetchAllClincis } from '../api/clinicApi';
 import { fetchAllDoctors } from '../api/doctorApi';
 import { fetchAllPatientBySecretary } from '../api/secretaryApi';
-import { fetchAllAppointments } from '../api/appointmentApi';
+import {
+  fetchAllAppointments,
+  fetchAppointmentDay,
+} from '../api/appointmentApi';
 // import { getAllUsers } from '../api/userApi';
 
-export const AppDataContext = createContext();
+export const AppDataContext = createContext(null);
 
 export const AppDataProvider = ({ children }) => {
   const { user, token } = useContext(AuthContext);
@@ -18,7 +21,8 @@ export const AppDataProvider = ({ children }) => {
   const [clinics, setClinics] = useState([]);
   const [doctors, setDoctors] = useState([]);
   const [patientsBySecretry, setPatientsBySecretry] = useState([]);
-  const [appointments, setaAppointments] = useState([]);
+  const [appointments, setAppointments] = useState([]);
+  const [appointmentDay, setAppointmentDay] = useState([]);
 
   const [loadingData, setLoadingData] = useState(false);
 
@@ -36,7 +40,7 @@ export const AppDataProvider = ({ children }) => {
 
   const loadClinics = async () => {
     const res = await fetchAllClincis(token);
-    setClinics(res || []);
+    setClinics(res.clinics || []);
   };
   const loadDoctors = async () => {
     const res = await fetchAllDoctors(token);
@@ -50,12 +54,18 @@ export const AppDataProvider = ({ children }) => {
 
   const loadAllAppointments = async () => {
     const res = await fetchAllAppointments(token);
-    setaAppointments(res.appointments);
+    setAppointments(res.appointments);
   };
   //   const loadUsers = async () => {
   //     const res = await getAllUsers(token);
   //     setUsers(res.data.data || res.data || []);
   //   };
+
+  const loadAppointmentsDay = async () => {
+    const res = await fetchAppointmentDay(token);
+    setAppointmentDay(res.data);
+    console.log(appointmentDay);
+  };
 
   const loadInitialData = async () => {
     if (!token) return;
@@ -69,6 +79,8 @@ export const AppDataProvider = ({ children }) => {
         loadDoctors(),
         loadAllPatientBySecretary(),
         loadAllAppointments(),
+        loadAppointmentsDay(),
+
         //  loadUsers()
       ]);
     } catch (error) {

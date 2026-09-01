@@ -29,3 +29,16 @@ export const updateAppointmentById = async (
   );
   return res.data;
 };
+export const confirmDateById = async (appointmentId, decision, token) => {
+  const res = await axios.patch(
+    `${API_URL}/decision/${appointmentId}`,
+    { decision },
+    auth(token),
+  );
+  return res.data;
+};
+
+export const fetchAppointmentDay = async (token) => {
+  const res = await axios.get(`${API_URL}/today`, auth(token));
+  return res.data;
+};

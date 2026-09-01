@@ -15,17 +15,22 @@ import DataTable from '../../../components/dataTable/DataTable';
 import { formatAppointmentDate } from '../../../../utils/functions';
 import { StatusBadge } from '../../../components/statusBadge/StatusBadge';
 import MeetingsDetailsModal from '../../../modals/addMeetingsModal/meetingsDetailsModal/MeetingsDetailsModal';
+import { confirmDateById } from '../../../../api/appointmentApi';
+import { AuthContext } from '../../../../context/AuthContext';
+import { toast } from 'react-toastify';
+import { PillButton } from '../../../../utils/ButtonFanctions';
 const MeetingsManagement = () => {
-  const { appointments } = useContext(AppDataContext);
+  const { appointments, loadAllAppointments } = useContext(AppDataContext);
+  const { token } = useContext(AuthContext);
+
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
-  const [isDeletingAppointment, setIsDeletingAppointment] = useState(false);
+  const [loadingAction, setLoadingAction] = useState(null);
 
   const normalizedAppointments = useMemo(() => {
     return (Array.isArray(appointments) ? appointments : []).map((appt) => ({
       _id: appt._id,
-
       patientName: appt.treatmentId?.userId?.name || '-',
       patientPhone: appt.treatmentId?.userId?.phoneNumber || '-',
       initials:
@@ -47,8 +52,6 @@ const MeetingsManagement = () => {
       raw: appt,
     }));
   }, [appointments]);
-
-  console.log(normalizedAppointments);
 
   const appointmentColumns = [
     {
@@ -114,46 +117,50 @@ const MeetingsManagement = () => {
       key: 'actions',
       title: 'נהלים',
       width: '1.3fr',
-      render: (item) => (
-        <div className="appt-actions">
-          {item.sessionStatus === 'pending' ? (
-            <>
-              <PillButton bg="#DCFCE7" color="#166534" onClick={() => {}}>
-                הסכמה
-              </PillButton>
 
-              <PillButton bg="#FEE2E2" color="#991B1B" onClick={() => {}}>
-                נדחה
-              </PillButton>
-            </>
-          ) : (
-            <button
-              className="appt-link"
-              type="button"
-              onClick={() => {
-                setSelectedAppointment(item);
-              }}
-            >
-              הצג פרטים
-            </button>
-          )}
-        </div>
-      ),
+      render: (item) => {
+        const isApproving = loadingAction === `${item._id}-approve`;
+        const isRejecting = loadingAction === `${item._id}-reject`;
+        const isLoading = isApproving || isRejecting;
+        return (
+          <div className="appt-actions">
+            {item.sessionStatus === 'pending' ? (
+              <>
+                <PillButton
+                  bg="#DCFCE7"
+                  color="#166534"
+                  disabled={isLoading}
+                  onClick={() => confirmDate(item._id, 'approve')}
+                >
+                  {isApproving ? 'מאשר...' : 'הסכמה'}
+                </PillButton>
+
+                <PillButton
+                  bg="#FEE2E2"
+                  color="#991B1B"
+                  disabled={isLoading}
+                  onClick={() => confirmDate(item._id, 'reject')}
+                >
+                  {isRejecting ? 'דוחה...' : 'נדחה'}
+                </PillButton>
+              </>
+            ) : (
+              <button
+                className="appt-link"
+                type="button"
+                onClick={() => {
+                  setSelectedAppointment(item);
+                }}
+              >
+                הצג פרטים
+              </button>
+            )}
+          </div>
+        );
+      },
     },
   ];
-  const PillButton = ({ children, bg, color, onClick }) => (
-    <button
-      type="button"
-      onClick={onClick}
-      className="pill-button"
-      style={{
-        background: bg,
-        color,
-      }}
-    >
-      {children}
-    </button>
-  );
+
   const filteredAppointments = useMemo(() => {
     const q = query.trim().toLowerCase();
 
@@ -172,24 +179,23 @@ const MeetingsManagement = () => {
       );
     });
   }, [query, normalizedAppointments]);
+  const confirmDate = async (appointmentId, decision) => {
+    const loadingKey = `${appointmentId}-${decision}`;
 
-  const handleDeleteAppointment = async (appointmentId) => {
     try {
-      setIsDeletingAppointment(true);
-
-      // await deleteTreatmentSession(appointmentId);
-
-      // setAppointments((prev) =>
-      //   prev.filter(
-      //     (appointment) => appointment._id !== appointmentId,
-      //   ),
-      // );
-
-      setSelectedAppointment(null);
+      setLoadingAction(loadingKey);
+      await confirmDateById(appointmentId, decision, token);
+      toast.success(
+        decision === 'approve' ? 'התור אושר בהצלחה' : 'התור נדחה בהצלחה',
+      );
+      await loadAllAppointments();
     } catch (error) {
-      console.error('Failed to delete appointment:', error);
+      console.error('confirmDate error:', error);
+      const message =
+        error?.response?.data?.message || 'אירעה שגיאה בעדכון התור';
+      toast.error(message);
     } finally {
-      setIsDeletingAppointment(false);
+      setLoadingAction(null);
     }
   };
   return (
@@ -221,9 +227,7 @@ const MeetingsManagement = () => {
         >
           <MeetingsDetailsModal
             appointment={selectedAppointment}
-            isDeleting={isDeletingAppointment}
             onClose={() => setSelectedAppointment(null)}
-            onDelete={handleDeleteAppointment}
           />
         </Modal>
       )}
