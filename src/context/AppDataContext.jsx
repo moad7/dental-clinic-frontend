@@ -72,15 +72,17 @@ export const AppDataProvider = ({ children }) => {
 
     try {
       setLoadingData(true);
-
+      if (user && user.role === 'secretary') {
+        await Promise.all([
+          loadClinics(),
+          loadDoctors(),
+          loadAllPatientBySecretary(),
+          loadAllAppointments(),
+          loadAppointmentsDay(),
+        ]);
+      }
       await Promise.all([
         loadServiceGroups(),
-        loadClinics(),
-        loadDoctors(),
-        loadAllPatientBySecretary(),
-        loadAllAppointments(),
-        loadAppointmentsDay(),
-
         //  loadUsers()
       ]);
     } catch (error) {

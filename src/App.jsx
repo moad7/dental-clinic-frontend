@@ -28,9 +28,10 @@ import Patients from './pages/Patients.jsx';
 import PatientProfile from './pages/PatientProfile.jsx';
 import EditPatient from './pages/EditPatient.jsx';
 
-import CreateAppointment from './pages/CreateAppointment.jsx';
-import EditAppointment from './pages/EditAppointment.jsx';
-import CreateSession from './pages/CreateSession.jsx';
+import Dashboard from './pages/patient/components/dashboard/Dashboard.jsx';
+import BookAppointment from './pages/patient/components/bookAppointment/BookAppointment.jsx';
+import MyAppointments from './pages/patient/components/myAppointments/MyAppointments.jsx';
+import TreatmentPlans from './pages/patient/components/treatmentPlans/TreatmentPlans.jsx';
 
 import DoctorsManagement from './pages/secretary/components/doctorsManagement/DoctorsManagement.jsx';
 import MeetingsManagement from './pages/secretary/components/meetingsManagement/MeetingsManagement.jsx';
@@ -80,18 +81,22 @@ function App() {
                 </PrivateRoute>
               }
             >
-              <Route path="/patient/dashboard" element={<PatientDashboard />} />
+              <Route path="/patient/dashboard" element={<Dashboard />} />
               <Route
-                path="/patient/appointments/create"
-                element={<CreateMyAppointment />}
+                path="/patient/bookAppointment"
+                element={<BookAppointment />}
               />
               <Route
-                path="/patient/profile/edit/:id"
-                element={<EditPatient />}
+                path="/patient/myAppointments"
+                element={<MyAppointments />}
+              />
+              <Route
+                path="/patient/treatmentPlans"
+                element={<TreatmentPlans />}
               />
             </Route>
 
-            {/* Doctor + Secretary layout (Layout واحد) */}
+            {/* Doctor + Secretary layout (Layout אחד) */}
             <Route
               element={
                 <PrivateRoute>

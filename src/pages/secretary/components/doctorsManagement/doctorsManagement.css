@@ -95,26 +95,24 @@
 }
 
 .appt-status.active {
-  color: #266e40;
+  color: #2d9654;
   font-weight: 600;
   font-size: 15px;
   line-height: 20px;
   gap: 7px;
   padding: 5px 11px;
-  border: 1px solid rgba(17, 208, 87, 0.18);
   border-radius: 10px;
-  background: #f6fff9;
+  background: #dcfae6;
 }
 .appt-status.inactive {
-  color: #6e2626;
+  color: #af2222;
   font-weight: 600;
   font-size: 15px;
   line-height: 20px;
   gap: 7px;
   padding: 5px 11px;
-  border: 1px solid rgba(208, 17, 17, 0.18);
   border-radius: 10px;
-  background: #fff6f6;
+  background: #fde5e5;
 }
 .doctors-management-top {
   display: flex;

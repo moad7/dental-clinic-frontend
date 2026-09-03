@@ -5,10 +5,11 @@ import {
   FaRegClock,
   FaUserDoctor,
   FaRegCircle,
+  FaCheck,
 } from 'react-icons/fa6';
 import { MdOutlinePeopleAlt } from 'react-icons/md';
 
-export const DASHBOARD_SECRETARY_ICONS = {
+export const ICONS = {
   patients: MdOutlinePeopleAlt,
   doctors: FaUserDoctor,
   requests: FaRegClock,
@@ -16,4 +17,5 @@ export const DASHBOARD_SECRETARY_ICONS = {
   meetingsToday: FaRegCalendarAlt,
   pendingAppointment: FaRegClock,
   activeCircle: FaRegCircle,
+  check: FaCheck,
 };

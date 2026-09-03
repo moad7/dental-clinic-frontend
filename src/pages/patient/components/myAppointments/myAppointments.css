@@ -1,0 +1,1287 @@
+/* =========================================================
+   PAGE
+========================================================= */
+
+.my-appointments-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  width: 100%;
+  min-width: 0;
+}
+
+/*
+  أهم عنصر للـresponsive.
+
+  إذا الشاشة أصغر من التقويم:
+  ما نصغر التقويم حتى يتخرب.
+  نخليه يحافظ على حجمه ويظهر horizontal scroll.
+*/
+
+.appointments-calendar-scroll {
+  width: 100%;
+  min-width: 0;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  border-radius: 16px;
+
+  scrollbar-width: thin;
+}
+
+/* =========================================================
+   COMPLETE CALENDAR LAYOUT
+========================================================= */
+
+.appointments-calendar-layout {
+  display: grid;
+  position: relative;
+  z-index: 1;
+  grid-template-columns:
+    minmax(930px, 1fr)
+    330px;
+  width: 100%;
+  min-width: 1260px;
+  min-height: 710px;
+  overflow: hidden;
+  background: #ffffff;
+  border-radius: 16px;
+}
+
+/* =========================================================
+   MAIN CALENDAR
+========================================================= */
+
+.appointments-calendar-main {
+  width: 100%;
+  min-width: 0;
+
+  background: #ffffff;
+
+  border-left: 1px solid #eceef7;
+}
+
+/* =========================================================
+   TOOLBAR
+========================================================= */
+
+.calendar-toolbar {
+  height: 68px;
+
+  padding: 0 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 24px;
+
+  border-bottom: 1px solid #eceef7;
+
+  background: #ffffff;
+}
+
+.calendar-month-navigation {
+  display: flex;
+  align-items: center;
+
+  gap: 18px;
+
+  flex-shrink: 0;
+}
+
+.today-button {
+  height: 40px;
+
+  min-width: 70px;
+
+  padding: 0 20px;
+
+  border: 1px solid #bde6fb;
+  border-radius: 24px;
+
+  background: #ffffff;
+
+  color: #11d057;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.today-button:hover {
+  background: #f3fff8;
+
+  border-color: #11d057;
+}
+
+.calendar-current-month {
+  color: #181a20;
+
+  font-size: 18px;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+.calendar-navigation-buttons {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+}
+
+.calendar-navigation-buttons button {
+  width: 28px;
+  height: 28px;
+
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+
+  background: transparent;
+
+  color: #999bd1;
+
+  font-size: 20px;
+
+  cursor: pointer;
+
+  border-radius: 50%;
+
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.calendar-navigation-buttons button:hover {
+  color: #11cd59;
+
+  background: #f3fff7;
+}
+
+/* =========================================================
+   FILTERS
+========================================================= */
+
+.calendar-filters {
+  display: flex;
+  align-items: center;
+
+  padding: 3px;
+
+  background: #f8f8f8;
+
+  border-radius: 28px;
+}
+
+.calendar-filter {
+  height: 34px;
+
+  min-width: 72px;
+
+  padding: 0 15px;
+
+  border: none;
+  border-radius: 22px;
+
+  background: transparent;
+
+  color: #525252;
+
+  font-family: inherit;
+  font-size: 13px;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.calendar-filter.active {
+  background: #ffffff;
+
+  color: #262626;
+
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.06);
+}
+
+/* =========================================================
+   CALENDAR CONTENT
+========================================================= */
+
+.calendar-content {
+  position: relative;
+
+  width: 100%;
+  min-width: 0;
+
+  background: #ffffff;
+}
+
+/* =========================================================
+   DAYS HEADER
+========================================================= */
+
+.calendar-days-header {
+  display: grid;
+
+  grid-template-columns:
+    repeat(6, minmax(140px, 1fr))
+    78px;
+
+  height: 64px;
+
+  direction: rtl;
+
+  border-bottom: 1px solid #eceefa;
+}
+
+.calendar-day-name,
+.calendar-timezone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-left: 1px solid #eceefa;
+
+  color: #a4a6cb;
+
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.calendar-day-name:nth-child(4) {
+  color: #303030;
+
+  font-weight: 500;
+}
+
+.calendar-timezone {
+  direction: ltr;
+}
+
+/* =========================================================
+   GRID
+========================================================= */
+
+.calendar-grid {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    78px;
+
+  direction: rtl;
+
+  position: relative;
+}
+
+/* =========================================================
+   HOURS
+========================================================= */
+
+.calendar-hours {
+  order: 2;
+
+  width: 78px;
+}
+
+.calendar-hour {
+  height: 64px;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+
+  padding-top: 8px;
+
+  color: #a4a6cb;
+  font-size: 12px;
+
+  white-space: nowrap;
+
+  border-left: 1px solid #eceefa;
+  border-bottom: 1px solid #eceefa;
+}
+
+/* =========================================================
+   DAYS GRID
+========================================================= */
+
+.calendar-days-grid {
+  position: relative;
+
+  display: grid;
+
+  grid-template-columns: repeat(6, minmax(140px, 1fr));
+
+  direction: rtl;
+
+  min-width: 0;
+}
+
+.calendar-day-column {
+  position: relative;
+
+  min-width: 0;
+
+  border-left: 1px solid #eceefa;
+}
+
+.calendar-time-cell {
+  height: 64px;
+  border-bottom: 1px solid #eceefa;
+  background: #ffffff;
+}
+
+.calendar-time-cell--blocked {
+  background: repeating-linear-gradient(
+    -45deg,
+    #ffffff 0px,
+    #ffffff 7px,
+    #f4f5fd 7px,
+    #f4f5fd 10px
+  );
+}
+
+/* =========================================================
+   CALENDAR APPOINTMENT
+========================================================= */
+
+.calendar-appointment {
+  position: absolute;
+
+  right: 4px;
+  left: 4px;
+
+  padding: 14px 10px;
+
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+  align-items: flex-start;
+
+  gap: 6px;
+
+  overflow: hidden;
+
+  border-radius: 14px;
+
+  font-family: inherit;
+
+  text-align: right;
+
+  cursor: pointer;
+
+  z-index: 4;
+
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.15s ease;
+}
+
+.calendar-appointment:hover {
+  transform: translateY(-1px);
+
+  box-shadow: 0 8px 20px rgba(28, 38, 61, 0.08);
+}
+
+.calendar-appointment-title {
+  width: 100%;
+
+  color: #242424;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  line-height: 1.45;
+}
+
+.calendar-appointment-time {
+  color: #11d057;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  direction: ltr;
+
+  white-space: nowrap;
+}
+
+/* BLUE */
+
+.calendar-appointment--blue {
+  border: 1px solid #27a5ff;
+
+  background: linear-gradient(135deg, #ffffff 0%, #eef8ff 100%);
+}
+
+/* PURPLE */
+
+.calendar-appointment--purple {
+  border: 1px solid #c13bff;
+
+  background: linear-gradient(135deg, #ffffff 0%, #faedff 100%);
+}
+
+/* GREEN */
+
+.calendar-appointment--green {
+  border: 1px solid #78da2b;
+
+  background: linear-gradient(135deg, #ffffff 0%, #f2fbed 100%);
+}
+
+/* RED */
+
+.calendar-appointment--red {
+  border: 1px solid #ff7272;
+
+  background: linear-gradient(135deg, #ffffff 0%, #fff2f2 100%);
+}
+
+/* =========================================================
+   CURRENT TIME
+========================================================= */
+
+.calendar-current-time {
+  position: absolute;
+
+  right: 0;
+  left: 0;
+
+  height: 20px;
+
+  display: flex;
+  align-items: center;
+
+  z-index: 8;
+
+  pointer-events: none;
+}
+
+.current-time-line {
+  position: absolute;
+
+  right: 0;
+  left: 0;
+
+  border-top: 2px dashed #11d057;
+}
+
+.current-time-dot {
+  position: absolute;
+
+  left: -4px;
+
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+
+  background: #11d057;
+
+  z-index: 2;
+}
+
+.current-time-label {
+  position: absolute;
+
+  left: -68px;
+
+  min-width: 62px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 8px;
+
+  border: 1px solid #c6eaff;
+
+  border-radius: 18px;
+
+  background: #ffffff;
+
+  color: #11c95b;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  white-space: nowrap;
+
+  z-index: 3;
+}
+
+/* =========================================================
+   APPOINTMENT PREVIEW
+========================================================= */
+
+.appointment-preview-card {
+  position: absolute;
+
+  width: 370px;
+
+  padding: 16px;
+
+  border-radius: 16px;
+
+  background: #ffffff;
+
+  box-shadow: 0 18px 50px rgba(34, 41, 72, 0.15);
+
+  z-index: 100;
+
+  animation: appointmentPreviewIn 0.16s ease;
+}
+
+@keyframes appointmentPreviewIn {
+  from {
+    opacity: 0;
+
+    transform: translateY(5px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+
+    transform: translateY(0) scale(1);
+  }
+}
+
+.appointment-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin-bottom: 16px;
+}
+
+.appointment-preview-number {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+}
+
+.appointment-preview-number strong {
+  color: #242424;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.appointment-preview-number span {
+  padding: 4px 7px;
+
+  border-radius: 5px;
+
+  background: #eafcf2;
+
+  color: #11c95b;
+
+  font-size: 10px;
+  font-weight: 500;
+
+  direction: ltr;
+}
+
+.appointment-preview-close {
+  width: 26px;
+  height: 26px;
+
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: transparent;
+
+  color: #1f1f1f;
+
+  font-size: 19px;
+
+  cursor: pointer;
+
+  transition: background-color 0.2s ease;
+}
+
+.appointment-preview-close:hover {
+  background: #f5f5f5;
+}
+
+/* SERVICE */
+
+.appointment-preview-service {
+  padding: 16px;
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 10px;
+}
+
+.appointment-preview-service > strong {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #292929;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.appointment-preview-service > span {
+  color: #10cb59;
+
+  font-size: 11px;
+}
+
+/* NOTE */
+
+.appointment-clinic-note {
+  display: flex;
+
+  gap: 8px;
+
+  margin-top: 18px;
+
+  padding-top: 15px;
+
+  border-top: 1px solid #f0f0f0;
+}
+
+.appointment-clinic-note strong {
+  flex-shrink: 0;
+
+  color: #10cb59;
+
+  font-size: 10px;
+}
+
+.appointment-clinic-note p {
+  margin: 0;
+
+  color: #a1a9b6;
+
+  font-size: 9px;
+
+  line-height: 1.6;
+}
+
+/* INFO */
+
+.appointment-preview-info {
+  margin-top: 16px;
+
+  padding: 14px;
+
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 13px 22px;
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 10px;
+}
+
+.appointment-info-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 8px;
+}
+
+.appointment-info-item span {
+  color: #969eac;
+
+  font-size: 10px;
+}
+
+.appointment-info-item strong {
+  color: #292929;
+
+  font-size: 10px;
+  font-weight: 600;
+
+  text-align: left;
+}
+
+.appointment-info-time {
+  grid-column: 1 / -1;
+}
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.appointments-sidebar {
+  width: 330px;
+  min-width: 330px;
+
+  background: #ffffff;
+
+  /*
+    مهم:
+    لا يوجد display:none في أي responsive.
+  */
+}
+
+.appointments-sidebar-header {
+  height: 68px;
+
+  padding: 0 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  border-bottom: 1px solid #eceef7;
+}
+
+.appointments-sidebar-header h2 {
+  margin: 0;
+
+  color: #222222;
+
+  font-size: 20px;
+  font-weight: 700;
+}
+
+/* =========================================================
+   SIDEBAR NAVIGATION
+========================================================= */
+
+.appointments-sidebar-navigation {
+  display: flex;
+
+  gap: 10px;
+}
+
+.appointments-sidebar-navigation button {
+  width: 28px;
+  height: 28px;
+
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #bfe6fa;
+
+  border-radius: 50%;
+
+  background: #ffffff;
+
+  color: #11c85b;
+
+  font-size: 16px;
+
+  cursor: pointer;
+}
+
+.appointments-sidebar-navigation button.active {
+  border-color: #11c85b;
+
+  background: #11c85b;
+
+  color: #ffffff;
+}
+
+/* =========================================================
+   MINI CALENDAR
+========================================================= */
+
+.mini-calendar {
+  padding: 24px 20px 28px;
+
+  border-bottom: 1px solid #eceef7;
+}
+
+.mini-calendar-days {
+  display: grid;
+
+  grid-template-columns: repeat(7, 1fr);
+
+  margin-bottom: 12px;
+}
+
+.mini-calendar-days span {
+  text-align: center;
+
+  color: #333333;
+
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.mini-calendar-grid {
+  display: grid;
+
+  grid-template-columns: repeat(7, 1fr);
+
+  row-gap: 10px;
+}
+
+/*
+  لا نحط gap أفقي.
+  السبب:
+  نريد الأيام داخل الـrange تلتصق ببعض
+  مثل Figma.
+*/
+.mini-calendar-grid button {
+  height: 29px;
+
+  padding: 0;
+
+  position: relative;
+
+  border: 1px solid transparent;
+  border-radius: 0;
+
+  background: transparent;
+
+  color: #262626;
+
+  font-family: inherit;
+  font-size: 10px;
+
+  cursor: pointer;
+
+  z-index: 1;
+}
+
+/* =========================================================
+   MINI RANGE
+========================================================= */
+
+.mini-calendar-grid button.mini-range {
+  background: #effcf4;
+
+  border-top: 1px solid #11d057;
+  border-bottom: 1px solid #11d057;
+}
+
+/*
+  البداية
+*/
+
+.mini-calendar-grid button.mini-range-start {
+  border-right: 1px solid #11d057;
+
+  border-radius: 0 15px 15px 0;
+}
+
+/*
+  الوسط
+*/
+
+.mini-calendar-grid button.mini-range-middle {
+  border-right: none;
+  border-left: none;
+}
+
+/*
+  النهاية
+*/
+
+.mini-calendar-grid button.mini-range-end {
+  border-left: 1px solid #11d057;
+
+  border-radius: 15px 0 0 15px;
+}
+
+/*
+  اليوم الذي يمثل start / end
+*/
+
+.mini-calendar-grid button.mini-day-selected {
+  background: #11d057;
+
+  color: #ffffff;
+
+  border-color: #11d057;
+
+  border-radius: 50%;
+
+  z-index: 3;
+}
+
+.mini-calendar-grid button.mini-range-start-only {
+  background: #11d057;
+  color: #ffffff;
+  border-color: #11d057;
+  border-radius: 50%;
+}
+
+.mini-calendar-grid button.mini-range-same-day {
+  background: #6c63ff;
+  color: #ffffff;
+  border-color: #6c63ff;
+  border-radius: 50%;
+}
+/* =========================================================
+   UPCOMING
+========================================================= */
+
+.upcoming-appointments {
+  padding: 0 20px 24px;
+}
+
+.upcoming-title-row {
+  height: 68px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.upcoming-title-row h3 {
+  margin: 0;
+
+  color: #242424;
+
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.upcoming-title-row button {
+  width: 24px;
+  height: 24px;
+
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #c8eaff;
+
+  border-radius: 50%;
+
+  background: #ffffff;
+
+  color: #10cd5a;
+
+  font-size: 14px;
+
+  cursor: pointer;
+}
+
+/* =========================================================
+   UPCOMING ITEM
+========================================================= */
+
+.upcoming-appointment-item {
+  min-height: 78px;
+
+  display: grid;
+
+  grid-template-columns:
+    42px
+    minmax(0, 1fr)
+    auto;
+
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 12px 0;
+
+  border-bottom: 1px solid #eeeeee;
+}
+
+.upcoming-appointment-logo {
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #e5eef8;
+
+  border-radius: 10px;
+
+  background: #ffffff;
+
+  color: #2499df;
+
+  font-size: 15px;
+}
+
+.upcoming-appointment-content {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+.upcoming-appointment-content strong {
+  overflow: hidden;
+
+  color: #292929;
+
+  font-size: 11px;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+.upcoming-appointment-content span {
+  overflow: hidden;
+
+  color: #11c95c;
+
+  font-size: 10px;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+.upcoming-appointment-time {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 5px;
+
+  color: #262626;
+
+  font-size: 9px;
+
+  direction: ltr;
+
+  white-space: nowrap;
+}
+
+.upcoming-appointment-time svg {
+  font-size: 17px;
+}
+
+/* =========================================================
+   SHOW ALL
+========================================================= */
+
+.show-all-appointments {
+  width: 100%;
+  height: 44px;
+
+  margin-top: 18px;
+
+  border: none;
+
+  border-radius: 25px;
+
+  background: #10ce59;
+
+  color: #ffffff;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: background-color 0.2s ease;
+}
+
+.show-all-appointments:hover {
+  background: #0cba50;
+}
+
+/* =========================================================
+   CALENDAR STATES
+========================================================= */
+
+.calendar-status-message {
+  width: calc(100% - 32px);
+
+  margin: 16px;
+  padding: 14px 18px;
+
+  border: 1px solid #e8ebf3;
+  border-radius: 12px;
+
+  background: #f8f9fc;
+
+  color: #7f8795;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  text-align: center;
+}
+
+.calendar-status-message--error {
+  border-color: #ffd5d5;
+
+  background: #fff5f5;
+
+  color: #e05252;
+}
+
+/* =========================================================
+   MINI CALENDAR EMPTY CELLS
+========================================================= */
+
+.mini-calendar-empty {
+  display: block;
+
+  width: 100%;
+  height: 29px;
+
+  pointer-events: none;
+}
+
+/* =========================================================
+   UPCOMING EMPTY STATE
+========================================================= */
+
+.upcoming-empty {
+  min-height: 100px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  color: #9ba2ae;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  text-align: center;
+}
+.calendar-loading-overlay {
+  position: absolute;
+  inset: 64px 0 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(255, 255, 255, 0.55);
+
+  backdrop-filter: blur(1px);
+
+  z-index: 90;
+}
+
+.calendar-loading-box {
+  padding: 12px 22px;
+
+  border: 1px solid #e8ebf3;
+  border-radius: 24px;
+
+  background: #ffffff;
+
+  color: #11c95b;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  box-shadow: 0 8px 25px rgba(34, 41, 72, 0.08);
+}
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1400px) {
+  .appointments-calendar-layout {
+    grid-template-columns:
+      minmax(900px, 1fr)
+      320px;
+
+    min-width: 1220px;
+  }
+
+  .appointments-sidebar {
+    width: 320px;
+    min-width: 320px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .appointments-calendar-scroll {
+    /*
+      المستخدم يقدر يسحب يمين ويسار
+      بدون ما ينكسر التقويم
+    */
+    overflow-x: auto;
+  }
+
+  .appointments-calendar-layout {
+    grid-template-columns:
+      900px
+      310px;
+
+    width: 1210px;
+
+    min-width: 1210px;
+  }
+
+  .appointments-sidebar {
+    display: block;
+
+    width: 310px;
+    min-width: 310px;
+  }
+}
+
+@media (max-width: 700px) {
+  .appointments-calendar-layout {
+    grid-template-columns:
+      860px
+      300px;
+
+    width: 1160px;
+
+    min-width: 1160px;
+  }
+
+  .appointments-sidebar {
+    width: 300px;
+    min-width: 300px;
+  }
+
+  .calendar-toolbar {
+    padding: 0 18px;
+  }
+
+  .appointment-preview-card {
+    width: 340px;
+  }
+}

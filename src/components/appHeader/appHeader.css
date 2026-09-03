@@ -2,6 +2,7 @@
   position: sticky;
   top: 5px;
   padding: 0px 16px;
+  z-index: 1000;
 }
 .app-header {
   display: flex;

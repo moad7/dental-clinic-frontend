@@ -26,19 +26,19 @@ export const NAV_BY_ROLE = {
     {
       id: 'patient-appointments',
       label: 'הפגישות שלי',
-      to: '/patient/appointments',
+      to: '/patient/myAppointments',
       icon: Calendar,
     },
     {
       id: 'patient-book',
       label: 'הזמן פגישה',
-      to: '/patient/book',
+      to: '/patient/bookAppointment',
       icon: UserPlus,
     },
     {
       id: 'patient-treatments',
       label: 'תוכניות טיפול',
-      to: '/patient/treatment-plans',
+      to: '/patient/treatmentPlans',
       icon: ClipboardList,
     },
   ],

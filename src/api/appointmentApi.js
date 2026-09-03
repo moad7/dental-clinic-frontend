@@ -42,3 +42,28 @@ export const fetchAppointmentDay = async (token) => {
   const res = await axios.get(`${API_URL}/today`, auth(token));
   return res.data;
 };
+
+export const getPatientAppointmentsCalendar = async (
+  { from, to, status, doctorId, serviceGroupId },
+  token,
+) => {
+  const params = {
+    from,
+    to,
+  };
+  if (status) {
+    params.status = status;
+  }
+  if (doctorId) {
+    params.doctorId = doctorId;
+  }
+  if (serviceGroupId) {
+    params.serviceGroupId = serviceGroupId;
+  }
+  const res = await axios.get(`${API_URL}/patient/calendar`, {
+    ...auth(token),
+    params,
+  });
+
+  return res.data;
+};

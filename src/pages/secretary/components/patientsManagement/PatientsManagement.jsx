@@ -158,10 +158,7 @@ const PatientsManagement = () => {
       width: '1.2fr',
       render: (item) => (
         <span
-          style={{
-            color: item.status === 'active' ? '#16A34A' : '#DC2626',
-            fontWeight: 600,
-          }}
+          className={`appt-patient-status ${item.status === 'active' ? 'active' : 'inactive'}`}
         >
           {item.status === 'active' ? 'פעיל' : 'לא פעיל'}
         </span>

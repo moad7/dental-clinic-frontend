@@ -1,10 +1,10 @@
 import './dashboardStats.css';
-import { DASHBOARD_SECRETARY_ICONS } from '../../../utils/dashboardDataStats/dashboardIcons';
+import { ICONS } from '../../../utils/dashboardDataStats/dashboardIcons';
 const DashboardStats = ({ items }) => {
   return (
     <div className="dashboard-cards">
       {items.map((item) => {
-        const Icon = DASHBOARD_SECRETARY_ICONS[item.iconKey];
+        const Icon = ICONS[item.iconKey];
         return (
           <div key={item._id} className="container-box dashboard-card">
             <span className="card-title">{item.title}</span>

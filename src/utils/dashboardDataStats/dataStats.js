@@ -112,3 +112,34 @@ export const secretaryDoctorsStats = [
     date: 'מאז 9 ביולי 2025',
   },
 ];
+
+export const patientDashboardStats = [
+  {
+    _id: 'pendingRequests',
+    title: 'בקשות ממתינות',
+    value: '2 בקשות ממתינות',
+    iconKey: 'requests',
+    color: '#EA580C',
+    backgroundColor: '#FFEDD5',
+    date: 'מאז 9 ביולי 2025',
+  },
+  {
+    _id: 'completedRequests',
+    title: 'בקשות שהושלמו',
+    value: '12 בקשות שהושלמו',
+    iconKey: 'check',
+    color: '#11D057',
+    backgroundColor: '#EFFCF4',
+    date: 'מאז 22 באוקטובר 2025',
+  },
+
+  {
+    _id: 'nextAppointment',
+    title: 'הפגישה הבאה',
+    value: '15 בדצמבר, 2025',
+    iconKey: 'appointments',
+    color: '#0088FF',
+    backgroundColor: '#EAF4FF',
+    date: 'מאז 9 ביולי 2025',
+  },
+];
