@@ -1,12 +1,10 @@
-import React, { useContext, useMemo, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import BoxHeader from '../../../components/boxHeader/BoxHeader';
-import MeetingTable from '../../../components/meetingTable/meetingTable';
 import DashboardStats from '../../../components/dashboardStats/DashboardStats';
 import { secretaryStats } from '../../../../utils/dashboardDataStats/dataStats';
 import { FiPlus, FiSearch } from 'react-icons/fi';
 import { IoIosArrowDown } from 'react-icons/io';
-import { MdOutlineFilterList } from 'react-icons/md';
-import { LuSettings, LuSettings2 } from 'react-icons/lu';
+import { LuSettings } from 'react-icons/lu';
 import { RiDownloadCloud2Line } from 'react-icons/ri';
 import AddMeetingsModal from '../../../modals/addMeetingsModal/AddMeetingsModal';
 import Modal from '../../../../components/modal/Modal';
@@ -22,12 +20,10 @@ import { PillButton } from '../../../../utils/ButtonFanctions';
 const MeetingsManagement = () => {
   const { appointments, loadAllAppointments } = useContext(AppDataContext);
   const { token } = useContext(AuthContext);
-
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [loadingAction, setLoadingAction] = useState(null);
-
   const normalizedAppointments = useMemo(() => {
     return (Array.isArray(appointments) ? appointments : []).map((appt) => ({
       _id: appt._id,
@@ -41,7 +37,6 @@ const MeetingsManagement = () => {
           .map((word) => word[0])
           .join('') ||
         'AA',
-
       serviceName: appt.treatmentId?.serviceItem?.name || '-',
       requestDate: appt.date,
       requestTime: appt.time,
@@ -52,7 +47,7 @@ const MeetingsManagement = () => {
       raw: appt,
     }));
   }, [appointments]);
-
+  console.log('Normalized Appointments:', normalizedAppointments);
   const appointmentColumns = [
     {
       key: 'patient',
@@ -61,7 +56,6 @@ const MeetingsManagement = () => {
       render: (item) => (
         <div className="appt-patient">
           <div className="appt-patient-avatar">{item.initials || 'AA'}</div>
-
           <div className="appt-patient-info">
             <span className="appt-patient-name">{item.patientName}</span>
             <span className="appt-patient-phone">{item.patientPhone}</span>
@@ -117,7 +111,6 @@ const MeetingsManagement = () => {
       key: 'actions',
       title: 'נהלים',
       width: '1.3fr',
-
       render: (item) => {
         const isApproving = loadingAction === `${item._id}-approve`;
         const isRejecting = loadingAction === `${item._id}-reject`;
@@ -134,7 +127,6 @@ const MeetingsManagement = () => {
                 >
                   {isApproving ? 'מאשר...' : 'הסכמה'}
                 </PillButton>
-
                 <PillButton
                   bg="#FEE2E2"
                   color="#991B1B"
@@ -160,12 +152,9 @@ const MeetingsManagement = () => {
       },
     },
   ];
-
   const filteredAppointments = useMemo(() => {
     const q = query.trim().toLowerCase();
-
     if (!q) return normalizedAppointments;
-
     return normalizedAppointments.filter((appt) => {
       return (
         (appt.patientName || '').toLowerCase().includes(q) ||
@@ -181,7 +170,6 @@ const MeetingsManagement = () => {
   }, [query, normalizedAppointments]);
   const confirmDate = async (appointmentId, decision) => {
     const loadingKey = `${appointmentId}-${decision}`;
-
     try {
       setLoadingAction(loadingKey);
       await confirmDateById(appointmentId, decision, token);
@@ -234,7 +222,6 @@ const MeetingsManagement = () => {
       <div className="container-box">
         <div className="doctors-management-top">
           <span className="doctors-management-title">בקשות לפגישות</span>
-
           <div className="toolbar">
             <div className="toolbar__left">
               <div className="search-box">
@@ -271,5 +258,4 @@ const MeetingsManagement = () => {
     </div>
   );
 };
-
 export default MeetingsManagement;

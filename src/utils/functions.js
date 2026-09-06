@@ -1,6 +1,5 @@
 import textDictionary from '../dictionary/text';
 import validator from 'validator';
-
 export const validatePassword = (password) => {
   const rules = [
     {
@@ -12,12 +11,10 @@ export const validatePassword = (password) => {
       condition: (password) => /[A-Z]/.test(password),
       message: textDictionary.passwordCheckUppercase,
     },
-
     {
       condition: (password) => /[0-9]/.test(password),
       message: textDictionary.passwordCheckNumber,
     },
-
     {
       condition: (password) => !/\s/.test(password),
       message: textDictionary.passwordCheckNoSpaces,
@@ -31,23 +28,21 @@ export const validatePassword = (password) => {
     //   message: textDictionary.passwordCheckSpecialCharacter,
     // },
   ];
-
   return rules.map((rule) => ({
     message: rule.message,
     isMet: rule.condition(password),
   }));
 };
 export const formatAppointmentDate = (date, time) => {
-  const dateObj = new Date(date);
-
-  const formattedDate = dateObj.toLocaleDateString('he-IL', {
-    day: 'numeric',
+  if (!date) return '-';
+  const formattedDate = new Intl.DateTimeFormat('he-IL', {
+    day: '2-digit',
     month: 'long',
-  });
-
-  return `${formattedDate}, ${time}`;
+    year: 'numeric',
+    timeZone: 'Asia/Jerusalem',
+  }).format(new Date(date));
+  return `${formattedDate} ${time || ''}`;
 };
-
 export const israelCities = [
   'אום אל-פחם',
   'אילת',
@@ -104,20 +99,15 @@ export const israelCities = [
 ];
 export const calculateAge = (birthDate) => {
   if (!birthDate) return null;
-
   const today = new Date();
   const birth = new Date(birthDate);
-
   let age = today.getFullYear() - birth.getFullYear();
   const monthDiff = today.getMonth() - birth.getMonth();
-
   if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
     age -= 1;
   }
-
   return age;
 };
-
 export const getStatusStyle = (type, status) => {
   const treatmentStatuses = {
     in_progress: {
@@ -141,7 +131,6 @@ export const getStatusStyle = (type, status) => {
       bg: '#FFEDD5',
     },
   };
-
   const sessionStatuses = {
     pending: {
       text: 'ממתין לאישור',
@@ -169,9 +158,7 @@ export const getStatusStyle = (type, status) => {
       bg: '#FFEDD5',
     },
   };
-
   const statuses = type === 'treatment' ? treatmentStatuses : sessionStatuses;
-
   return (
     statuses[status] || {
       text: status || 'לא ידוע',
@@ -179,4 +166,38 @@ export const getStatusStyle = (type, status) => {
       bg: '#F3F4F6',
     }
   );
+};
+export const normalizeDateOnly = (value) => {
+  if (!value) return '';
+  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return value;
+  }
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return '';
+  }
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Jerusalem',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(date);
+  const year = parts.find((part) => part.type === 'year')?.value;
+  const month = parts.find((part) => part.type === 'month')?.value;
+  const day = parts.find((part) => part.type === 'day')?.value;
+  return `${year}-${month}-${day}`;
+};
+export const formatDateOnly = (value) => {
+  if (!value) return null;
+  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return value;
+  }
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
+  }
+  const year = parsed.getFullYear();
+  const month = String(parsed.getMonth() + 1).padStart(2, '0');
+  const day = String(parsed.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 };
