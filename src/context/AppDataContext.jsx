@@ -1,6 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { AuthContext } from './AuthContext';
-
 import { fetchServices } from '../api/serviceApi';
 import { fetchAllClincis } from '../api/clinicApi';
 import { fetchAllDoctors } from '../api/doctorApi';
@@ -10,12 +9,9 @@ import {
   fetchAppointmentDay,
 } from '../api/appointmentApi';
 // import { getAllUsers } from '../api/userApi';
-
 export const AppDataContext = createContext(null);
-
 export const AppDataProvider = ({ children }) => {
   const { user, token } = useContext(AuthContext);
-
   const [serviceGroups, setServiceGroups] = useState([]);
   const [users, setUsers] = useState([]);
   const [clinics, setClinics] = useState([]);
@@ -23,21 +19,17 @@ export const AppDataProvider = ({ children }) => {
   const [patientsBySecretry, setPatientsBySecretry] = useState([]);
   const [appointments, setAppointments] = useState([]);
   const [appointmentDay, setAppointmentDay] = useState([]);
-
   const [loadingData, setLoadingData] = useState(false);
-
   const addDoctorToState = (doctor) => {
     setDoctors((prev) => {
       const currentDoctors = Array.isArray(prev) ? prev : [];
       return [doctor, ...currentDoctors];
     });
   };
-
   const loadServiceGroups = async () => {
     const res = await fetchServices(token);
     setServiceGroups(res || []);
   };
-
   const loadClinics = async () => {
     const res = await fetchAllClincis(token);
     setClinics(res.clinics || []);
@@ -46,12 +38,10 @@ export const AppDataProvider = ({ children }) => {
     const res = await fetchAllDoctors(token);
     setDoctors(res.doctors || []);
   };
-
   const loadAllPatientBySecretary = async () => {
     const res = await fetchAllPatientBySecretary(token);
     setPatientsBySecretry(res.patients || []);
   };
-
   const loadAllAppointments = async () => {
     const res = await fetchAllAppointments(token);
     setAppointments(res.appointments);
@@ -60,22 +50,18 @@ export const AppDataProvider = ({ children }) => {
   //     const res = await getAllUsers(token);
   //     setUsers(res.data.data || res.data || []);
   //   };
-
   const loadAppointmentsDay = async () => {
     const res = await fetchAppointmentDay(token);
     setAppointmentDay(res.data);
     console.log(appointmentDay);
   };
-
   const loadInitialData = async () => {
     if (!token) return;
-
     try {
       setLoadingData(true);
       if (user && user.role === 'secretary') {
         await Promise.all([
           loadClinics(),
-          loadDoctors(),
           loadAllPatientBySecretary(),
           loadAllAppointments(),
           loadAppointmentsDay(),
@@ -83,6 +69,7 @@ export const AppDataProvider = ({ children }) => {
       }
       await Promise.all([
         loadServiceGroups(),
+        loadDoctors(),
         //  loadUsers()
       ]);
     } catch (error) {
@@ -91,13 +78,11 @@ export const AppDataProvider = ({ children }) => {
       setLoadingData(false);
     }
   };
-
   useEffect(() => {
     if (user && token) {
       loadInitialData();
     }
   }, [user, token]);
-
   return (
     <AppDataContext.Provider
       value={{
@@ -107,15 +92,11 @@ export const AppDataProvider = ({ children }) => {
         setUsers,
         loadingData,
         clinics,
-
         doctors,
         addDoctorToState,
-
         patientsBySecretry,
-
         appointments,
         loadAllAppointments,
-
         loadServiceGroups,
         loadDoctors,
         loadInitialData,

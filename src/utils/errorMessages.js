@@ -23,6 +23,7 @@ export const ERROR_MESSAGES = {
   'Invalid appointment id': 'מזהה המפגש אינו תקין',
   'Invalid treatmentId': 'מזהה הטיפול אינו תקין',
   'Missing required fields': 'יש למלא את כל השדות הנדרשים',
+  'Invalid weekday': 'יום חול לא חוקי',
   /*
    * ========================================
    * Appointment / Treatment Session
@@ -38,6 +39,8 @@ export const ERROR_MESSAGES = {
     'לרופא כבר קיים תור בתאריך ובשעה שנבחרו',
   'Patient already has an appointment on this day':
     'למטופל כבר קיים תור פעיל ביום זה',
+  'Doctor already has an overlapping appointment at this date and time':
+    'לרופא כבר יש תור חופף בתאריך ובשעה אלה',
   'Patient already has an appointment on this day. Complete the existing appointment first.':
     'למטופל כבר קיים תור ביום זה, יש להשלים או לסיים את התור הקיים תחילה',
   'Doctor, date and time are required for pending or confirmed sessions':
@@ -96,6 +99,9 @@ export const ERROR_MESSAGES = {
   'Failed to update doctor': 'אירעה שגיאה בעדכון פרטי הרופא',
   'Failed to create doctor': 'אירעה שגיאה ביצירת הרופא',
   'Doctor already exists': 'הרופא כבר קיים במערכת',
+  'Selected time is outside doctor working hours':
+    'הזמן שנבחר הוא מחוץ לשעות הפעילות של הרופא',
+  'Doctor is not working on the selected day': 'הרופא לא עובד ביום שנבחר',
   /*
    * ========================================
    * Patient
@@ -120,6 +126,8 @@ export const ERROR_MESSAGES = {
   'Failed to create service': 'אירעה שגיאה ביצירת השירות',
   'Failed to update service': 'אירעה שגיאה בעדכון השירות',
   'Service already exists': 'השירות כבר קיים במערכת',
+  'Invalid service duration': 'משך שירות לא חוקי',
+  'Service item not found in selected service group':'פריט השירות לא נמצא בקבוצת השירות שנבחרה'
   /*
    * ========================================
    * Clinic
@@ -173,7 +181,10 @@ export const getAppErrorMessage = (
   if (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') {
     return ERROR_MESSAGES.TIMEOUT_ERROR;
   }
-  const message = error?.response?.data?.error || error?.message;
+  const message =
+    error?.response?.data?.message ||
+    error?.response?.data?.error ||
+    error?.message;
   if (!ERROR_MESSAGES[message]) {
     switch (error?.response?.status) {
       case 400:

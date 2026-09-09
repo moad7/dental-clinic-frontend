@@ -109,7 +109,6 @@ const MeetingsDetailsModal = ({
   const originalDate = formatDateForInput(appointment.requestDate || raw.date);
   const originalTime = appointment.requestTime || raw.time || '';
   const originalDoctorId = currentDoctor?._id || '';
-  const serviceGroupId = serviceGroup?._id || null;
   const requiresSchedule =
     formData.status === 'pending' || formData.status === 'confirmed';
   const canSave =
@@ -206,6 +205,8 @@ const MeetingsDetailsModal = ({
           {
             doctorId: newSessionForm.doctorId,
             date: newSessionForm.date,
+            serviceGroupId: serviceGroup?._id,
+            serviceItemId: serviceItem?._id,
           },
           token,
         );
@@ -263,22 +264,13 @@ const MeetingsDetailsModal = ({
             doctorId: formData.doctorId,
             date: formData.date,
             sessionId: appointment._id,
+            serviceGroupId: serviceGroup?._id,
+            serviceItemId: serviceItem?._id,
           },
           token,
         );
         if (ignoreResult) return;
         let slots = Array.isArray(result?.slots) ? result.slots : [];
-        const isOriginalDoctor =
-          String(formData.doctorId) === String(originalDoctorId);
-        const isOriginalDate = formData.date === originalDate;
-        if (
-          isOriginalDoctor &&
-          isOriginalDate &&
-          originalTime &&
-          !slots.includes(originalTime)
-        ) {
-          slots = [...slots, originalTime].sort();
-        }
         setAvailableSlots(slots);
       } catch (error) {
         if (ignoreResult) return;
@@ -518,7 +510,7 @@ const MeetingsDetailsModal = ({
               </label>
               {requiresSchedule && (
                 <MeetingSchedulePicker
-                  serviceGroupId={serviceGroupId}
+                  serviceGroupId={serviceGroup?._id}
                   doctorId={formData.doctorId}
                   date={formData.date}
                   time={formData.time}
@@ -767,7 +759,7 @@ const MeetingsDetailsModal = ({
                 </select>
               </label>
               <MeetingSchedulePicker
-                serviceGroupId={serviceGroupId}
+                serviceGroupId={serviceGroup?._id}
                 doctorId={newSessionForm.doctorId}
                 date={newSessionForm.date}
                 time={newSessionForm.time}

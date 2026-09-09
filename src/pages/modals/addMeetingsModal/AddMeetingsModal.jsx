@@ -7,6 +7,7 @@ import { fetchDoctorAvailableSlots } from '../../../api/doctorApi';
 import { createAppointments } from '../../../api/appointmentApi';
 import MeetingSchedulePicker from '../../components/meetingSchedulePicker/MeetingSchedulePicker';
 import { normalizeDateOnly } from '../../../utils/functions';
+import { showErrorToast } from '../../../utils/errorMessages';
 const initialFormData = {
   patientId: '',
   serviceGroupId: '',
@@ -133,6 +134,8 @@ const AddMeetingsModal = ({ setOpen }) => {
           {
             doctorId: formData.doctorId,
             date: formData.date,
+            serviceGroupId: formData.serviceGroupId,
+            serviceItemId: formData.serviceItemId,
           },
           token,
         );
@@ -220,26 +223,7 @@ const AddMeetingsModal = ({ setOpen }) => {
       setAvailableSlots([]);
       setOpen(false);
     } catch (error) {
-      const message = error?.response?.data?.message;
-      switch (message) {
-        case 'Doctor already has an appointment at this date and time':
-          toast.error('לרופא כבר קיים תור בשעה זו');
-          break;
-        case 'Patient already has an appointment on this day. Complete the existing appointment first.':
-          toast.error('למטופל כבר קיים תור פעיל באותו יום');
-          break;
-        case 'Patient not found':
-          toast.error('המטופל לא נמצא');
-          break;
-        case 'Doctor not found or does not provide this service':
-          toast.error('הרופא אינו מספק טיפול זה');
-          break;
-        case 'The patient is inactive':
-          toast.error('המטופל אינו פעיל');
-          break;
-        default:
-          toast.error(message || 'אירעה שגיאה');
-      }
+      showErrorToast(error, 'אירעה שגיאה ביצירת המפגש');
     } finally {
       setLoading(false);
     }

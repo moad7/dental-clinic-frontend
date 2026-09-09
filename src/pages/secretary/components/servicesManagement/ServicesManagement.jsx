@@ -1,12 +1,12 @@
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import BoxHeader from '../../../components/boxHeader/BoxHeader';
 import { FiPlus } from 'react-icons/fi';
 import Modal from '../../../../components/modal/Modal';
 import AddServiceModal from '../../../modals/ServiceModal/AddServiceModal';
 import { SlArrowUp } from 'react-icons/sl';
-import { AuthContext } from '../../../../context/AuthContext';
 import { MdEdit } from 'react-icons/md';
 import { AppDataContext } from '../../../../context/AppDataContext';
+import './servicesManagement.css';
 const ServicesManagement = () => {
   const [open, setOpen] = useState(false);
   const { serviceGroups } = useContext(AppDataContext);
@@ -34,7 +34,6 @@ const ServicesManagement = () => {
             <section key={group._id} className="clinic-service-group-panel">
               <div className="clinic-service-group-header">
                 <h3 className="clinic-service-group-title">{group.title}</h3>
-
                 <button
                   className="clinic-service-group-collapse-btn"
                   type="button"
@@ -42,7 +41,6 @@ const ServicesManagement = () => {
                   <SlArrowUp />
                 </button>
               </div>
-
               <div className="clinic-service-cards-row">
                 {group.services?.map((service) => (
                   <div key={service._id} className="clinic-service-card">
@@ -60,7 +58,6 @@ const ServicesManagement = () => {
                           {/* {service.nameEn && `(${service.nameEn})`} */}
                         </h4>
                       </div>
-
                       <span
                         className={`clinic-service-status-badge ${
                           service.active
@@ -75,9 +72,7 @@ const ServicesManagement = () => {
                       <span>תיאור השירות</span>
                       <strong>{service.description ?? 'אין תיאור'}</strong>
                     </div>
-
                     <div className="clinic-service-divider" />
-
                     <div className="clinic-service-bottom-grid">
                       <div>
                         <span>מחיר השירות</span>
@@ -85,7 +80,6 @@ const ServicesManagement = () => {
                           {service.price ? `₪${service.price}` : 'אין מחיר'}
                         </strong>
                       </div>
-
                       <div>
                         <span>זמן</span>
                         <strong>
@@ -93,7 +87,6 @@ const ServicesManagement = () => {
                         </strong>
                       </div>
                     </div>
-
                     <button className="clinic-service-edit-btn" type="button">
                       <MdEdit size={20} />
                       <span>שינוי שירות</span>
@@ -107,5 +100,4 @@ const ServicesManagement = () => {
     </>
   );
 };
-
 export default ServicesManagement;
