@@ -127,7 +127,7 @@ export const ERROR_MESSAGES = {
   'Failed to update service': 'אירעה שגיאה בעדכון השירות',
   'Service already exists': 'השירות כבר קיים במערכת',
   'Invalid service duration': 'משך שירות לא חוקי',
-  'Service item not found in selected service group':'פריט השירות לא נמצא בקבוצת השירות שנבחרה'
+  'Service item not found in selected service group':'פריט השירות לא נמצא בקבוצת השירות שנבחרה',
   /*
    * ========================================
    * Clinic

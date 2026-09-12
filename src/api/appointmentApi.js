@@ -1,8 +1,6 @@
 import axios from 'axios';
 import { auth } from '../utils/constants';
-
 const API_URL = 'http://localhost:3000/api/appointments';
-
 export const createAppointments = async (payload, token) => {
   const res = await axios.post(
     `${API_URL}/createAppointment`,
@@ -11,12 +9,10 @@ export const createAppointments = async (payload, token) => {
   );
   return res.data;
 };
-
 export const fetchAllAppointments = async (token) => {
   const res = await axios.get(`${API_URL}`, auth(token));
   return res.data;
 };
-
 export const updateAppointmentById = async (
   updateData,
   appointmentId,
@@ -37,12 +33,10 @@ export const confirmDateById = async (appointmentId, decision, token) => {
   );
   return res.data;
 };
-
 export const fetchAppointmentDay = async (token) => {
   const res = await axios.get(`${API_URL}/today`, auth(token));
   return res.data;
 };
-
 export const getPatientAppointmentsCalendar = async (
   { from, to, status, doctorId, serviceGroupId },
   token,
@@ -64,6 +58,9 @@ export const getPatientAppointmentsCalendar = async (
     ...auth(token),
     params,
   });
-
+  return res.data;
+};
+export const getPatientTreatmentPlans = async (token) => {
+  const res = await axios.get(`${API_URL}/patient/treatments`, auth(token));
   return res.data;
 };
