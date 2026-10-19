@@ -1,35 +1,29 @@
 /* ===============================
    Patient Dashboard
 ================================ */
-
 .patient-dashboard {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
-
 /* ===============================
    Dashboard Overview
 ================================ */
-
 .patient-dashboard-overview {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 15px;
   align-items: stretch;
 }
-
 .patient-dashboard-card {
   background: #ffffff;
   border-radius: 16px;
   padding: 18px;
   min-width: 0;
 }
-
 /* ===============================
    Common Section Header
 ================================ */
-
 .dashboard-section-header {
   display: flex;
   align-items: center;
@@ -37,7 +31,6 @@
   gap: 16px;
   margin-bottom: 20px;
 }
-
 .dashboard-section-title {
   margin: 0;
   color: #111827;
@@ -45,7 +38,6 @@
   font-weight: 700;
   line-height: 1.4;
 }
-
 .dashboard-view-all {
   padding: 0;
   border: none;
@@ -58,200 +50,314 @@
   cursor: pointer;
   transition: opacity 0.2s ease;
 }
-
 .dashboard-view-all:hover {
   opacity: 0.75;
 }
-
 /* ===============================
    Recent Activity
 ================================ */
-
 .recent-activity-list {
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
-
 .recent-activity-item {
   display: flex;
   align-items: center;
   gap: 12px;
 }
-
 .activity-icon {
   width: 42px;
   height: 42px;
   min-width: 42px;
   border-radius: 50%;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   font-size: 20px;
 }
-
 .activity-icon--confirmed {
   color: #0eaf58;
   background: #dcfce7;
 }
-
 .activity-icon--reminder {
   color: #168ef7;
   background: #e1effe;
 }
-
 .activity-icon--treatment {
   color: #a637f4;
   background: #f2e4ff;
 }
-
 .activity-content {
   display: flex;
   flex-direction: column;
   gap: 6px;
   min-width: 0;
 }
-
 .activity-title {
   color: #111827;
   font-size: 18px;
   font-weight: 500;
   line-height: 20px;
 }
-
 .activity-description {
   color: #6b7280;
   font-size: 14px;
   font-weight: 400;
   line-height: 16px;
 }
-
 /* ===============================
    Active Treatments
 ================================ */
-
 .active-treatments-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  width: 100%;
 }
-
+.active-treatment-carousel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 12px;
+}
 .active-treatment-wrapper {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  animation: treatmentCarouselFade 0.3s ease;
 }
-
+@keyframes treatmentCarouselFade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* =========================
+   Treatment Card
+========================= */
 .active-treatment-card {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-
-  padding: 12px;
-
-  border: 1px solid #f2f2f7;
-  border-radius: 8px;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid #edf1f4;
+  border-radius: 12px;
+  background: #ffffff;
 }
-
-.treatment-main-row,
-.treatment-progress-info {
+.treatment-main-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
+  gap: 14px;
 }
-
+.treatment-title-area {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
 .treatment-name {
   color: #111827;
   font-size: 18px;
   font-weight: 500;
   line-height: 20px;
 }
-
-.treatment-sessions,
-.treatment-progress-info,
-.treatment-next-session {
+.treatment-service-group {
   color: #8b93a5;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 500;
 }
-
+.treatment-sessions {
+  flex-shrink: 0;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #f0fff5;
+  color: #0eaa48;
+  font-size: 14px;
+  font-weight: 700;
+}
+.treatment-progress-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #8b93a5;
+  font-size: 15px;
+  font-weight: 500;
+}
 .treatment-progress {
   position: relative;
-
   width: 100%;
-  height: 6px;
-
+  height: 7px;
   overflow: hidden;
-
   background: #e9faf1;
   border-radius: 999px;
 }
-
 .treatment-progress-value {
   position: absolute;
   top: 0;
   right: 0;
-
   height: 100%;
-
-  background: #10cf62;
+  background: #11d057;
   border-radius: inherit;
-
   transition: width 0.35s ease;
 }
-
+.treatment-doctor,
 .treatment-next-session {
-  text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 4px;
+  color: #8b93a5;
+  font-size: 15px;
+  font-weight: 500;
 }
-
+.treatment-doctor strong,
+.treatment-next-session strong {
+  color: #374151;
+  font-weight: 600;
+}
+.treatment-next-session--empty {
+  justify-content: flex-start;
+  color: #a1a8b5;
+}
+/* =========================
+   Details Button
+========================= */
 .treatment-details-button {
   width: 100%;
-  min-height: 40px;
+  min-height: 44px;
   padding: 12px 16px;
   border: none;
-  border-radius: 8px;
-  background: #10cd5b;
+  border-radius: 10px;
+  background: #11d057;
   color: #ffffff;
   font-family: inherit;
   font-size: 16px;
   font-weight: 700;
-  line-height: 20px;
   cursor: pointer;
   transition:
     background-color 0.2s ease,
     transform 0.15s ease;
 }
-
 .treatment-details-button:hover {
-  background: #0cba52;
+  background: #0eaa48;
 }
-
 .treatment-details-button:active {
-  transform: scale(0.995);
+  transform: scale(0.99);
 }
-
+/* =========================
+   Carousel Arrows
+========================= */
+.treatment-carousel-arrow {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e6eaee;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #4b5563;
+  font-size: 21px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.15s ease;
+}
+.treatment-carousel-arrow:hover {
+  background: #f0fff5;
+  border-color: #11d057;
+  color: #0eaa48;
+}
+.treatment-carousel-arrow:active {
+  transform: scale(0.94);
+}
+/* =========================
+   Carousel Footer
+========================= */
+.treatment-carousel-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 14px;
+}
+.treatment-carousel-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.treatment-carousel-dot {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: #d6dbe1;
+  cursor: pointer;
+  transition:
+    width 0.25s ease,
+    background-color 0.25s ease;
+}
+.treatment-carousel-dot--active {
+  width: 22px;
+  background: #11d057;
+}
+.treatment-carousel-counter {
+  color: #8b93a5;
+  font-size: 13px;
+  font-weight: 600;
+}
+/* =========================
+   Responsive
+========================= */
+@media (max-width: 600px) {
+  .active-treatment-carousel {
+    gap: 7px;
+  }
+  .treatment-carousel-arrow {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+  }
+  .active-treatment-card {
+    padding: 14px;
+  }
+  .treatment-main-row {
+    flex-direction: column;
+  }
+  .treatment-doctor,
+  .treatment-next-session {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+}
 /* ===============================
    Recent Appointments
 ================================ */
-
 .recent-appointments {
   width: 100%;
 }
-
 .recent-appointments-table-wrapper {
   width: 100%;
   overflow-x: auto;
 }
-
 .recent-appointments-table {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
 }
-
 .recent-appointments-table th {
   padding: 12px 10px;
   color: #6b7280;
@@ -261,7 +367,6 @@
   text-align: right;
   border-bottom: 1px solid #eceef2;
 }
-
 .recent-appointments-table td {
   padding: 14px 10px;
   color: #1f2937;
@@ -271,15 +376,12 @@
   text-align: right;
   border-bottom: 1px solid #f3f4f6;
 }
-
 .recent-appointments-table tbody tr:last-child td {
   border-bottom: none;
 }
-
 /* ===============================
    Appointment Status
 ================================ */
-
 .appointment-status {
   display: inline-flex;
   align-items: center;
@@ -289,59 +391,47 @@
   font-size: 14px;
   font-weight: 500;
 }
-
 .appointment-status--completed {
   color: #11b85b;
   background: #eafaf1;
 }
-
 .appointment-status--confirmed {
   color: #168ef7;
   background: #eaf4ff;
 }
-
 .appointment-status--pending {
   color: #d78b00;
   background: #fff7df;
 }
-
 .appointment-status--cancelled {
   color: #dc3545;
   background: #fdecee;
 }
-
 .appointment-status--rejected {
   color: #dc3545;
   background: #fdecee;
 }
-
 /* ===============================
    Responsive
 ================================ */
-
 @media (max-width: 900px) {
   .patient-dashboard-overview {
     grid-template-columns: 1fr;
   }
 }
-
 @media (max-width: 650px) {
   .patient-dashboard-card {
     padding: 14px;
   }
-
   .dashboard-section-title {
     font-size: 18px;
   }
-
   .recent-appointments-table {
     min-width: 650px;
   }
-
   .activity-title {
     font-size: 15px;
   }
-
   .activity-description {
     font-size: 12px;
   }

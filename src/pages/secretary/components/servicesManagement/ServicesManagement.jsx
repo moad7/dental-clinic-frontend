@@ -7,8 +7,11 @@ import { SlArrowUp } from 'react-icons/sl';
 import { MdEdit } from 'react-icons/md';
 import { AppDataContext } from '../../../../context/AppDataContext';
 import './servicesManagement.css';
+import EditServiceModal from '../../../modals/serviceModal/editServiceModal/EditServiceModal';
 const ServicesManagement = () => {
   const [open, setOpen] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [selectedService, setSelectedService] = useState(null);
   const { serviceGroups } = useContext(AppDataContext);
   return (
     <>
@@ -28,6 +31,25 @@ const ServicesManagement = () => {
           size="xl"
         >
           <AddServiceModal />
+        </Modal>
+        <Modal
+          isOpen={openEditModal}
+          onClose={() => {
+            setOpenEditModal(false);
+            setSelectedService(null);
+          }}
+          title="עריכת שירות"
+          size="xl"
+        >
+          {selectedService && (
+            <EditServiceModal
+              service={selectedService}
+              onClose={() => {
+                setOpenEditModal(false);
+                setSelectedService(null);
+              }}
+            />
+          )}
         </Modal>
         {serviceGroups.length > 0 &&
           serviceGroups.map((group) => (
@@ -87,7 +109,18 @@ const ServicesManagement = () => {
                         </strong>
                       </div>
                     </div>
-                    <button className="clinic-service-edit-btn" type="button">
+                    <button
+                      className="clinic-service-edit-btn"
+                      type="button"
+                      onClick={() => {
+                        setSelectedService({
+                          ...service,
+                          serviceGroupId: group._id,
+                          serviceGroupTitle: group.title,
+                        });
+                        setOpenEditModal(true);
+                      }}
+                    >
                       <MdEdit size={20} />
                       <span>שינוי שירות</span>
                     </button>

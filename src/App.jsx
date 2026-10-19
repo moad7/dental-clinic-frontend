@@ -6,42 +6,27 @@ import {
 } from 'react-router-dom';
 import { useContext } from 'react';
 import { AuthContext } from './context/AuthContext';
-
 import PrivateRoute from './utils/PrivateRoute.jsx';
 import RedirectByRole from './components/RedirectByRole.jsx';
-
 import LoginScreen from './pages/loginScreen/LoginScreen.jsx';
 import Register from './pages/loginScreen/components/register/Register.jsx';
-
-// Layouts
-import Layout from './components/Layout.jsx';
-import PatientNavbar from './pages/PatientNavbar.jsx';
-
 // Pages
 import SecretaryDashboard from './pages/secretary/components/dashboard/SecretaryDashboard.jsx';
-import DoctorDashboard from './pages/doctorDashboard.js';
-import PatientDashboard from './pages/PatientDashboard.jsx';
-
-import Appointments from './pages/Appointments.jsx';
 import CalendarView from './pages/CalendarView.jsx';
-import Patients from './pages/Patients.jsx';
-import PatientProfile from './pages/PatientProfile.jsx';
-import EditPatient from './pages/EditPatient.jsx';
-
 import Dashboard from './pages/patient/components/dashboard/Dashboard.jsx';
 import BookAppointment from './pages/patient/components/bookAppointment/BookAppointment.jsx';
 import MyAppointments from './pages/patient/components/myAppointments/MyAppointments.jsx';
 import TreatmentPlans from './pages/patient/components/treatmentPlans/TreatmentPlans.jsx';
-
 import DoctorsManagement from './pages/secretary/components/doctorsManagement/DoctorsManagement.jsx';
 import MeetingsManagement from './pages/secretary/components/meetingsManagement/MeetingsManagement.jsx';
 import PatientsManagement from './pages/secretary/components/patientsManagement/PatientsManagement.jsx';
 import ServicesManagement from './pages/secretary/components/servicesManagement/ServicesManagement.jsx';
-import CreateMyAppointment from './pages/CreateMyAppointment.jsx';
 import AppLayout from './layouts/AppLayout.jsx';
 import { AppDataContext } from './context/AppDataContext.jsx';
 import SetPassword from './components/publicPages/SetPassword.jsx';
-
+import DoctorPatient from './pages/doctor/components/doctorPatient/DoctorPatient.jsx';
+import DoctorAppointment from './pages/doctor/components/doctorAppointment/DoctorAppointment.jsx';
+import DoctorDashboard from './pages/doctor/components/dashboard/doctorDashboard.jsx';
 function App() {
   const { user } = useContext(AuthContext);
   // const {  } = useContext(AppDataContext);
@@ -50,7 +35,6 @@ function App() {
       <Routes>
         {/* Public route */}
         <Route path="/set-password/:token" element={<SetPassword />} />
-
         {/* Public */}
         {!user && (
           <>
@@ -59,7 +43,6 @@ function App() {
             <Route path="*" element={<Navigate to="/login" replace />} />
           </>
         )}
-
         {/* Protected */}
         {user && (
           <>
@@ -71,7 +54,6 @@ function App() {
                 </PrivateRoute>
               }
             />
-
             {/* Patient layout */}
             <Route
               element={
@@ -95,8 +77,7 @@ function App() {
                 element={<TreatmentPlans />}
               />
             </Route>
-
-            {/* Doctor + Secretary layout (Layout אחד) */}
+            {/* Doctor layout */}
             <Route
               element={
                 <PrivateRoute>
@@ -104,10 +85,21 @@ function App() {
                 </PrivateRoute>
               }
             >
-              {/* Doctor */}
               <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
-
-              {/* Secretary */}
+              <Route
+                path="/doctor/appointments"
+                element={<DoctorAppointment />}
+              />
+              <Route path="/doctor/patients" element={<DoctorPatient />} />
+            </Route>
+            {/* Secretary layout */}
+            <Route
+              element={
+                <PrivateRoute>
+                  <AppLayout />
+                </PrivateRoute>
+              }
+            >
               <Route
                 path="/secretary/dashboard"
                 element={<SecretaryDashboard />}
@@ -151,7 +143,6 @@ function App() {
                 element={<CreateSession />}
               /> */}
             </Route>
-
             {/* fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </>
@@ -160,5 +151,4 @@ function App() {
     </Router>
   );
 }
-
 export default App;

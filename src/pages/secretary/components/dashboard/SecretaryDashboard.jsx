@@ -12,20 +12,20 @@ import MeetingTable from '../../../components/meetingTable/meetingTable';
 import DashboardStats from '../../../components/dashboardStats/DashboardStats';
 import { secretaryStats } from '../../../../utils/dashboardDataStats/dataStats';
 import Modal from '../../../../components/modal/Modal';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import AddMeetingsModal from '../../../modals/addMeetingsModal/AddMeetingsModal';
 import AddPatientModal from '../../../modals/patientModal/AddPatientModal';
+import { AuthContext } from '../../../../context/AuthContext';
 const SecretaryDashboard = () => {
+  const { user } = useContext(AuthContext);
   const [Open, setOpen] = useState(false);
   const [selectedAction, setSelectedAction] = useState(null);
   // const [stats, setStats] = useState(null);
   // const [todayAppointments, setTodayAppointments] = useState([]);
   // const token = localStorage.getItem('token');
-
   const isConfirmed = (item) => {
     return item.status === 'confirmed';
   };
-
   const tableToday = [
     {
       _id: 1,
@@ -46,7 +46,6 @@ const SecretaryDashboard = () => {
       status: 'confirmed',
     },
   ];
-
   const fastManagement = [
     {
       _id: 1,
@@ -75,11 +74,10 @@ const SecretaryDashboard = () => {
       navigat: '',
     },
   ];
-
   return (
     <div className="main-container" dir="rtl">
       <BoxHeader
-        title={'בוקר טוב, מואד!'}
+        title={'בוקר טוב, ' + user.name}
         subtitle={'הנה סקירה כללית של ההזמנות שלך היום.'}
       />
       <DashboardStats items={secretaryStats} />
@@ -88,13 +86,11 @@ const SecretaryDashboard = () => {
           <span className="nivg-order-title">בקשות אישור ממתינות</span>
           <span className="nivg-order-badge">15 ממתינים</span>
         </div>
-
         <div className="nivg-order-content">
           <div className="nivg-order-left">
             <div className="nivg-order-iconBox">
               <BellRing size={27} />
             </div>
-
             <div className="nivg-order-texts">
               <span className="nivg-order-mainText">
                 בקשות לפגישות דורשות את תשומת לבך
@@ -107,7 +103,6 @@ const SecretaryDashboard = () => {
               </span>
             </div>
           </div>
-
           <div className="nivg-order-right">
             <button className="nivg-order-btn">בקשות סקירה</button>
           </div>
@@ -119,11 +114,9 @@ const SecretaryDashboard = () => {
             <span className="today-card-title">לוח הזמנים של היום</span>
             <span className="today-card-date">15 בדצמבר, 2025</span>
           </div>
-
           <div className="today-card-list">
             {tableToday.map((item) => {
               const confirmed = isConfirmed(item);
-
               return (
                 <div className="today-item" key={item._id}>
                   <div className="today-item-right">
@@ -137,7 +130,6 @@ const SecretaryDashboard = () => {
                       <span>{item.timingName}</span>
                     </div>
                   </div>
-
                   <div
                     className={`today-item-status ${
                       confirmed ? 'is-confirmed' : 'is-pending'
@@ -149,15 +141,12 @@ const SecretaryDashboard = () => {
               );
             })}
           </div>
-
           <div className="today-card-footer">
             <button className="today-card-link">הצג את לוח השנה המלא</button>
           </div>
         </div>
-
         <div className="container-box quick-mgmt">
           <span className="quick-mgmt-title">נהלים מהירים</span>
-
           <div className="quick-mgmt-list">
             {fastManagement.map((item) => (
               <div
@@ -175,10 +164,8 @@ const SecretaryDashboard = () => {
                   >
                     {item.icon}
                   </span>
-
                   <span className="quick-mgmt-name">{item.mangName}</span>
                 </div>
-
                 <div className="quick-mgmt-arrow">
                   <MdArrowBack />
                 </div>
@@ -187,7 +174,6 @@ const SecretaryDashboard = () => {
           </div>
         </div>
       </div>
-
       <MeetingTable headerTextTable={'בקשות אחרונות לפגישות'} moreBtn />
       {selectedAction && (
         <Modal
@@ -202,5 +188,4 @@ const SecretaryDashboard = () => {
     </div>
   );
 };
-
 export default SecretaryDashboard;

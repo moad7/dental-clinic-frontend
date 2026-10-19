@@ -218,9 +218,7 @@ const BookingPage = ({ service, setService }) => {
       const response = await createAppointments(bookingData, token);
       toast.success('התור נקבע בהצלחה');
       console.log('Appointment created:', response);
-      // ننظف الوقت لأن slot صار محجوز
       setSelectedTime('');
-      // نعيد تحميل الساعات المتاحة لنفس الطبيب والتاريخ
       const slotsResult = await fetchDoctorAvailableSlots(
         {
           doctorId: selectedDoctor._id,
@@ -231,8 +229,7 @@ const BookingPage = ({ service, setService }) => {
       setAvailableSlots(
         Array.isArray(slotsResult?.slots) ? slotsResult.slots : [],
       );
-      // إذا ودك ترجع للخدمات بعد نجاح الحجز:
-      // setService(null);
+      setService(null);
     } catch (error) {
       console.log(error.response.data.message);
       showErrorToast(error, 'אירעה שגיאה ביצירת המפגש');
@@ -362,9 +359,6 @@ const BookingPage = ({ service, setService }) => {
                 ))}
                 {calendarDays.days.map((day) => {
                   const date = new Date(currentYear, currentMonth, day);
-                  /*
-                   * نخلي الأيام الماضية disabled.
-                   */
                   const startOfToday = new Date(
                     today.getFullYear(),
                     today.getMonth(),

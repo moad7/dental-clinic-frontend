@@ -1,0 +1,588 @@
+/* =========================================================
+   EDIT SERVICE MODAL
+========================================================= */
+.edit-service-modal {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  color: #20232b;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+.edit-service-modal *,
+.edit-service-modal *::before,
+.edit-service-modal *::after {
+  box-sizing: border-box;
+}
+/* =========================================================
+   SECTIONS
+========================================================= */
+.edit-service-section {
+  width: 100%;
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #eef0f3;
+  border-radius: 12px;
+}
+.edit-service-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.edit-service-section h3 {
+  margin: 0 0 5px;
+  color: #20232b;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+.edit-service-section p {
+  margin: 0;
+  color: #8b93a1;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+/* =========================================================
+   MAIN LAYOUT
+========================================================= */
+.edit-service-main-layout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 26px;
+  align-items: start;
+}
+/* =========================================================
+   IMAGE AREA
+========================================================= */
+.edit-service-image-area {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.edit-service-label {
+  display: block;
+  margin-bottom: 8px;
+  color: #505866;
+  font-size: 12px;
+  font-weight: 600;
+}
+/* =========================================================
+   IMAGE TYPE - URL / FILE
+========================================================= */
+.edit-service-image-type {
+  width: 100%;
+  height: 40px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 3px;
+  padding: 3px;
+  margin-bottom: 12px;
+  background: #f4f6f8;
+  border: 1px solid #eef0f3;
+  border-radius: 9px;
+}
+.edit-service-image-type-btn {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 8px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: #8a929e;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.edit-service-image-type-btn svg {
+  flex-shrink: 0;
+  font-size: 14px;
+}
+.edit-service-image-type-btn:hover {
+  color: #17b85b;
+}
+.edit-service-image-type-btn.active {
+  background: #ffffff;
+  color: #13b85a;
+  font-weight: 600;
+  box-shadow:
+    0 1px 3px rgba(16, 24, 40, 0.08),
+    0 1px 2px rgba(16, 24, 40, 0.04);
+}
+/* =========================================================
+   URL INPUT
+========================================================= */
+.edit-service-url-area {
+  width: 100%;
+  margin-bottom: 12px;
+}
+.edit-service-image-url-input {
+  width: 100%;
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid #dfe3e8;
+  border-radius: 8px;
+  outline: none;
+  background: #ffffff;
+  color: #313844;
+  font-family: inherit;
+  font-size: 11px;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.edit-service-image-url-input::placeholder {
+  color: #b1b7c0;
+}
+.edit-service-image-url-input:hover {
+  border-color: #cfd5dc;
+}
+.edit-service-image-url-input:focus {
+  border-color: #19c463;
+  box-shadow: 0 0 0 3px rgba(25, 196, 99, 0.08);
+}
+/* =========================================================
+   FILE UPLOAD
+========================================================= */
+.edit-service-file-area {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 12px;
+}
+.edit-service-upload-button {
+  width: 100%;
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 10px;
+  border: 1px dashed #cbd1d9;
+  border-radius: 8px;
+  background: #fafbfc;
+  color: #6e7785;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease;
+}
+.edit-service-upload-button svg {
+  flex-shrink: 0;
+  color: #17bd5c;
+}
+.edit-service-upload-button:hover {
+  border-color: #18c260;
+  background: #f3fcf7;
+  color: #12a951;
+}
+.edit-service-file-name {
+  width: 100%;
+  display: block;
+  overflow: hidden;
+  color: #7f8793;
+  font-size: 10px;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* =========================================================
+   IMAGE PREVIEW
+========================================================= */
+.edit-service-image-box {
+  position: relative;
+  width: 100%;
+  height: 160px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e1e5ea;
+  border-radius: 12px;
+  background: #f8fafb;
+}
+.edit-service-image-preview {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.edit-service-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #a2a9b3;
+  font-size: 11px;
+}
+.edit-service-image-placeholder svg {
+  color: #b3bac4;
+}
+/* NEW IMAGE BADGE */
+.edit-service-new-image-badge {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  padding: 5px 9px;
+  border: 1px solid #c9f3da;
+  border-radius: 20px;
+  background: rgba(236, 253, 243, 0.95);
+  color: #0fa950;
+  font-size: 9px;
+  font-weight: 700;
+  backdrop-filter: blur(4px);
+}
+.edit-service-image-help {
+  margin-top: 7px !important;
+  color: #a0a7b2 !important;
+  font-size: 9px !important;
+  line-height: 1.5 !important;
+  text-align: center;
+}
+/* =========================================================
+   NORMAL FIELDS
+========================================================= */
+.edit-service-fields {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.edit-service-field {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.edit-service-field label {
+  color: #4f5866;
+  font-size: 12px;
+  font-weight: 600;
+}
+.edit-service-field label > span {
+  margin-right: 3px;
+  color: #ef5e5e;
+}
+/* INPUT + TEXTAREA */
+.edit-service-field > input,
+.edit-service-field > textarea {
+  width: 100%;
+  border: 1px solid #dfe3e8;
+  border-radius: 8px;
+  outline: none;
+  background: #ffffff;
+  color: #252b34;
+  font-family: inherit;
+  font-size: 12px;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.edit-service-field > input {
+  height: 44px;
+  padding: 0 13px;
+}
+.edit-service-field > textarea {
+  min-height: 118px;
+  padding: 12px 13px 28px;
+  line-height: 1.6;
+  resize: vertical;
+}
+.edit-service-field > input::placeholder,
+.edit-service-field > textarea::placeholder {
+  color: #adb3bc;
+}
+.edit-service-field > input:hover,
+.edit-service-field > textarea:hover {
+  border-color: #cfd4dc;
+}
+.edit-service-field > input:focus,
+.edit-service-field > textarea:focus {
+  border-color: #19c463;
+  box-shadow: 0 0 0 3px rgba(25, 196, 99, 0.08);
+}
+/* TEXT COUNTER */
+.edit-service-counter {
+  position: absolute;
+  left: 10px;
+  bottom: 8px;
+  color: #a3aab4;
+  font-size: 9px;
+  font-weight: 400;
+  pointer-events: none;
+}
+/* =========================================================
+   PRICE / DURATION
+========================================================= */
+.edit-service-two-columns {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.edit-service-input-with-icon {
+  width: 100%;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 12px;
+  border: 1px solid #dfe3e8;
+  border-radius: 8px;
+  background: #ffffff;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.edit-service-input-with-icon:hover {
+  border-color: #cfd4dc;
+}
+.edit-service-input-with-icon:focus-within {
+  border-color: #19c463;
+  box-shadow: 0 0 0 3px rgba(25, 196, 99, 0.08);
+}
+.edit-service-input-with-icon > svg {
+  flex-shrink: 0;
+  color: #8d95a1;
+  font-size: 16px;
+}
+.edit-service-input-with-icon input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #252b34;
+  font-family: inherit;
+  font-size: 12px;
+}
+.edit-service-input-with-icon input::placeholder {
+  color: #adb3bc;
+}
+.edit-service-input-with-icon > span {
+  flex-shrink: 0;
+  color: #747d89;
+  font-size: 11px;
+  font-weight: 500;
+}
+/* REMOVE NUMBER ARROWS */
+.edit-service-input-with-icon input[type='number']::-webkit-inner-spin-button,
+.edit-service-input-with-icon input[type='number']::-webkit-outer-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+.edit-service-input-with-icon input[type='number'] {
+  -moz-appearance: textfield;
+}
+/* =========================================================
+   STATUS SECTION
+========================================================= */
+.edit-service-status-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+/* =========================================================
+   SWITCH
+========================================================= */
+.edit-service-switch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  user-select: none;
+  cursor: pointer;
+}
+.edit-service-switch input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+.edit-service-switch-slider {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 30px;
+  background: #dfe3e8;
+  transition: background 0.2s ease;
+}
+.edit-service-switch-slider::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.16);
+  transition: transform 0.2s ease;
+}
+.edit-service-switch input:checked + .edit-service-switch-slider {
+  background: #18c260;
+}
+.edit-service-switch input:checked + .edit-service-switch-slider::after {
+  transform: translateX(-20px);
+}
+.edit-service-switch strong {
+  min-width: 45px;
+  color: #525b68;
+  font-size: 12px;
+  font-weight: 600;
+}
+/* =========================================================
+   ACTIONS
+========================================================= */
+.edit-service-actions {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 4px;
+}
+.edit-service-actions button {
+  min-width: 125px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 18px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
+}
+/* CANCEL */
+.edit-service-cancel-btn {
+  border: 1px solid #dfe3e8;
+  background: #ffffff;
+  color: #626b78;
+}
+.edit-service-cancel-btn:hover:not(:disabled) {
+  background: #f8f9fa;
+  border-color: #ccd2da;
+}
+/* SAVE */
+.edit-service-save-btn {
+  border: 1px solid #17bf5d;
+  background: #17bf5d;
+  color: #ffffff;
+}
+.edit-service-save-btn:hover:not(:disabled) {
+  background: #11ae52;
+  border-color: #11ae52;
+  box-shadow: 0 4px 12px rgba(23, 191, 93, 0.18);
+}
+.edit-service-actions button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.edit-service-actions button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+/* =========================================================
+   SCROLLBAR - IF MODAL GETS LONG
+========================================================= */
+.edit-service-modal::-webkit-scrollbar {
+  width: 5px;
+}
+.edit-service-modal::-webkit-scrollbar-track {
+  background: transparent;
+}
+.edit-service-modal::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: #d6dae0;
+}
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+@media (max-width: 900px) {
+  .edit-service-main-layout {
+    grid-template-columns: 190px minmax(0, 1fr);
+    gap: 18px;
+  }
+}
+@media (max-width: 700px) {
+  .edit-service-section {
+    padding: 16px;
+  }
+  .edit-service-main-layout {
+    grid-template-columns: 1fr;
+  }
+  .edit-service-image-area {
+    max-width: 100%;
+  }
+  .edit-service-image-box {
+    height: 200px;
+  }
+  .edit-service-two-columns {
+    grid-template-columns: 1fr;
+  }
+  .edit-service-status-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .edit-service-actions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .edit-service-actions button {
+    width: 100%;
+    min-width: 0;
+  }
+}
+@media (max-width: 450px) {
+  .edit-service-section {
+    padding: 14px;
+    border-radius: 10px;
+  }
+  .edit-service-image-type {
+    height: auto;
+    grid-template-columns: 1fr;
+  }
+  .edit-service-image-type-btn {
+    min-height: 34px;
+  }
+  .edit-service-image-box {
+    height: 170px;
+  }
+  .edit-service-actions {
+    grid-template-columns: 1fr;
+  }
+  .edit-service-actions button {
+    height: 44px;
+  }
+}

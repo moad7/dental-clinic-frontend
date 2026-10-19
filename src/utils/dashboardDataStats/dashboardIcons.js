@@ -6,9 +6,9 @@ import {
   FaUserDoctor,
   FaRegCircle,
   FaCheck,
+  FaStethoscope,
 } from 'react-icons/fa6';
-import { MdOutlinePeopleAlt } from 'react-icons/md';
-
+import { MdOutlinePeopleAlt, MdOutlineDoneOutline } from 'react-icons/md';
 export const ICONS = {
   patients: MdOutlinePeopleAlt,
   doctors: FaUserDoctor,
@@ -18,4 +18,6 @@ export const ICONS = {
   pendingAppointment: FaRegClock,
   activeCircle: FaRegCircle,
   check: FaCheck,
+  completedRequests: MdOutlineDoneOutline,
+  incomingPatients: FaStethoscope,
 };

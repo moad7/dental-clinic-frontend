@@ -10,7 +10,6 @@ import {
 import { AuthContext } from '../../../context/AuthContext';
 const AddServiceModal = () => {
   const { token } = useContext(AuthContext);
-
   const [image, setImage] = useState(null);
   // const [activeDoctor, setActiveDoctor] = useState(null);
   const [groups, setGroups] = useState([]);
@@ -29,19 +28,15 @@ const AddServiceModal = () => {
   const handleSelectImage = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     const preview = URL.createObjectURL(file);
-
     setImage({
       file,
       preview,
     });
   };
-
   const handleRemove = () => {
     setImage(null);
   };
-
   useEffect(() => {
     const loadServices = async () => {
       const services = await fetchServices(token);
@@ -49,72 +44,75 @@ const AddServiceModal = () => {
     };
     loadServices();
   }, [token]);
-
   const handleCreateGroup = async () => {
     if (!newGroupTitle.trim()) return alert('Enter group title');
-
     const res = await createServiceGroup(newGroupTitle, token);
-
     setGroups([res, ...groups]);
     setSelectedGroupId(res._id);
     setNewGroupTitle('');
     setShowNewGroup(false);
   };
-
   const handleDeleteGroup = async () => {
     if (!selectedGroupId) return alert('Choose group first');
-
     const confirmDelete = window.confirm('Delete this group?');
     if (!confirmDelete) return;
-
     await axios.delete(`/api/services/groups/${selectedGroupId}`);
-
     setGroups(groups.filter((g) => g._id !== selectedGroupId));
     setSelectedGroupId('');
   };
-
   const handleCreateService = async () => {
-    if (!selectedGroupId) return alert('Choose or create group first');
-    if (!form.name.trim()) return alert('Service name is required');
-
-    const payload = {
-      name: form.name,
-      description: form.description,
-      price: Number(form.price),
-      durationMin: Number(form.durationMin),
-      photo: mode === 'link' ? form.imageUrl : image?.preview || '',
-    };
-
-    const res = await addItemToServiseGroup(selectedGroupId, payload, token);
-
-    setGroups((prev) => prev.map((g) => (g._id === selectedGroupId ? res : g)));
-
-    setForm({
-      name: '',
-      description: '',
-      durationMin: '',
-      price: '',
-      imageUrl: '',
-    });
-
-    setImage(null);
+    if (!selectedGroupId) {
+      return alert('Choose or create group first');
+    }
+    if (!form.name.trim()) {
+      return alert('Service name is required');
+    }
+    const payload = new FormData();
+    payload.append('name', form.name.trim());
+    payload.append('description', form.description);
+    payload.append('price', form.price);
+    payload.append('durationMin', form.durationMin);
+    /*
+    Upload mode
+  */
+    if (mode === 'upload' && image?.file) {
+      payload.append('photo', image.file);
+    }
+    /*
+    Link mode
+  */
+    if (mode === 'link' && form.imageUrl.trim()) {
+      payload.append('imageUrl', form.imageUrl.trim());
+    }
+    try {
+      const res = await addItemToServiseGroup(selectedGroupId, payload, token);
+      setGroups((prev) =>
+        prev.map((g) => (g._id === selectedGroupId ? res : g)),
+      );
+      setForm({
+        name: '',
+        description: '',
+        durationMin: '',
+        price: '',
+        photo: '',
+        imageUrl: '',
+      });
+      setImage(null);
+    } catch (error) {
+      console.error('Create service error:', error);
+    }
   };
-
   const handleDeleteService = async (serviceId) => {
     if (!selectedGroupId) return;
-
     const confirmDelete = window.confirm('Delete this service?');
     if (!confirmDelete) return;
-
     const res = await axios.delete(
       `/api/services/groups/${selectedGroupId}/services/${serviceId}`,
     );
-
     setGroups((prev) =>
       prev.map((g) => (g._id === selectedGroupId ? res.data : g)),
     );
   };
-
   // const selectedGroup = groups.find((g) => g._id === selectedGroupId);
   const selectedGroup = groups?.find((g) => g?._id === selectedGroupId);
   return (
@@ -122,7 +120,6 @@ const AddServiceModal = () => {
       <div className="service-form">
         <div className="modal-groub">
           <label className="label-modal">קבוצת שירות</label>
-
           <div className="service-group-row">
             <select
               className="input-modal"
@@ -136,7 +133,6 @@ const AddServiceModal = () => {
                 </option>
               ))}
             </select>
-
             <button
               type="button"
               className="btn-small-service"
@@ -144,7 +140,6 @@ const AddServiceModal = () => {
             >
               +
             </button>
-
             {selectedGroupId && (
               <button
                 type="button"
@@ -156,11 +151,9 @@ const AddServiceModal = () => {
             )}
           </div>
         </div>
-
         {showNewGroup && (
           <div className="modal-groub">
             <label className="label-modal">שם קבוצה חדשה</label>
-
             <div className="service-group-row">
               <input
                 className="input-modal"
@@ -168,7 +161,6 @@ const AddServiceModal = () => {
                 value={newGroupTitle}
                 onChange={(e) => setNewGroupTitle(e.target.value)}
               />
-
               <button
                 type="button"
                 className="btn-create-service"
@@ -179,7 +171,6 @@ const AddServiceModal = () => {
             </div>
           </div>
         )}
-
         <div className="modal-groub">
           <label className="label-modal">שם השירות</label>
           <input
@@ -189,46 +180,8 @@ const AddServiceModal = () => {
             onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
         </div>
-        {/* <div className="modal-groub">
-          <label className="label-modal">תמונת שירות</label>
-
-          <div className="upload-picture-service-box">
-            <div className="upload-picture-service-content">
-              <input
-                type="file"
-                id="fileUpload"
-                className="upload-input"
-                onChange={handleSelectImage}
-              />
-              {!image ? (
-                <div className="upload-picture-service-content">
-                  <label htmlFor="fileUpload" className="upload-icon-box">
-                    <MdOutlineCloudUpload size={22} />
-                  </label>
-
-                  <div className="upload-text-box">
-                    <small className="upload-title">העלה תמונה של השירות</small>
-
-                    <small className="upload-subtitle">
-                      PDF, JPG, PNG up to 10MB
-                    </small>
-                  </div>
-                </div>
-              ) : (
-                <div className="image-preview-box">
-                  <img src={image.preview} className="image-preview" />
-
-                  <div className="image-delete-btn" onClick={handleRemove}>
-                    <MdDelete size={18} />
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div> */}
         <div className="modal-groub">
           <label className="label-modal">תמונת שירות</label>
-
           {/* Tabs */}
           <div className="upload-tabs">
             <button
@@ -237,7 +190,6 @@ const AddServiceModal = () => {
             >
               העלאת תמונה
             </button>
-
             <button
               className={mode === 'link' ? 'active' : ''}
               onClick={() => setMode('link')}
@@ -245,7 +197,6 @@ const AddServiceModal = () => {
               קישור תמונה
             </button>
           </div>
-
           <div className="upload-picture-service-box">
             <div className="upload-picture-service-content">
               {mode === 'upload' && (
@@ -254,15 +205,14 @@ const AddServiceModal = () => {
                     type="file"
                     id="fileUpload"
                     className="upload-input"
+                    accept="image/jpeg,image/png,image/webp"
                     onChange={handleSelectImage}
                   />
-
                   {!image ? (
                     <>
                       <label htmlFor="fileUpload" className="upload-icon-box">
                         <MdOutlineCloudUpload size={22} />
                       </label>
-
                       <div className="upload-text-box">
                         <small className="upload-title">
                           העלה תמונה של השירות
@@ -275,7 +225,6 @@ const AddServiceModal = () => {
                   ) : (
                     <div className="image-preview-box">
                       <img src={image.preview} className="image-preview" />
-
                       <div className="image-delete-btn" onClick={handleRemove}>
                         <MdDelete size={18} />
                       </div>
@@ -283,7 +232,6 @@ const AddServiceModal = () => {
                   )}
                 </>
               )}
-
               {mode === 'link' && (
                 <div className="image-link-box">
                   <input
@@ -294,7 +242,6 @@ const AddServiceModal = () => {
                       setForm({ ...form, imageUrl: e.target.value })
                     }
                   />
-
                   {form.imageUrl && (
                     <div className="image-preview-box">
                       <img src={form.imageUrl} className="image-preview" />
@@ -315,7 +262,6 @@ const AddServiceModal = () => {
             onChange={(e) => setForm({ ...form, description: e.target.value })}
           />
         </div>
-
         <div className="row2 modal-groub ">
           <div>
             <label className="label-modal">משך זמן (דקות)</label>
@@ -358,12 +304,10 @@ const AddServiceModal = () => {
             {selectedGroup ? selectedGroup.title : 'בחר קבוצה להצגת השירותים'}
           </span>
         </div>
-
         <div className="services-list">
           {!selectedGroup?.services?.length && (
             <div className="empty-services">אין שירותים עדיין</div>
           )}
-
           {selectedGroup?.services?.map((service) => (
             <div className="service-list-card" key={service._id}>
               <div className="service-list-info">
@@ -374,7 +318,6 @@ const AddServiceModal = () => {
                     className="service-list-img"
                   />
                 )}
-
                 <div>
                   <div className="service-list-name">{service.name}</div>
                   <div className="service-list-meta">
@@ -382,7 +325,6 @@ const AddServiceModal = () => {
                   </div>
                 </div>
               </div>
-
               <button
                 className="service-list-delete"
                 onClick={() => handleDeleteService(service._id)}
@@ -396,5 +338,4 @@ const AddServiceModal = () => {
     </div>
   );
 };
-
 export default AddServiceModal;

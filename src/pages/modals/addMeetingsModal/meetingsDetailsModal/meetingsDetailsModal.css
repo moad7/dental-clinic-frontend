@@ -13,7 +13,6 @@
   flex-direction: column;
   gap: 20px;
   color: var(--meeting-text);
-  /* تكبير عام بسيط */
   font-size: 15px;
 }
 .meeting-details__summary {

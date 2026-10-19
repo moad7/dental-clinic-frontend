@@ -112,7 +112,6 @@ export const secretaryDoctorsStats = [
     date: 'מאז 9 ביולי 2025',
   },
 ];
-
 export const patientDashboardStats = [
   {
     _id: 'pendingRequests',
@@ -132,11 +131,48 @@ export const patientDashboardStats = [
     backgroundColor: '#EFFCF4',
     date: 'מאז 22 באוקטובר 2025',
   },
-
   {
     _id: 'nextAppointment',
     title: 'הפגישה הבאה',
     value: '15 בדצמבר, 2025',
+    iconKey: 'appointments',
+    color: '#0088FF',
+    backgroundColor: '#EAF4FF',
+    date: 'מאז 9 ביולי 2025',
+  },
+];
+export const doctorDashboardStats = [
+  {
+    _id: 'incomingPatients',
+    title: 'מטופלים נכנסים',
+    value: '3 חולים',
+    iconKey: 'incomingPatients',
+    color: '#6155F5',
+    backgroundColor: '#6155F514',
+    date: 'מאז 9 ביולי 2025',
+  },
+  {
+    _id: 'completedRequests',
+    title: ' בוצע היום ',
+    value: '8 חולים',
+    iconKey: 'completedRequests',
+    color: '#11D057',
+    backgroundColor: '#EFFCF4',
+    date: 'מאז 22 באוקטובר 2025',
+  },
+  {
+    _id: 'requests',
+    title: 'בקשות חדשות',
+    value: '8 בקשות',
+    iconKey: 'requests',
+    color: '#EA580C',
+    backgroundColor: '#FFEDD5',
+    date: 'מאז 15 בדצמבר 2025',
+  },
+  {
+    _id: 'appointments',
+    title: 'הזמנות היום',
+    value: '5 הזמנות',
     iconKey: 'appointments',
     color: '#0088FF',
     backgroundColor: '#EAF4FF',

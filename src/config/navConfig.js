@@ -8,7 +8,6 @@ import {
   BriefcaseMedical,
   Hospital,
 } from 'lucide-react';
-
 export const NAV_BY_ROLE = {
   patient: [
     {
@@ -42,7 +41,6 @@ export const NAV_BY_ROLE = {
       icon: ClipboardList,
     },
   ],
-
   secretary: [
     {
       id: 'secretary-home-icon',
@@ -81,7 +79,6 @@ export const NAV_BY_ROLE = {
       icon: BriefcaseMedical,
     },
   ],
-
   doctor: [
     {
       id: 'doctor-home-icon',
@@ -96,9 +93,9 @@ export const NAV_BY_ROLE = {
       icon: LayoutGrid,
     },
     {
-      id: 'doctor-schedule',
+      id: 'doctor-appointments',
       label: 'לוח זמנים',
-      to: '/doctor/schedule',
+      to: '/doctor/appointments',
       icon: Calendar,
     },
     {
