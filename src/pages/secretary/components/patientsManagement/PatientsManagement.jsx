@@ -2,21 +2,63 @@ import './patientsManagement.css';
 import BoxHeader from '../../../../pages/components/boxHeader/BoxHeader';
 import DashboardStats from '../../../components/dashboardStats/DashboardStats';
 import { secretaryPatientsStats } from '../../../../utils/dashboardDataStats/dataStats';
-import { FiPlus, FiSearch } from 'react-icons/fi';
-import { useContext, useMemo, useState } from 'react';
+import {
+  FiPlus,
+  FiSearch,
+  FiEye,
+  FiChevronDown,
+  FiSettings,
+  FiX,
+  FiCheck,
+} from 'react-icons/fi';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import DataTable from '../../../components/dataTable/DataTable';
 import { AppDataContext } from '../../../../context/AppDataContext';
 import Modal from '../../../../components/modal/Modal';
 import AddPatientModal from '../../../modals/patientModal/AddPatientModal';
 import PatientModalSecretary from '../../../modals/patientModal/patientModalSevretary/PatientModalSecretary';
-
 const PatientsManagement = () => {
-  const { patientsBySecretry } = useContext(AppDataContext);
+  const { patients } = useContext(AppDataContext);
   const [open, setOpen] = useState(false);
   const [openAddPatient, setOpenAddPatient] = useState(false);
   const [patientId, setPatientId] = useState(null);
+  const [query, setQuery] = useState('');
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filters, setFilters] = useState({
+    city: 'all',
+    gender: 'all',
+    status: 'all',
+  });
+  const filterRef = useRef(null);
+  const updateFilter = (key, value) => {
+    setFilters((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+  const resetFilters = () => {
+    setFilters({
+      city: 'all',
+      gender: 'all',
+      status: 'all',
+    });
+  };
+  const activeFiltersCount = Object.values(filters).filter(
+    (value) => value !== 'all',
+  ).length;
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (filterRef.current && !filterRef.current.contains(event.target)) {
+        setFiltersOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, []);
   const normalizedPatients = useMemo(() => {
-    return (Array.isArray(patientsBySecretry) ? patientsBySecretry : [])
+    return (Array.isArray(patients) ? patients : [])
       .filter((patient) => patient?.userId?._id)
       .map((patient) => {
         const sessions =
@@ -26,12 +68,10 @@ const PatientsManagement = () => {
               treatment: t.serviceGroupId?.title || 'טיפול',
             })),
           ) || [];
-
         const nextSession =
           sessions
             .filter((s) => s.status === 'pending' || s.status === 'confirmed')
             .sort((a, b) => new Date(a.date) - new Date(b.date))[0] || null;
-
         return {
           _id: patient.userId._id,
           idNumber: patient.userId?.idNumber || '-',
@@ -45,10 +85,16 @@ const PatientsManagement = () => {
               .join('') || 'AA',
           phone: patient.userId?.phoneNumber || '-',
           email: patient.userId?.email || '-',
-          gender: patient.userId?.gender || '-',
+          city: patient.city || '-',
+          gender: patient.userId?.gender
+            ? patient.userId.gender === 'male'
+              ? 'זכר'
+              : 'נקבה'
+            : '-',
           status: patient.userId?.isActive ? 'active' : 'inactive',
-          lastVisit: patient.lastVisit || '-',
-
+          lastVisit: patient.lastVisit
+            ? new Date(patient.lastVisit).toLocaleDateString('he-IL')
+            : '-',
           nextAppointment: nextSession
             ? {
                 dateTime: `${new Date(nextSession.date).toLocaleDateString(
@@ -57,37 +103,49 @@ const PatientsManagement = () => {
                 treatment: nextSession.treatment,
               }
             : null,
-
           treatments:
             patient.treatments
               ?.map((t) => t.serviceGroupId?.title)
               .filter(Boolean)
               .join(', ') || 'אין טיפולים',
-
           raw: patient,
         };
       });
-  }, [patientsBySecretry]);
-  const [query, setQuery] = useState('');
-
+  }, [patients]);
+  const availableCities = useMemo(() => {
+    return [
+      ...new Set(
+        normalizedPatients
+          .map((patient) => patient.city?.trim())
+          .filter((city) => city && city !== '-'),
+      ),
+    ].sort((a, b) => a.localeCompare(b, 'he'));
+  }, [normalizedPatients]);
   const filteredPatients = useMemo(() => {
     const q = query.trim().toLowerCase();
-
-    if (!q) return normalizedPatients;
-
-    return normalizedPatients.filter((p) => {
-      return (
-        (p.idNumber || '').toLowerCase().includes(q) ||
-        (p.name || '').toLowerCase().includes(q) ||
-        (p.email || '').toLowerCase().includes(q) ||
-        (p.phone || '').toLowerCase().includes(q) ||
-        String(p._id || '')
-          .toLowerCase()
-          .includes(q)
-      );
+    return normalizedPatients.filter((patient) => {
+      const matchesSearch =
+        !q ||
+        [
+          patient.idNumber,
+          patient.name,
+          patient.email,
+          patient.phone,
+          patient._id,
+        ].some((value) =>
+          String(value ?? '')
+            .toLowerCase()
+            .includes(q),
+        );
+      const matchesCity =
+        filters.city === 'all' || patient.city === filters.city;
+      const matchesGender =
+        filters.gender === 'all' || patient.gender === filters.gender;
+      const matchesStatus =
+        filters.status === 'all' || patient.status === filters.status;
+      return matchesSearch && matchesCity && matchesGender && matchesStatus;
     });
-  }, [query, normalizedPatients]);
-
+  }, [query, normalizedPatients, filters]);
   const patientColumns = [
     {
       key: 'patient',
@@ -102,11 +160,10 @@ const PatientsManagement = () => {
           }}
         >
           <div className="appt-patient-avatar">{item.initials || 'AA'}</div>
-
           <div className="appt-patient-info">
             <span className="appt-patient-name">{item.name}</span>
             <span className="appt-patient-id">
-              מזהה: #{item.idNumber ?? '-'}
+              מזהה: {item.idNumber ?? '-'}#
             </span>
           </div>
         </div>
@@ -122,6 +179,18 @@ const PatientsManagement = () => {
           <span className="appt-patient-email">{item.email ?? '-'}</span>
         </div>
       ),
+    },
+    {
+      key: 'city',
+      title: 'עיר',
+      width: '1.2fr',
+      render: (item) => <div className="appt-city">{item.city ?? '-'}</div>,
+    },
+    {
+      key: 'gender',
+      title: 'מין',
+      width: '1.2fr',
+      render: (item) => <div className="appt-gender">{item.gender ?? '-'}</div>,
     },
     {
       key: 'lastVisit',
@@ -177,7 +246,6 @@ const PatientsManagement = () => {
           >
             תזמון
           </button>
-
           <button
             className="appt-patient-procedures-btn"
             type="button"
@@ -185,7 +253,6 @@ const PatientsManagement = () => {
           >
             עריכה
           </button>
-
           <button
             className="appt-patient-procedures-btn"
             type="button"
@@ -201,7 +268,6 @@ const PatientsManagement = () => {
       ),
     },
   ];
-
   return (
     <div className="main-container" dir="rtl">
       <BoxHeader
@@ -222,12 +288,10 @@ const PatientsManagement = () => {
         <AddPatientModal setOpen={setOpenAddPatient} open={openAddPatient} />
       </Modal>
       <DashboardStats items={secretaryPatientsStats} />
-
       <div className="container-box">
         <div className="patients-management-top">
           <span className="patients-management-title">רישומי מטופלים</span>
-
-          <div className="toolbar">
+          <div className="toolbar patients-toolbar">
             <div className="toolbar__left">
               <div className="search-box">
                 <FiSearch className="search-icon" />
@@ -239,10 +303,116 @@ const PatientsManagement = () => {
                   onChange={(e) => setQuery(e.target.value)}
                 />
               </div>
+              <div className="patient-filter" ref={filterRef}>
+                <button
+                  type="button"
+                  className={`patient-filter__trigger ${
+                    filtersOpen || activeFiltersCount > 0
+                      ? 'patient-filter__trigger--active'
+                      : ''
+                  }`}
+                  onClick={() => setFiltersOpen((prev) => !prev)}
+                  aria-expanded={filtersOpen}
+                  aria-haspopup="true"
+                >
+                  <FiSettings size={17} />
+                  <span>
+                    {activeFiltersCount > 0
+                      ? `סינון (${activeFiltersCount})`
+                      : 'הכל'}
+                  </span>
+                  <FiChevronDown
+                    size={16}
+                    className={`patient-filter__chevron ${
+                      filtersOpen ? 'patient-filter__chevron--open' : ''
+                    }`}
+                  />
+                </button>
+                {filtersOpen && (
+                  <div className="patient-filter__dropdown">
+                    <div className="patient-filter__header">
+                      <div>
+                        <strong>סינון מטופלים</strong>
+                        <span>סינון לפי פרטי המטופל</span>
+                      </div>
+                      <button
+                        type="button"
+                        className="patient-filter__close"
+                        onClick={() => setFiltersOpen(false)}
+                        aria-label="סגירה"
+                      >
+                        <FiX size={18} />
+                      </button>
+                    </div>
+                    <div className="patient-filter__body">
+                      <div className="patient-filter__field">
+                        <label htmlFor="patient-city-filter">עיר</label>
+                        <select
+                          id="patient-city-filter"
+                          value={filters.city}
+                          onChange={(e) => updateFilter('city', e.target.value)}
+                        >
+                          <option value="all">כל הערים</option>
+                          {availableCities.map((city) => (
+                            <option key={city} value={city}>
+                              {city}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="patient-filter__field">
+                        <label htmlFor="patient-gender-filter">מין</label>
+                        <select
+                          id="patient-gender-filter"
+                          value={filters.gender}
+                          onChange={(e) =>
+                            updateFilter('gender', e.target.value)
+                          }
+                        >
+                          <option value="all">הכל</option>
+                          <option value="זכר">זכר</option>
+                          <option value="נקבה">נקבה</option>
+                        </select>
+                      </div>
+                      <div className="patient-filter__field">
+                        <label htmlFor="patient-status-filter">סטאטוס</label>
+                        <select
+                          id="patient-status-filter"
+                          value={filters.status}
+                          onChange={(e) =>
+                            updateFilter('status', e.target.value)
+                          }
+                        >
+                          <option value="all">הכל</option>
+                          <option value="active">פעיל</option>
+                          <option value="inactive">לא פעיל</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div className="patient-filter__footer">
+                      <button
+                        type="button"
+                        className="patient-filter__reset"
+                        onClick={resetFilters}
+                        disabled={activeFiltersCount === 0}
+                      >
+                        איפוס סינון
+                      </button>
+                      <button
+                        type="button"
+                        className="patient-filter__apply"
+                        onClick={() => setFiltersOpen(false)}
+                      >
+                        <FiCheck size={16} />
+                        סיום
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
-
         <DataTable
           columns={patientColumns}
           data={filteredPatients}
@@ -265,5 +435,4 @@ const PatientsManagement = () => {
     </div>
   );
 };
-
 export default PatientsManagement;

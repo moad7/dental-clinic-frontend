@@ -29,7 +29,7 @@ const getPatientPhone = (patient) => {
   return patient?.userId?.phoneNumber || patient?.phoneNumber || '';
 };
 const AddMeetingsModal = ({ setOpen }) => {
-  const { patientsBySecretry, serviceGroups, loadAllAppointments } =
+  const { patients, serviceGroups, loadAllAppointments } =
     useContext(AppDataContext);
   const { token, user } = useContext(AuthContext);
   const [formData, setFormData] = useState(initialFormData);
@@ -38,9 +38,6 @@ const AddMeetingsModal = ({ setOpen }) => {
   const [availableSlots, setAvailableSlots] = useState([]);
   const [slotsLoading, setSlotsLoading] = useState(false);
   const [loading, setLoading] = useState(false);
-  const patients = useMemo(() => {
-    return Array.isArray(patientsBySecretry) ? patientsBySecretry : [];
-  }, [patientsBySecretry]);
   const filteredPatients = useMemo(() => {
     const q = patientSearch.trim().toLowerCase();
     if (!q) return patients;

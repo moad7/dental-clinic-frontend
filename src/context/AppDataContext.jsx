@@ -7,7 +7,7 @@ import {
   fetchDoctorAppointments,
   fetchDoctorDashboard,
 } from '../api/doctorApi';
-import { fetchAllPatientBySecretary } from '../api/secretaryApi';
+import { fetchAllPatients } from '../api/patients';
 import {
   fetchAllAppointments,
   fetchAppointmentDay,
@@ -22,7 +22,7 @@ export const AppDataProvider = ({ children }) => {
   const [clinics, setClinics] = useState([]);
   const [doctors, setDoctors] = useState([]);
   const [doctorDashboard, setDoctorDashboard] = useState(null);
-  const [patientsBySecretry, setPatientsBySecretry] = useState([]);
+  const [patients, setPatients] = useState([]);
   const [appointments, setAppointments] = useState([]);
   const [doctorAppointments, setDoctorAppointments] = useState([]);
   const [appointmentDay, setAppointmentDay] = useState([]);
@@ -53,11 +53,10 @@ export const AppDataProvider = ({ children }) => {
   const loadDoctorAppointments = async () => {
     const res = await fetchDoctorAppointments(token);
     setDoctorAppointments(res || []);
-    console.log('Doctor Appointments:', res);
   };
-  const loadAllPatientBySecretary = async () => {
-    const res = await fetchAllPatientBySecretary(token);
-    setPatientsBySecretry(res.patients || []);
+  const loadAllPatients = async () => {
+    const res = await fetchAllPatients(token);
+    setPatients(res.patients || []);
   };
   const loadAllAppointments = async () => {
     const res = await fetchAllAppointments(token);
@@ -80,13 +79,17 @@ export const AppDataProvider = ({ children }) => {
       if (user && user.role === 'secretary') {
         await Promise.all([
           loadClinics(),
-          loadAllPatientBySecretary(),
+          loadAllPatients(),
           loadAllAppointments(),
           loadAppointmentsDay(),
         ]);
       }
       if (user && user.role === 'doctor') {
-        await Promise.all([loadDoctorDashboard(), loadDoctorAppointments()]);
+        await Promise.all([
+          loadDoctorDashboard(),
+          loadDoctorAppointments(),
+          loadAllPatients(),
+        ]);
       }
       if (user.role === 'patient') {
         loadPatientTreatmentPlans();
@@ -120,7 +123,7 @@ export const AppDataProvider = ({ children }) => {
         doctorDashboard,
         doctorAppointments,
         addDoctorToState,
-        patientsBySecretry,
+        patients,
         appointments,
         patientTreatments,
         loadAllAppointments,

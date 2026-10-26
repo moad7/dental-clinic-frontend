@@ -234,15 +234,6 @@ const MeetingsManagement = () => {
                   onChange={(e) => setQuery(e.target.value)}
                 />
               </div>
-              <div className="filter-btn">
-                <LuSettings />
-                <span>הכל</span>
-                <IoIosArrowDown />
-              </div>
-            </div>
-            <div className="print-btn">
-              <RiDownloadCloud2Line />
-              <span>הדפסה</span>
             </div>
           </div>
         </div>

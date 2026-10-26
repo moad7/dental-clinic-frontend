@@ -126,7 +126,7 @@ export default function AppHeader({ user, onLogout }) {
                 <div className="dropdown-divider" />
                 <button
                   type="button"
-                  className="dropdown-item logout-item"
+                  className="dropdown-item"
                   role="menuitem"
                   onClick={handleLogout}
                 >

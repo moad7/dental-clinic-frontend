@@ -6,6 +6,7 @@ import {
   FiLink,
   FiUpload,
 } from 'react-icons/fi';
+import { Trash2, AlertTriangle } from 'lucide-react';
 import { toast } from 'react-toastify';
 import './editServiceModal.css';
 import { updateServiceItem } from '../../../../api/serviceApi';
@@ -21,6 +22,7 @@ const EditServiceModal = ({ service, onClose }) => {
     active: true,
     photo: '',
   });
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [imageType, setImageType] = useState('url');
   const [photoFile, setPhotoFile] = useState(null);
   const [preview, setPreview] = useState('');
@@ -169,6 +171,7 @@ const EditServiceModal = ({ service, onClose }) => {
       setLoading(false);
     }
   };
+  const handleDelete = () => {};
   return (
     <form className="edit-service-modal" dir="rtl" onSubmit={handleSubmit}>
       <div className="edit-service-section">
@@ -359,7 +362,7 @@ const EditServiceModal = ({ service, onClose }) => {
           <strong>{formData.active ? 'פעיל' : 'לא פעיל'}</strong>
         </label>
       </div>
-      <div className="edit-service-actions">
+      {/* <div className="edit-service-actions">
         <button
           type="button"
           className="edit-service-cancel-btn"
@@ -375,6 +378,71 @@ const EditServiceModal = ({ service, onClose }) => {
         >
           {loading ? 'שומר...' : 'שמירת שינויים'}
         </button>
+      </div> */}
+      <div className="edit-service-actions" dir="rtl">
+        {showDeleteConfirm ? (
+          <div className="edit-service-delete-confirm">
+            <div className="delete-confirm-info">
+              <AlertTriangle size={20} />
+              <div>
+                <p className="delete-confirm-title">
+                  האם אתה בטוח שברצונך למחוק את השירות?
+                </p>
+                <span className="delete-confirm-description">
+                  פעולה זו אינה ניתנת לביטול.
+                </span>
+              </div>
+            </div>
+            <div className="delete-confirm-buttons">
+              <button
+                type="button"
+                className="edit-service-cancel-btn"
+                onClick={() => setShowDeleteConfirm(false)}
+                disabled={loading}
+              >
+                ביטול
+              </button>
+              <button
+                type="button"
+                className="edit-service-confirm-delete-btn"
+                onClick={handleDelete}
+                disabled={loading}
+              >
+                <Trash2 size={16} />
+                {loading ? 'מוחק...' : 'כן, מחק שירות'}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
+            <button
+              type="button"
+              className="edit-service-delete-btn"
+              onClick={() => setShowDeleteConfirm(true)}
+              disabled={loading}
+            >
+              <Trash2 size={16} />
+              מחיקת שירות
+            </button>
+            <div className="edit-service-actions-group">
+              <button
+                type="button"
+                className="edit-service-cancel-btn"
+                onClick={onClose}
+                disabled={loading}
+              >
+                ביטול
+              </button>
+              <button
+                type="submit"
+                className="edit-service-save-btn"
+                disabled={loading}
+              >
+                {loading ? 'שומר...' : 'שמירת שינויים'}
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </form>
   );

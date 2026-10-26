@@ -462,9 +462,27 @@
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 10px;
+  justify-content: space-between;
+  gap: 12px;
   padding-top: 4px;
+}
+.edit-service-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+/* DELETE BUTTON */
+.edit-service-delete-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #fecaca;
+  background: #fff5f5;
+  color: #dc2626;
+}
+.edit-service-delete-btn:hover:not(:disabled) {
+  background: #fee2e2;
+  border-color: #fca5a5;
 }
 .edit-service-actions button {
   min-width: 125px;
@@ -484,6 +502,55 @@
     color 0.2s ease,
     transform 0.15s ease,
     box-shadow 0.2s ease;
+}
+/* INLINE DELETE CONFIRM */
+.edit-service-delete-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  padding: 18px;
+  background: #fff7f7;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  animation: deleteConfirmAppear 0.2s ease;
+}
+.delete-confirm-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  color: #dc2626;
+}
+.delete-confirm-info svg {
+  flex-shrink: 0;
+}
+.delete-confirm-title {
+  margin: 0 0 5px;
+  color: #991b1b;
+  font-size: 14px;
+  font-weight: 700;
+}
+.delete-confirm-description {
+  color: #b45353;
+  font-size: 12px;
+}
+.delete-confirm-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.edit-service-confirm-delete-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #dc2626;
+  border: 1px solid #dc2626;
+  color: #fff;
+}
+.edit-service-confirm-delete-btn:hover:not(:disabled) {
+  background: #b91c1c;
+  border-color: #b91c1c;
 }
 /* CANCEL */
 .edit-service-cancel-btn {
