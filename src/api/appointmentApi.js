@@ -25,10 +25,10 @@ export const updateAppointmentById = async (
   );
   return res.data;
 };
-export const confirmDateById = async (appointmentId, decision, token) => {
+export const confirmDateById = async (appointmentId, decision, note, token) => {
   const res = await axios.patch(
     `${API_URL}/decision/${appointmentId}`,
-    { decision },
+    { decision, note },
     auth(token),
   );
   return res.data;

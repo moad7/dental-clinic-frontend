@@ -295,6 +295,41 @@
   color: #94a3b8;
   text-align: left;
 }
+/* Completed / Rejected Status */
+.doctor-appointment-status-text {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 12px 14px;
+  border-radius: 9px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.doctor-appointment-status-text--completed {
+  background: #f0fff5;
+  border: 1px solid #b8efc9;
+  color: #0eaa48;
+}
+.doctor-appointment-status-text--rejected {
+  background: #fff1f1;
+  border: 1px solid #ffcaca;
+  color: #dc2626;
+}
+/* Read-only Note */
+.doctor-appointment-note-text {
+  width: 100%;
+  min-height: 85px;
+  padding: 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 9px;
+  background: #f9fafb;
+  color: #374151;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
 .doctor-appointment-modal-actions {
   display: flex;
   justify-content: flex-end;

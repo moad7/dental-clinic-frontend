@@ -7,8 +7,12 @@ import DataTable from '../../../components/dataTable/DataTable';
 import Modal from '../../../../components/modal/Modal';
 import { doctorDashboardStats } from '../../../../utils/dashboardDataStats/dataStats';
 import { AuthContext } from '../../../../context/AuthContext';
-import './doctorAppointment.css';
 import { AppDataContext } from '../../../../context/AppDataContext';
+import { confirmDateById } from '../../../../api/appointmentApi';
+import './doctorAppointment.css';
+// =========================================================
+// STATUS OPTIONS
+// =========================================================
 const STATUS_OPTIONS = [
   { value: 'all', label: 'כל הסטטוסים' },
   { value: 'pending', label: 'ממתין' },
@@ -24,48 +28,65 @@ const STATUS_LABELS = {
   cancelled: 'בוטל',
   rejected: 'נדחה',
 };
+const DOCTOR_STATUS_OPTIONS = [
+  { value: 'completed', label: 'הושלם' },
+  { value: 'rejected', label: 'נדחה' },
+];
+// =========================================================
+// HELPERS
+// =========================================================
 const formatDate = (value) => {
   if (!value) return '-';
   const [year, month, day] = String(value).slice(0, 10).split('-');
   return `${day}/${month}/${year}`;
 };
+const normalizeAppointments = (data) => {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.appointments)) {
+    return data.appointments;
+  }
+  return [];
+};
+// =========================================================
+// COMPONENT
+// =========================================================
 const DoctorAppointment = () => {
+  // -------------------------------------------------------
+  // CONTEXT
+  // -------------------------------------------------------
   const { token } = useContext(AuthContext);
   const { doctorAppointments } = useContext(AppDataContext);
-  const [appointments, setAppointments] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // -------------------------------------------------------
+  // STATE
+  // -------------------------------------------------------
+  const [appointments, setAppointments] = useState(() =>
+    normalizeAppointments(doctorAppointments),
+  );
+  const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('');
   const [selectedSession, setSelectedSession] = useState(null);
-  const [editStatus, setEditStatus] = useState('pending');
+  const [editStatus, setEditStatus] = useState('');
   const [editNote, setEditNote] = useState('');
+  // -------------------------------------------------------
+  // SYNC APPOINTMENTS FROM CONTEXT
+  // -------------------------------------------------------
   useEffect(() => {
-    if (!token) {
-      setLoading(false);
-      return;
-    }
-    let cancelled = false;
-    const loadAppointments = async () => {
-      try {
-        const response = await doctorAppointments;
-        if (!cancelled) {
-          setAppointments(response.appointments ?? []);
-        }
-      } catch (error) {
-        if (!cancelled) {
-          console.error(error);
-          toast.error('שגיאה בטעינת הפגישות');
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    };
-    loadAppointments();
-    return () => {
-      cancelled = true;
-    };
-  }, [token]);
+    setAppointments(normalizeAppointments(doctorAppointments));
+  }, [doctorAppointments]);
+  // -------------------------------------------------------
+  // SESSION STATUS
+  // -------------------------------------------------------
+  const isCompleted = selectedSession?.status === 'completed';
+  const isRejected = selectedSession?.status === 'rejected';
+  const isCancelled = selectedSession?.status === 'cancelled';
+  const isReadOnlyStatus = isCompleted || isRejected || isCancelled;
+  const canEditNote = !isRejected && !isCancelled;
+  const canSave = Boolean(selectedSession) && canEditNote;
+  // -------------------------------------------------------
+  // FILTER APPOINTMENTS
+  // -------------------------------------------------------
   const filteredAppointments = useMemo(() => {
     const query = search.trim().toLowerCase();
     return appointments.filter((appointment) => {
@@ -81,14 +102,83 @@ const DoctorAppointment = () => {
       return matchesSearch && matchesStatus && matchesDate;
     });
   }, [appointments, search, statusFilter, dateFilter]);
+  // -------------------------------------------------------
+  // OPEN SESSION MODAL
+  // -------------------------------------------------------
   const openSessionModal = (session) => {
     setSelectedSession(session);
-    setEditStatus(session.status);
-    setEditNote(session.note ?? '');
+    setEditStatus(session.status || '');
+    setEditNote(session.note || '');
   };
+  // -------------------------------------------------------
+  // CLOSE SESSION MODAL
+  // -------------------------------------------------------
   const closeSessionModal = () => {
+    if (saving) return;
     setSelectedSession(null);
+    setEditStatus('');
+    setEditNote('');
   };
+  // -------------------------------------------------------
+  // SAVE SESSION
+  // -------------------------------------------------------
+  const handleSave = async (selectedSessionId) => {
+    if (!selectedSession || saving) return;
+    const currentStatus = selectedSession.status;
+    const completedSession = currentStatus === 'completed';
+    if (currentStatus === 'rejected' || currentStatus === 'cancelled') {
+      toast.error('לא ניתן לערוך פגישה זו');
+      return;
+    }
+    const decision = completedSession ? 'update_note' : editStatus;
+    if (!completedSession && !editStatus) {
+      toast.error('יש לבחור סטטוס');
+      return;
+    }
+    if (!editNote.trim()) {
+      toast.error('יש להזין הערה');
+      return;
+    }
+    try {
+      setSaving(true);
+      const response = await confirmDateById(
+        selectedSessionId,
+        decision,
+        editNote.trim(),
+        token,
+      );
+      // Update the appointment locally after successful save
+      const updatedSession = response?.appointment;
+      setAppointments((previous) =>
+        previous.map((appointment) => {
+          if (String(appointment._id) !== String(selectedSessionId)) {
+            return appointment;
+          }
+          return {
+            ...appointment,
+            status:
+              updatedSession?.status ||
+              (decision === 'update_note' ? appointment.status : decision),
+            note: updatedSession?.note ?? editNote.trim(),
+          };
+        }),
+      );
+      toast.success(
+        completedSession ? 'ההערה עודכנה בהצלחה' : 'סטטוס הפגישה עודכן בהצלחה',
+      );
+      setSelectedSession(null);
+      setEditStatus('');
+      setEditNote('');
+    } catch (error) {
+      console.error('Update appointment error:', error);
+      toast.error(error.response?.data?.message || 'אירעה שגיאה בעדכון הפגישה');
+    } finally {
+      setSaving(false);
+    }
+  };
+  // -------------------------------------------------------
+  // TABLE COLUMNS
+  // -------------------------------------------------------
   const columns = [
     {
       key: 'patient',
@@ -112,7 +202,7 @@ const DoctorAppointment = () => {
       width: '1.3fr',
       render: (item) => (
         <div className="doctor-appointment-service">
-          <strong>{item.serviceName}</strong>
+          <strong>{item.serviceName || '-'}</strong>
           <small>
             מפגש {item.sessionNumber ?? '-'}
             {item.totalSessions ? ` מתוך ${item.totalSessions}` : ''}
@@ -167,6 +257,9 @@ const DoctorAppointment = () => {
       ),
     },
   ];
+  // =======================================================
+  // RENDER
+  // =======================================================
   return (
     <div className="main-container doctor-appointment-page" dir="rtl">
       <BoxHeader
@@ -174,6 +267,9 @@ const DoctorAppointment = () => {
         subtitle="סקירה כללית של הפגישות והטיפולים של הרופא"
       />
       <DashboardStats items={doctorDashboardStats} />
+      {/* ===================================================
+          APPOINTMENTS PANEL
+      =================================================== */}
       <section className="doctor-appointment-panel">
         <div className="doctor-appointment-heading">
           <div>
@@ -184,6 +280,9 @@ const DoctorAppointment = () => {
             {filteredAppointments.length} פגישות
           </span>
         </div>
+        {/* =================================================
+            FILTERS
+        ================================================= */}
         <div className="doctor-appointment-filters">
           <div className="doctor-appointment-search">
             <FiSearch />
@@ -227,21 +326,23 @@ const DoctorAppointment = () => {
             </button>
           )}
         </div>
-        {loading ? (
-          <div className="doctor-appointment-loading">טוען פגישות...</div>
-        ) : (
-          <div className="doctor-appointment-table-wrap">
-            <DataTable
-              columns={columns}
-              data={filteredAppointments}
-              rowKey="_id"
-              classPrefix="doctor-appointments-table"
-              emptyText="לא נמצאו פגישות"
-              defaultPageSize={15}
-            />
-          </div>
-        )}
+        {/* =================================================
+            TABLE
+        ================================================= */}
+        <div className="doctor-appointment-table-wrap">
+          <DataTable
+            columns={columns}
+            data={filteredAppointments}
+            rowKey="_id"
+            classPrefix="doctor-appointments-table"
+            emptyText="לא נמצאו פגישות"
+            defaultPageSize={15}
+          />
+        </div>
       </section>
+      {/* ===================================================
+          SESSION MODAL
+      =================================================== */}
       <Modal
         isOpen={Boolean(selectedSession)}
         onClose={closeSessionModal}
@@ -250,6 +351,9 @@ const DoctorAppointment = () => {
       >
         {selectedSession && (
           <div className="doctor-appointment-modal" dir="rtl">
+            {/* =============================================
+                SESSION INFORMATION
+            ============================================= */}
             <div className="doctor-appointment-modal-info">
               <div>
                 <span>מטופל</span>
@@ -257,7 +361,7 @@ const DoctorAppointment = () => {
               </div>
               <div>
                 <span>טיפול</span>
-                <strong>{selectedSession.serviceName}</strong>
+                <strong>{selectedSession.serviceName || '-'}</strong>
               </div>
               <div>
                 <span>תאריך</span>
@@ -265,48 +369,89 @@ const DoctorAppointment = () => {
               </div>
               <div>
                 <span>שעה</span>
-                <strong>{selectedSession.time}</strong>
+                <strong>{selectedSession.time || '-'}</strong>
               </div>
             </div>
+            {/* =============================================
+                SESSION STATUS
+            ============================================= */}
             <div className="doctor-appointment-modal-field">
               <label htmlFor="doctor-session-status">סטטוס הפגישה</label>
-              <select
-                id="doctor-session-status"
-                value={editStatus}
-                onChange={(event) => setEditStatus(event.target.value)}
-              >
-                {STATUS_OPTIONS.filter((option) => option.value !== 'all').map(
-                  (option) => (
+              {isReadOnlyStatus ? (
+                <div
+                  className={`doctor-appointment-status-text ${
+                    isCompleted
+                      ? 'doctor-appointment-status-text--completed'
+                      : 'doctor-appointment-status-text--rejected'
+                  }`}
+                >
+                  {isCompleted
+                    ? 'הפגישה הושלמה'
+                    : isRejected
+                      ? 'הפגישה נדחתה'
+                      : 'הפגישה בוטלה'}
+                </div>
+              ) : (
+                <select
+                  id="doctor-session-status"
+                  value={editStatus}
+                  onChange={(event) => setEditStatus(event.target.value)}
+                  disabled={saving}
+                >
+                  <option value="">בחר סטטוס</option>
+                  {DOCTOR_STATUS_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
                     </option>
-                  ),
-                )}
-              </select>
+                  ))}
+                </select>
+              )}
             </div>
+            {/* =============================================
+                DOCTOR NOTE
+            ============================================= */}
             <div className="doctor-appointment-modal-field">
-              <label htmlFor="doctor-session-note">הערות למפגש</label>
-              <textarea
-                id="doctor-session-note"
-                rows={5}
-                maxLength={1000}
-                placeholder="הוסף הערות על הטיפול או סיבת הדחייה..."
-                value={editNote}
-                onChange={(event) => setEditNote(event.target.value)}
-              />
-              <small>{editNote.length}/1000</small>
+              <label htmlFor="doctor-session-note">הערת הרופא</label>
+              {canEditNote ? (
+                <textarea
+                  id="doctor-session-note"
+                  value={editNote}
+                  onChange={(event) => setEditNote(event.target.value)}
+                  placeholder="הוסף הערה על המפגש..."
+                  disabled={saving}
+                  rows={4}
+                />
+              ) : (
+                <div className="doctor-appointment-note-text">
+                  {selectedSession.note?.trim() || 'לא נוספה הערה למפגש זה'}
+                </div>
+              )}
             </div>
+            {/* =============================================
+                ACTION BUTTONS
+            ============================================= */}
             <div className="doctor-appointment-modal-actions">
-              <button type="button" onClick={closeSessionModal}>
-                ביטול
-              </button>
               <button
                 type="button"
-                disabled
-                title="שמירה תהיה זמינה לאחר חיבור API לעדכון מפגש"
+                onClick={closeSessionModal}
+                disabled={saving}
               >
-                שמירת שינויים
+                סגירה
               </button>
+              {canSave && (
+                <button
+                  type="button"
+                  className="doctor-appointment-save-btn"
+                  onClick={() => handleSave(selectedSession._id)}
+                  disabled={saving}
+                >
+                  {saving
+                    ? 'שומר...'
+                    : isCompleted
+                      ? 'שמירת הערה'
+                      : 'שמירת שינויים'}
+                </button>
+              )}
             </div>
           </div>
         )}
