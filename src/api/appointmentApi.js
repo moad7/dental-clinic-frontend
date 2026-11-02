@@ -25,6 +25,10 @@ export const updateAppointmentById = async (
   );
   return res.data;
 };
+export const deleteAppointmentById = async (appointmentId, token) => {
+  const res = await axios.delete(`${API_URL}/${appointmentId}`, auth(token));
+  return res.data;
+};
 export const confirmDateById = async (appointmentId, decision, note, token) => {
   const res = await axios.patch(
     `${API_URL}/decision/${appointmentId}`,

@@ -6,10 +6,15 @@ import {
   FiLink,
   FiUpload,
 } from 'react-icons/fi';
-import { Trash2, AlertTriangle } from 'lucide-react';
+import { Trash2, Archive, AlertTriangle } from 'lucide-react';
 import { toast } from 'react-toastify';
 import './editServiceModal.css';
-import { updateServiceItem } from '../../../../api/serviceApi';
+import {
+  updateServiceItem,
+  fetchServiceArchivePreview,
+  archiveServiceItem,
+  deleteServiceItem,
+} from '../../../../api/serviceApi';
 import { AuthContext } from '../../../../context/AuthContext';
 const EditServiceModal = ({ service, onClose }) => {
   const { token } = useContext(AuthContext);
@@ -23,13 +28,15 @@ const EditServiceModal = ({ service, onClose }) => {
     photo: '',
   });
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [archivePreview, setArchivePreview] = useState(null);
+  const [archivePreviewLoading, setArchivePreviewLoading] = useState(false);
+  const [archiveLoading, setArchiveLoading] = useState(false);
   const [imageType, setImageType] = useState('url');
   const [photoFile, setPhotoFile] = useState(null);
   const [preview, setPreview] = useState('');
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     if (!service) return;
-    console.log(service);
     setFormData({
       name: service.name || '',
       description: service.description || '',
@@ -171,7 +178,59 @@ const EditServiceModal = ({ service, onClose }) => {
       setLoading(false);
     }
   };
-  const handleDelete = () => {};
+  const handleOpenArchive = async () => {
+    if (!service?.serviceGroupId || !service?._id) return;
+    try {
+      setShowDeleteConfirm(true);
+      setArchivePreview(null);
+      setArchivePreviewLoading(true);
+      const data = await fetchServiceArchivePreview(
+        service.serviceGroupId,
+        service._id,
+        token,
+      );
+      console.log('Archive preview data:', data);
+      setArchivePreview(data);
+    } catch (error) {
+      console.error('Archive preview error:', error);
+      toast.error(
+        error?.response?.data?.message || 'אירעה שגיאה בטעינת נתוני השירות',
+      );
+      setShowDeleteConfirm(false);
+    } finally {
+      setArchivePreviewLoading(false);
+    }
+  };
+  const handleDelete = async () => {
+    if (!archivePreview || archiveLoading) return;
+    const { serviceGroupId, _id: itemId } = service;
+    const hasTreatments = archivePreview.stats.totalTreatments > 0;
+    try {
+      setArchiveLoading(true);
+      if (hasTreatments) {
+        await archiveServiceItem(serviceGroupId, itemId, token);
+        toast.success('השירות הועבר לארכיון בהצלחה');
+      } else {
+        await deleteServiceItem(serviceGroupId, itemId, token);
+        toast.success('השירות נמחק בהצלחה');
+      }
+      setShowDeleteConfirm(false);
+      setArchivePreview(null);
+      onClose?.();
+    } catch (error) {
+      console.error('Delete/archive service error:', error);
+      toast.error(
+        error?.response?.data?.message || 'אירעה שגיאה בביצוע הפעולה',
+      );
+    } finally {
+      setArchiveLoading(false);
+    }
+  };
+  const handleCancelArchive = () => {
+    if (archiveLoading || archivePreviewLoading) return;
+    setShowDeleteConfirm(false);
+    setArchivePreview(null);
+  };
   return (
     <form className="edit-service-modal" dir="rtl" onSubmit={handleSubmit}>
       <div className="edit-service-section">
@@ -362,67 +421,116 @@ const EditServiceModal = ({ service, onClose }) => {
           <strong>{formData.active ? 'פעיל' : 'לא פעיל'}</strong>
         </label>
       </div>
-      {/* <div className="edit-service-actions">
-        <button
-          type="button"
-          className="edit-service-cancel-btn"
-          onClick={onClose}
-          disabled={loading}
-        >
-          ביטול
-        </button>
-        <button
-          type="submit"
-          className="edit-service-save-btn"
-          disabled={loading}
-        >
-          {loading ? 'שומר...' : 'שמירת שינויים'}
-        </button>
-      </div> */}
       <div className="edit-service-actions" dir="rtl">
         {showDeleteConfirm ? (
           <div className="edit-service-delete-confirm">
             <div className="delete-confirm-info">
-              <AlertTriangle size={20} />
+              <AlertTriangle size={22} />
               <div>
                 <p className="delete-confirm-title">
-                  האם אתה בטוח שברצונך למחוק את השירות?
-                </p>
+                  {archivePreview?.stats?.totalTreatments > 0
+                    ? 'העברת השירות לארכיון'
+                    : 'מחיקת השירות לצמיתות'}
+                </p>{' '}
                 <span className="delete-confirm-description">
-                  פעולה זו אינה ניתנת לביטול.
+                  {archivePreview?.stats?.totalTreatments > 0
+                    ? 'קיימים טיפולים המשויכים לשירות. השירות יועבר לארכיון, וכל הטיפולים והתורים יישמרו.'
+                    : 'לא נמצאו טיפולים המשויכים לשירות. השירות יימחק לצמיתות ולא ניתן יהיה לשחזר אותו.'}
                 </span>
               </div>
             </div>
-            <div className="delete-confirm-buttons">
-              <button
-                type="button"
-                className="edit-service-cancel-btn"
-                onClick={() => setShowDeleteConfirm(false)}
-                disabled={loading}
-              >
-                ביטול
-              </button>
-              <button
-                type="button"
-                className="edit-service-confirm-delete-btn"
-                onClick={handleDelete}
-                disabled={loading}
-              >
-                <Trash2 size={16} />
-                {loading ? 'מוחק...' : 'כן, מחק שירות'}
-              </button>
-            </div>
+            {archivePreviewLoading ? (
+              <p className="archive-preview-loading">
+                טוען נתוני שירות וטיפולים...
+              </p>
+            ) : archivePreview ? (
+              <>
+                <div className="archive-service-details">
+                  <strong>{archivePreview.service?.name}</strong>
+                  <span>
+                    סטטוס נוכחי:{' '}
+                    {archivePreview.service?.active ? 'פעיל' : 'לא פעיל'}
+                  </span>
+                </div>
+                <div className="archive-stats-grid">
+                  <div className="archive-stat-card">
+                    <strong>
+                      {archivePreview.stats?.totalTreatments ?? 0}
+                    </strong>
+                    <span>סה״כ טיפולים</span>
+                  </div>
+                  <div className="archive-stat-card">
+                    <strong>{archivePreview.stats?.inProgress ?? 0}</strong>
+                    <span>בטיפול</span>
+                  </div>
+                  <div className="archive-stat-card">
+                    <strong>{archivePreview.stats?.completed ?? 0}</strong>
+                    <span>הושלמו</span>
+                  </div>
+                  <div className="archive-stat-card">
+                    <strong>{archivePreview.stats?.cancelled ?? 0}</strong>
+                    <span>בוטלו</span>
+                  </div>
+                  <div className="archive-stat-card">
+                    <strong>{archivePreview.stats?.rejected ?? 0}</strong>
+                    <span>נדחו</span>
+                  </div>
+                  <div className="archive-stat-card">
+                    <strong>
+                      {archivePreview.stats?.futureAppointments ?? 0}
+                    </strong>
+                    <span>תורים עתידיים</span>
+                  </div>
+                </div>
+                {archivePreview.stats?.futureAppointments > 0 && (
+                  <div className="archive-future-warning">
+                    <AlertTriangle size={18} />
+                    <span>
+                      קיימים תורים עתידיים לשירות זה. העברה לארכיון לא תבטל
+                      אותם.
+                    </span>
+                  </div>
+                )}
+                <div className="delete-confirm-buttons">
+                  <button
+                    type="button"
+                    className="edit-service-cancel-btn"
+                    onClick={handleCancelArchive}
+                    disabled={archiveLoading}
+                  >
+                    ביטול
+                  </button>
+                  <button
+                    type="button"
+                    className="edit-service-confirm-delete-btn"
+                    onClick={handleDelete}
+                    disabled={archiveLoading || !archivePreview}
+                  >
+                    {archivePreview?.stats?.totalTreatments > 0 ? (
+                      <Archive size={16} />
+                    ) : (
+                      <Trash2 size={16} />
+                    )}
+                    {archiveLoading
+                      ? 'מבצע פעולה...'
+                      : archivePreview?.stats?.totalTreatments > 0
+                        ? 'אישור העברה לארכיון'
+                        : 'אישור מחיקה לצמיתות'}
+                  </button>
+                </div>
+              </>
+            ) : null}
           </div>
         ) : (
           <>
             <button
               type="button"
               className="edit-service-delete-btn"
-              onClick={() => setShowDeleteConfirm(true)}
-              disabled={loading}
+              onClick={handleOpenArchive}
+              disabled={loading || archiveLoading}
             >
-              <Trash2 size={16} />
-              מחיקת שירות
+              <Archive size={16} />
+              העברה לארכיון
             </button>
             <div className="edit-service-actions-group">
               <button

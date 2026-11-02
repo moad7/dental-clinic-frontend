@@ -157,6 +157,11 @@ export const getStatusStyle = (type, status) => {
       color: '#9A3412',
       bg: '#FFEDD5',
     },
+    expired: {
+      text: 'הפגישה פגה',
+      color: '#51565f',
+      bg: '#dbdfe6',
+    },
   };
   const statuses = type === 'treatment' ? treatmentStatuses : sessionStatuses;
   return (

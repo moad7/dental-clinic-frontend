@@ -13,6 +13,7 @@ const ServicesManagement = () => {
   const [openEditModal, setOpenEditModal] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const { serviceGroups } = useContext(AppDataContext);
+  console.log('Service Groups:', serviceGroups);
   return (
     <>
       <div className="main-container" dir="rtl">

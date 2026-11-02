@@ -11,7 +11,6 @@ import { AuthContext } from '../../../context/AuthContext';
 const AddServiceModal = () => {
   const { token } = useContext(AuthContext);
   const [image, setImage] = useState(null);
-  // const [activeDoctor, setActiveDoctor] = useState(null);
   const [groups, setGroups] = useState([]);
   const [selectedGroupId, setSelectedGroupId] = useState('');
   const [newGroupTitle, setNewGroupTitle] = useState('');
@@ -39,7 +38,7 @@ const AddServiceModal = () => {
   };
   useEffect(() => {
     const loadServices = async () => {
-      const services = await fetchServices(token);
+      const services = await fetchServices(token, 'all');
       setGroups(services);
     };
     loadServices();
@@ -102,17 +101,6 @@ const AddServiceModal = () => {
       console.error('Create service error:', error);
     }
   };
-  const handleDeleteService = async (serviceId) => {
-    if (!selectedGroupId) return;
-    const confirmDelete = window.confirm('Delete this service?');
-    if (!confirmDelete) return;
-    const res = await axios.delete(
-      `/api/services/groups/${selectedGroupId}/services/${serviceId}`,
-    );
-    setGroups((prev) =>
-      prev.map((g) => (g._id === selectedGroupId ? res.data : g)),
-    );
-  };
   // const selectedGroup = groups.find((g) => g._id === selectedGroupId);
   const selectedGroup = groups?.find((g) => g?._id === selectedGroupId);
   return (
@@ -124,7 +112,10 @@ const AddServiceModal = () => {
             <select
               className="input-modal"
               value={selectedGroupId}
-              onChange={(e) => setSelectedGroupId(e.target.value)}
+              onChange={(e) => {
+                setSelectedGroupId(e.target.value);
+                setShowNewGroup(false);
+              }}
             >
               <option value="">בחר קבוצה</option>
               {groups.map((group) => (
@@ -136,9 +127,12 @@ const AddServiceModal = () => {
             <button
               type="button"
               className="btn-small-service"
-              onClick={() => setShowNewGroup(!showNewGroup)}
+              onClick={() => {
+                setShowNewGroup(!showNewGroup);
+                setSelectedGroupId('');
+              }}
             >
-              +
+              {showNewGroup ? '-' : '+'}
             </button>
             {selectedGroupId && (
               <button
@@ -325,12 +319,6 @@ const AddServiceModal = () => {
                   </div>
                 </div>
               </div>
-              <button
-                className="service-list-delete"
-                onClick={() => handleDeleteService(service._id)}
-              >
-                <MdDelete size={18} />
-              </button>
             </div>
           ))}
         </div>

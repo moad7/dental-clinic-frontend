@@ -1,8 +1,6 @@
 import { createContext, useEffect, useState } from 'react';
 import { BsNutFill } from 'react-icons/bs';
-
 export const AuthContext = createContext();
-
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
@@ -13,7 +11,6 @@ export const AuthProvider = ({ children }) => {
       try {
         const parsedUser = JSON.parse(storedUser);
         const parsedToken = JSON.parse(storedToken);
-
         setUser(parsedUser);
         setToken(parsedToken);
       } catch (err) {
@@ -23,20 +20,17 @@ export const AuthProvider = ({ children }) => {
       }
     }
   }, []);
-
   const login = (userData) => {
     localStorage.setItem('user', JSON.stringify(userData.user));
     localStorage.setItem('token', JSON.stringify(userData.token));
     setToken(userData.token);
     setUser(userData.user);
   };
-
   const logout = () => {
     localStorage.removeItem('user');
     setToken(null);
     setUser(null);
   };
-
   return (
     <AuthContext.Provider value={{ user, login, logout, setUser, token }}>
       {children}

@@ -17,6 +17,7 @@ import {
 export const AppDataContext = createContext(null);
 export const AppDataProvider = ({ children }) => {
   const { user, token } = useContext(AuthContext);
+  const serviceView = user?.role === 'secretary' ? 'all' : 'available';
   const [serviceGroups, setServiceGroups] = useState([]);
   const [users, setUsers] = useState([]);
   const [clinics, setClinics] = useState([]);
@@ -35,7 +36,7 @@ export const AppDataProvider = ({ children }) => {
     });
   };
   const loadServiceGroups = async () => {
-    const res = await fetchServices(token);
+    const res = await fetchServices(token, serviceView);
     setServiceGroups(res || []);
   };
   const loadClinics = async () => {

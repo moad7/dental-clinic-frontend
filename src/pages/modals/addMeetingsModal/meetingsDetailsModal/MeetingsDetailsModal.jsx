@@ -16,7 +16,10 @@ import MeetingSchedulePicker from '../../../components/meetingSchedulePicker/Mee
 import { AppDataContext } from '../../../../context/AppDataContext';
 import { AuthContext } from '../../../../context/AuthContext';
 import { fetchDoctorAvailableSlots } from '../../../../api/doctorApi';
-import { updateAppointmentById } from '../../../../api/appointmentApi';
+import {
+  deleteAppointmentById,
+  updateAppointmentById,
+} from '../../../../api/appointmentApi';
 import {
   createTreatmentSession,
   fetchTreatmentSessions,
@@ -57,16 +60,11 @@ const formatDateTime = (date) => {
 const getCreatorRoleText = (role) => {
   return CREATOR_ROLES[role] || role || '-';
 };
-const MeetingsDetailsModal = ({
-  appointment,
-  onClose,
-  onDelete,
-  isUpdating = false,
-  isDeleting = false,
-}) => {
+const MeetingsDetailsModal = ({ appointment, onClose, isUpdating = false }) => {
   const { token } = useContext(AuthContext);
   const { loadAllAppointments } = useContext(AppDataContext);
   const [isEditing, setIsEditing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [slotsLoading, setSlotsLoading] = useState(false);
   const [availableSlots, setAvailableSlots] = useState([]);
@@ -357,11 +355,19 @@ const MeetingsDetailsModal = ({
     }
   };
   const handleDelete = async () => {
+    if (isDeleting) return;
     try {
-      await onDelete?.(appointment._id);
+      setIsDeleting(true);
+      await deleteAppointmentById(appointment._id, token);
+      await loadAllAppointments?.();
       setShowDeleteConfirm(false);
+      onClose?.();
+      toast.success('המפגש נמחק בהצלחה');
     } catch (error) {
       console.error('Failed to delete appointment:', error);
+      showErrorToast(error, 'אירעה שגיאה במחיקת המפגש');
+    } finally {
+      setIsDeleting(false);
     }
   };
   const handleOpenNewSession = (sessionNumber) => {
