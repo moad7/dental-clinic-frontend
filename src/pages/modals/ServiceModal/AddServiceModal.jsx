@@ -8,8 +8,12 @@ import {
   fetchServices,
 } from '../../../api/serviceApi';
 import { AuthContext } from '../../../context/AuthContext';
-const AddServiceModal = () => {
+import { toast } from 'react-toastify';
+import { AppDataContext } from '../../../context/AppDataContext';
+import { showErrorToast } from '../../../utils/errorMessages';
+const AddServiceModal = ({ onClose }) => {
   const { token } = useContext(AuthContext);
+  const { loadServiceGroups } = useContext(AppDataContext);
   const [image, setImage] = useState(null);
   const [groups, setGroups] = useState([]);
   const [selectedGroupId, setSelectedGroupId] = useState('');
@@ -61,25 +65,21 @@ const AddServiceModal = () => {
   };
   const handleCreateService = async () => {
     if (!selectedGroupId) {
-      return alert('Choose or create group first');
+      toast.info('בחר קבוצה לפני הוספת שירות');
+      return;
     }
     if (!form.name.trim()) {
-      return alert('Service name is required');
+      toast.error('שם השירות נדרש');
+      return;
     }
     const payload = new FormData();
     payload.append('name', form.name.trim());
     payload.append('description', form.description);
     payload.append('price', form.price);
     payload.append('durationMin', form.durationMin);
-    /*
-    Upload mode
-  */
     if (mode === 'upload' && image?.file) {
       payload.append('photo', image.file);
     }
-    /*
-    Link mode
-  */
     if (mode === 'link' && form.imageUrl.trim()) {
       payload.append('imageUrl', form.imageUrl.trim());
     }
@@ -88,6 +88,9 @@ const AddServiceModal = () => {
       setGroups((prev) =>
         prev.map((g) => (g._id === selectedGroupId ? res : g)),
       );
+      await loadServiceGroups();
+      onClose();
+      toast.success('השירות נוסף בהצלחה');
       setForm({
         name: '',
         description: '',
@@ -98,7 +101,7 @@ const AddServiceModal = () => {
       });
       setImage(null);
     } catch (error) {
-      console.error('Create service error:', error);
+      showErrorToast(error, 'אירעה שגיאה ביצירת השירות');
     }
   };
   // const selectedGroup = groups.find((g) => g._id === selectedGroupId);

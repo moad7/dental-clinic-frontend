@@ -16,8 +16,11 @@ import {
   deleteServiceItem,
 } from '../../../../api/serviceApi';
 import { AuthContext } from '../../../../context/AuthContext';
+import { AppDataContext } from '../../../../context/AppDataContext';
+import { showErrorToast } from '../../../../utils/errorMessages';
 const EditServiceModal = ({ service, onClose }) => {
   const { token } = useContext(AuthContext);
+  const { loadServiceGroups } = useContext(AppDataContext);
   const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
     name: '',
@@ -167,13 +170,12 @@ const EditServiceModal = ({ service, onClose }) => {
           token,
         );
       }
+      await loadServiceGroups();
       toast.success('השירות עודכן בהצלחה');
       onClose?.();
     } catch (error) {
       console.error('Update service error:', error);
-      toast.error(
-        error?.response?.data?.message || 'אירעה שגיאה בעדכון השירות',
-      );
+      showErrorToast(error, 'אירעה שגיאה בעדכון סוג השירות');
     } finally {
       setLoading(false);
     }
@@ -211,17 +213,20 @@ const EditServiceModal = ({ service, onClose }) => {
         await archiveServiceItem(serviceGroupId, itemId, token);
         toast.success('השירות הועבר לארכיון בהצלחה');
       } else {
-        await deleteServiceItem(serviceGroupId, itemId, token);
-        toast.success('השירות נמחק בהצלחה');
+        const result = await deleteServiceItem(serviceGroupId, itemId, token);
+        toast.success(
+          result.groupDeleted
+            ? 'השירות האחרון והקבוצה נמחקו בהצלחה'
+            : 'השירות נמחק בהצלחה',
+        );
       }
+      await loadServiceGroups();
       setShowDeleteConfirm(false);
       setArchivePreview(null);
       onClose?.();
     } catch (error) {
       console.error('Delete/archive service error:', error);
-      toast.error(
-        error?.response?.data?.message || 'אירעה שגיאה בביצוע הפעולה',
-      );
+      showErrorToast(error, 'אירעה שגיאה במחיקת סוג השירות');
     } finally {
       setArchiveLoading(false);
     }

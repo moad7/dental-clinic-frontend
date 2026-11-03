@@ -119,16 +119,31 @@ export const ERROR_MESSAGES = {
    * Services
    * ========================================
    */
+  'Invalid service group or item id':
+    'מזהה קבוצת השירות או סוג השירות אינו תקין',
   'Service not found': 'הטיפול לא נמצא',
   'Service group not found': 'קבוצת הטיפול לא נמצאה',
   'Service item not found': 'סוג הטיפול לא נמצא',
   'Failed to fetch services': 'אירעה שגיאה בטעינת השירותים',
   'Failed to create service': 'אירעה שגיאה ביצירת השירות',
   'Failed to update service': 'אירעה שגיאה בעדכון השירות',
+  'Failed to delete service item': 'אירעה שגיאה במחיקת סוג השירות',
   'Service already exists': 'השירות כבר קיים במערכת',
+  'Service group already exists': 'קבוצת השירות כבר קיימת במערכת',
+  'Service item already exists': 'סוג השירות כבר קיים במערכת',
   'Invalid service duration': 'משך שירות לא חוקי',
   'Service item not found in selected service group':
     'פריט השירות לא נמצא בקבוצת השירות שנבחרה',
+  'Cannot delete this group because it is linked to existing treatments':
+    'לא ניתן למחוק את קבוצת השירות הזו מכיוון שהיא מקושרת לטיפולים קיימים',
+  'Cannot delete this service item because it is linked to existing treatments':
+    'לא ניתן למחוק את סוג השירות הזה מכיוון שהוא מקושר לטיפולים קיימים',
+  'Failed to fetch archive preview': 'אירעה שגיאה בטעינת פרטי הארכיון',
+  'Service is already archived': 'השירות כבר נמצא בארכיון',
+  'Service is not archived': 'השירות אינו בארכיון',
+  'Failed to unarchive service': 'אירעה שגיאה בשחזור השירות',
+  'Failed to archive service': 'אירעה שגיאה בארכיון השירות',
+  'Duration must be at least 5 minutes': 'משך השירות חייב להיות לפחות 5 דקות',
   /*
    * ========================================
    * Clinic
@@ -183,9 +198,8 @@ export const getAppErrorMessage = (
     return ERROR_MESSAGES.TIMEOUT_ERROR;
   }
   const message =
-    error?.response?.data?.message ||
-    error?.response?.data?.error ||
-    error?.message;
+    error.response.data.message || error.response.data.error || error.message;
+  console.error('Error:', message);
   if (!ERROR_MESSAGES[message]) {
     switch (error?.response?.status) {
       case 400:
