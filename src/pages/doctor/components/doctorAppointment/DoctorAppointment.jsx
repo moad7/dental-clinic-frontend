@@ -10,6 +10,7 @@ import { AuthContext } from '../../../../context/AuthContext';
 import { AppDataContext } from '../../../../context/AppDataContext';
 import { confirmDateById } from '../../../../api/appointmentApi';
 import './doctorAppointment.css';
+import { showErrorToast } from '../../../../utils/errorMessages';
 // =========================================================
 // STATUS OPTIONS
 // =========================================================
@@ -59,9 +60,7 @@ const DoctorAppointment = () => {
   // -------------------------------------------------------
   // STATE
   // -------------------------------------------------------
-  const [appointments, setAppointments] = useState(() =>
-    normalizeAppointments(doctorAppointments),
-  );
+  const [appointments, setAppointments] = useState(() => normalizeAppointments(doctorAppointments));
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -95,10 +94,8 @@ const DoctorAppointment = () => {
         appointment.patient?.name?.toLowerCase().includes(query) ||
         appointment.patient?.phoneNumber?.includes(query) ||
         appointment.serviceName?.toLowerCase().includes(query);
-      const matchesStatus =
-        statusFilter === 'all' || appointment.status === statusFilter;
-      const matchesDate =
-        !dateFilter || String(appointment.date).slice(0, 10) === dateFilter;
+      const matchesStatus = statusFilter === 'all' || appointment.status === statusFilter;
+      const matchesDate = !dateFilter || String(appointment.date).slice(0, 10) === dateFilter;
       return matchesSearch && matchesStatus && matchesDate;
     });
   }, [appointments, search, statusFilter, dateFilter]);
@@ -141,12 +138,7 @@ const DoctorAppointment = () => {
     }
     try {
       setSaving(true);
-      const response = await confirmDateById(
-        selectedSessionId,
-        decision,
-        editNote.trim(),
-        token,
-      );
+      const response = await confirmDateById(selectedSessionId, decision, editNote.trim(), token);
       // Update the appointment locally after successful save
       const updatedSession = response?.appointment;
       setAppointments((previous) =>
@@ -156,22 +148,18 @@ const DoctorAppointment = () => {
           }
           return {
             ...appointment,
-            status:
-              updatedSession?.status ||
-              (decision === 'update_note' ? appointment.status : decision),
+            status: updatedSession?.status || (decision === 'update_note' ? appointment.status : decision),
             note: updatedSession?.note ?? editNote.trim(),
           };
         }),
       );
-      toast.success(
-        completedSession ? 'ההערה עודכנה בהצלחה' : 'סטטוס הפגישה עודכן בהצלחה',
-      );
+      toast.success(completedSession ? 'ההערה עודכנה בהצלחה' : 'סטטוס הפגישה עודכן בהצלחה');
       setSelectedSession(null);
       setEditStatus('');
       setEditNote('');
     } catch (error) {
       console.error('Update appointment error:', error);
-      toast.error(error.response?.data?.message || 'אירעה שגיאה בעדכון הפגישה');
+      showErrorToast(error || 'אירעה שגיאה בעדכון הפגישה');
     } finally {
       setSaving(false);
     }
@@ -186,9 +174,7 @@ const DoctorAppointment = () => {
       width: '1.5fr',
       render: (item) => (
         <div className="doctor-appointment-patient">
-          <span className="doctor-appointment-avatar">
-            {item.patient?.name?.charAt(0) || '?'}
-          </span>
+          <span className="doctor-appointment-avatar">{item.patient?.name?.charAt(0) || '?'}</span>
           <div>
             <strong>{item.patient?.name || 'מטופל לא זמין'}</strong>
             <small>{item.patient?.phoneNumber || '-'}</small>
@@ -226,19 +212,14 @@ const DoctorAppointment = () => {
       key: 'durationMin',
       title: 'משך',
       width: '0.7fr',
-      render: (item) =>
-        item.durationMin != null ? `${item.durationMin} דקות` : '-',
+      render: (item) => (item.durationMin != null ? `${item.durationMin} דקות` : '-'),
     },
     {
       key: 'status',
       title: 'סטטוס',
       width: '0.9fr',
       render: (item) => (
-        <span
-          className={`doctor-appointment-status doctor-appointment-status--${item.status}`}
-        >
-          {STATUS_LABELS[item.status] || item.status}
-        </span>
+        <span className={`doctor-appointment-status doctor-appointment-status--${item.status}`}>{STATUS_LABELS[item.status] || item.status}</span>
       ),
     },
     {
@@ -246,11 +227,7 @@ const DoctorAppointment = () => {
       title: 'פעולות',
       width: '0.8fr',
       render: (item) => (
-        <button
-          type="button"
-          className="doctor-appointment-edit-btn"
-          onClick={() => openSessionModal(item)}
-        >
+        <button type="button" className="doctor-appointment-edit-btn" onClick={() => openSessionModal(item)}>
           <FiEdit2 />
           פרטים
         </button>
@@ -262,10 +239,7 @@ const DoctorAppointment = () => {
   // =======================================================
   return (
     <div className="main-container doctor-appointment-page" dir="rtl">
-      <BoxHeader
-        title="לוח זמנים של הרופא"
-        subtitle="סקירה כללית של הפגישות והטיפולים של הרופא"
-      />
+      <BoxHeader title="לוח זמנים של הרופא" subtitle="סקירה כללית של הפגישות והטיפולים של הרופא" />
       <DashboardStats items={doctorDashboardStats} />
       {/* ===================================================
           APPOINTMENTS PANEL
@@ -276,9 +250,7 @@ const DoctorAppointment = () => {
             <h2>כל הפגישות</h2>
             <p>ניהול ומעקב אחר הפגישות והטיפולים שלך</p>
           </div>
-          <span className="doctor-appointment-total">
-            {filteredAppointments.length} פגישות
-          </span>
+          <span className="doctor-appointment-total">{filteredAppointments.length} פגישות</span>
         </div>
         {/* =================================================
             FILTERS
@@ -293,10 +265,7 @@ const DoctorAppointment = () => {
               onChange={(event) => setSearch(event.target.value)}
             />
           </div>
-          <select
-            value={statusFilter}
-            onChange={(event) => setStatusFilter(event.target.value)}
-          >
+          <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
             {STATUS_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
@@ -305,11 +274,7 @@ const DoctorAppointment = () => {
           </select>
           <div className="doctor-appointment-date-filter">
             <FiCalendar />
-            <input
-              type="date"
-              value={dateFilter}
-              onChange={(event) => setDateFilter(event.target.value)}
-            />
+            <input type="date" value={dateFilter} onChange={(event) => setDateFilter(event.target.value)} />
           </div>
           {(search || statusFilter !== 'all' || dateFilter) && (
             <button
@@ -343,12 +308,7 @@ const DoctorAppointment = () => {
       {/* ===================================================
           SESSION MODAL
       =================================================== */}
-      <Modal
-        isOpen={Boolean(selectedSession)}
-        onClose={closeSessionModal}
-        title="פרטי הפגישה"
-        size="md"
-      >
+      <Modal isOpen={Boolean(selectedSession)} onClose={closeSessionModal} title="פרטי הפגישה" size="md">
         {selectedSession && (
           <div className="doctor-appointment-modal" dir="rtl">
             {/* =============================================
@@ -380,24 +340,13 @@ const DoctorAppointment = () => {
               {isReadOnlyStatus ? (
                 <div
                   className={`doctor-appointment-status-text ${
-                    isCompleted
-                      ? 'doctor-appointment-status-text--completed'
-                      : 'doctor-appointment-status-text--rejected'
+                    isCompleted ? 'doctor-appointment-status-text--completed' : 'doctor-appointment-status-text--rejected'
                   }`}
                 >
-                  {isCompleted
-                    ? 'הפגישה הושלמה'
-                    : isRejected
-                      ? 'הפגישה נדחתה'
-                      : 'הפגישה בוטלה'}
+                  {isCompleted ? 'הפגישה הושלמה' : isRejected ? 'הפגישה נדחתה' : 'הפגישה בוטלה'}
                 </div>
               ) : (
-                <select
-                  id="doctor-session-status"
-                  value={editStatus}
-                  onChange={(event) => setEditStatus(event.target.value)}
-                  disabled={saving}
-                >
+                <select id="doctor-session-status" value={editStatus} onChange={(event) => setEditStatus(event.target.value)} disabled={saving}>
                   <option value="">בחר סטטוס</option>
                   {DOCTOR_STATUS_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -422,34 +371,19 @@ const DoctorAppointment = () => {
                   rows={4}
                 />
               ) : (
-                <div className="doctor-appointment-note-text">
-                  {selectedSession.note?.trim() || 'לא נוספה הערה למפגש זה'}
-                </div>
+                <div className="doctor-appointment-note-text">{selectedSession.note?.trim() || 'לא נוספה הערה למפגש זה'}</div>
               )}
             </div>
             {/* =============================================
                 ACTION BUTTONS
             ============================================= */}
             <div className="doctor-appointment-modal-actions">
-              <button
-                type="button"
-                onClick={closeSessionModal}
-                disabled={saving}
-              >
+              <button type="button" onClick={closeSessionModal} disabled={saving}>
                 סגירה
               </button>
               {canSave && (
-                <button
-                  type="button"
-                  className="doctor-appointment-save-btn"
-                  onClick={() => handleSave(selectedSession._id)}
-                  disabled={saving}
-                >
-                  {saving
-                    ? 'שומר...'
-                    : isCompleted
-                      ? 'שמירת הערה'
-                      : 'שמירת שינויים'}
+                <button type="button" className="doctor-appointment-save-btn" onClick={() => handleSave(selectedSession._id)} disabled={saving}>
+                  {saving ? 'שומר...' : isCompleted ? 'שמירת הערה' : 'שמירת שינויים'}
                 </button>
               )}
             </div>

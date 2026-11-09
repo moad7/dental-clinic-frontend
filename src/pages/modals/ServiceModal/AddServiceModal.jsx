@@ -1,7 +1,6 @@
 import { MdDelete, MdOutlineCloudUpload } from 'react-icons/md';
 import './serviceModal.css';
 import { useState, useEffect, useContext } from 'react';
-import axios from 'axios';
 import {
   addItemToServiseGroup,
   createServiceGroup,
@@ -55,14 +54,7 @@ const AddServiceModal = ({ onClose }) => {
     setNewGroupTitle('');
     setShowNewGroup(false);
   };
-  const handleDeleteGroup = async () => {
-    if (!selectedGroupId) return alert('Choose group first');
-    const confirmDelete = window.confirm('Delete this group?');
-    if (!confirmDelete) return;
-    await axios.delete(`/api/services/groups/${selectedGroupId}`);
-    setGroups(groups.filter((g) => g._id !== selectedGroupId));
-    setSelectedGroupId('');
-  };
+
   const handleCreateService = async () => {
     if (!selectedGroupId) {
       toast.info('בחר קבוצה לפני הוספת שירות');
@@ -137,15 +129,7 @@ const AddServiceModal = ({ onClose }) => {
             >
               {showNewGroup ? '-' : '+'}
             </button>
-            {selectedGroupId && (
-              <button
-                type="button"
-                className="btn-delete-service"
-                onClick={handleDeleteGroup}
-              >
-                <MdDelete size={18} />
-              </button>
-            )}
+            
           </div>
         </div>
         {showNewGroup && (

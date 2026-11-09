@@ -97,6 +97,10 @@ export const israelCities = [
   'טמרה',
   'סחנין',
 ];
+  export const cityOptions = israelCities.map((city) => ({
+    value: city,
+    label: city,
+  }));
 export const calculateAge = (birthDate) => {
   if (!birthDate) return null;
   const today = new Date();

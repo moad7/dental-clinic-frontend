@@ -35,31 +35,22 @@ export const ERROR_MESSAGES = {
   'Failed to update appointment': 'אירעה שגיאה בעדכון המפגש',
   'Failed to delete appointment': 'אירעה שגיאה במחיקת המפגש',
   'Appointment updated successfully': 'המפגש עודכן בהצלחה',
-  'Doctor already has an appointment at this date and time':
-    'לרופא כבר קיים תור בתאריך ובשעה שנבחרו',
-  'Patient already has an appointment on this day':
-    'למטופל כבר קיים תור פעיל ביום זה',
-  'Doctor already has an overlapping appointment at this date and time':
-    'לרופא כבר יש תור חופף בתאריך ובשעה אלה',
+  'Doctor already has an appointment at this date and time': 'לרופא כבר קיים תור בתאריך ובשעה שנבחרו',
+  'Patient already has an appointment on this day': 'למטופל כבר קיים תור פעיל ביום זה',
+  'Doctor already has an overlapping appointment at this date and time': 'לרופא כבר יש תור חופף בתאריך ובשעה אלה',
   'Patient already has an appointment on this day. Complete the existing appointment first.':
     'למטופל כבר קיים תור ביום זה, יש להשלים או לסיים את התור הקיים תחילה',
-  'Doctor, date and time are required for pending or confirmed sessions':
-    'יש לבחור רופא, תאריך ושעה עבור מפגש ממתין או מאושר',
+  'Doctor, date and time are required for pending or confirmed sessions': 'יש לבחור רופא, תאריך ושעה עבור מפגש ממתין או מאושר',
   'Invalid appointment date': 'תאריך המפגש אינו תקין',
   'Invalid session date': 'תאריך המפגש אינו תקין',
   'Invalid session date. Expected YYYY-MM-DD': 'תאריך המפגש אינו תקין',
   'Invalid time format. Expected HH:mm': 'שעת המפגש אינה תקינה',
-  'New session status must be pending or confirmed':
-    'סטטוס של מפגש חדש יכול להיות רק ממתין או מאושר',
+  'New session status must be pending or confirmed': 'סטטוס של מפגש חדש יכול להיות רק ממתין או מאושר',
   'All treatment sessions are already scheduled': 'כל מפגשי הטיפול כבר נקבעו',
-  'Previous treatment session must be scheduled first':
-    'יש לקבוע קודם את המפגש הקודם',
-  'Session must be scheduled after the previous session':
-    'יש לקבוע את המפגש לאחר המפגש הקודם',
-  'Session must be scheduled before the next session':
-    'יש לקבוע את המפגש לפני המפגש הבא',
-  'Failed to calculate next session number':
-    'אירעה שגיאה בחישוב מספר המפגש הבא',
+  'Previous treatment session must be scheduled first': 'יש לקבוע קודם את המפגש הקודם',
+  'Session must be scheduled after the previous session': 'יש לקבוע את המפגש לאחר המפגש הקודם',
+  'Session must be scheduled before the next session': 'יש לקבוע את המפגש לפני המפגש הבא',
+  'Failed to calculate next session number': 'אירעה שגיאה בחישוב מספר המפגש הבא',
   'Invalid session date or time': 'התאריך או השעה של המפגש אינם תקינים',
   'Treatment session created successfully': 'המפגש נוסף בהצלחה',
   'Failed to create session': 'אירעה שגיאה ביצירת המפגש',
@@ -67,40 +58,33 @@ export const ERROR_MESSAGES = {
   'Failed to delete session': 'אירעה שגיאה במחיקת המפגש',
   'Failed to fetch sessions': 'אירעה שגיאה בטעינת מפגשי הטיפול',
   'Session not found': 'המפגש לא נמצא',
-  'Only doctors or secretaries can update sessions':
-    'רק רופא או מזכירה יכולים לעדכן מפגש',
-  'Only doctors or secretaries can delete sessions':
-    'רק רופא או מזכירה יכולים למחוק מפגש',
+  'Only doctors or secretaries can update sessions': 'רק רופא או מזכירה יכולים לעדכן מפגש',
+  'Only doctors or secretaries can delete sessions': 'רק רופא או מזכירה יכולים למחוק מפגש',
+  'Cannot complete an appointment before its scheduled time': 'לא ניתן לסיים מפגש לפני מועדו',
   /*
    * ========================================
    * Treatment
    * ========================================
    */
   'Treatment not found': 'הטיפול לא נמצא',
-  'Cannot add sessions to a treatment that is not in progress':
-    'לא ניתן להוסיף מפגש לטיפול שאינו פעיל',
+  'Cannot add sessions to a treatment that is not in progress': 'לא ניתן להוסיף מפגש לטיפול שאינו פעיל',
   'totalSessions must be at least 1': 'מספר המפגשים חייב להיות לפחות 1',
-  'totalSessions must be an integer greater than or equal to 1':
-    'מספר המפגשים חייב להיות מספר שלם הגדול או שווה ל-1',
+  'totalSessions must be an integer greater than or equal to 1': 'מספר המפגשים חייב להיות מספר שלם הגדול או שווה ל-1',
   /*
    * ========================================
    * Doctor
    * ========================================
    */
   'Doctor not found': 'הרופא לא נמצא',
-  'Doctor not found or does not provide this service':
-    'הרופא לא נמצא או שאינו מספק את הטיפול שנבחר',
-  'Doctor does not provide this treatment service':
-    'הרופא שנבחר אינו מתאים לסוג הטיפול הזה',
-  'Treatment doctor is inactive or no longer provides this service':
-    'הרופא אינו פעיל או שאינו מספק עוד את הטיפול הזה',
+  'Doctor not found or does not provide this service': 'הרופא לא נמצא או שאינו מספק את הטיפול שנבחר',
+  'Doctor does not provide this treatment service': 'הרופא שנבחר אינו מתאים לסוג הטיפול הזה',
+  'Treatment doctor is inactive or no longer provides this service': 'הרופא אינו פעיל או שאינו מספק עוד את הטיפול הזה',
   'Doctor is inactive': 'חשבון הרופא אינו פעיל',
   'Failed to fetch doctors': 'אירעה שגיאה בטעינת הרופאים',
   'Failed to update doctor': 'אירעה שגיאה בעדכון פרטי הרופא',
   'Failed to create doctor': 'אירעה שגיאה ביצירת הרופא',
   'Doctor already exists': 'הרופא כבר קיים במערכת',
-  'Selected time is outside doctor working hours':
-    'הזמן שנבחר הוא מחוץ לשעות הפעילות של הרופא',
+  'Selected time is outside doctor working hours': 'הזמן שנבחר הוא מחוץ לשעות הפעילות של הרופא',
   'Doctor is not working on the selected day': 'הרופא לא עובד ביום שנבחר',
   /*
    * ========================================
@@ -119,8 +103,7 @@ export const ERROR_MESSAGES = {
    * Services
    * ========================================
    */
-  'Invalid service group or item id':
-    'מזהה קבוצת השירות או סוג השירות אינו תקין',
+  'Invalid service group or item id': 'מזהה קבוצת השירות או סוג השירות אינו תקין',
   'Service not found': 'הטיפול לא נמצא',
   'Service group not found': 'קבוצת הטיפול לא נמצאה',
   'Service item not found': 'סוג הטיפול לא נמצא',
@@ -132,12 +115,9 @@ export const ERROR_MESSAGES = {
   'Service group already exists': 'קבוצת השירות כבר קיימת במערכת',
   'Service item already exists': 'סוג השירות כבר קיים במערכת',
   'Invalid service duration': 'משך שירות לא חוקי',
-  'Service item not found in selected service group':
-    'פריט השירות לא נמצא בקבוצת השירות שנבחרה',
-  'Cannot delete this group because it is linked to existing treatments':
-    'לא ניתן למחוק את קבוצת השירות הזו מכיוון שהיא מקושרת לטיפולים קיימים',
-  'Cannot delete this service item because it is linked to existing treatments':
-    'לא ניתן למחוק את סוג השירות הזה מכיוון שהוא מקושר לטיפולים קיימים',
+  'Service item not found in selected service group': 'פריט השירות לא נמצא בקבוצת השירות שנבחרה',
+  'Cannot delete this group because it is linked to existing treatments': 'לא ניתן למחוק את קבוצת השירות הזו מכיוון שהיא מקושרת לטיפולים קיימים',
+  'Cannot delete this service item because it is linked to existing treatments': 'לא ניתן למחוק את סוג השירות הזה מכיוון שהוא מקושר לטיפולים קיימים',
   'Failed to fetch archive preview': 'אירעה שגיאה בטעינת פרטי הארכיון',
   'Service is already archived': 'השירות כבר נמצא בארכיון',
   'Service is not archived': 'השירות אינו בארכיון',
@@ -171,6 +151,12 @@ export const ERROR_MESSAGES = {
   'Password is required': 'יש להזין סיסמה',
   'Current password is incorrect': 'הסיסמה הנוכחית אינה נכונה',
   'Passwords do not match': 'הסיסמאות אינן תואמות',
+  'User has already completed password setup': 'המשתמש כבר סיים את הגדרת הסיסמה',
+  'User already has a password. Use password reset instead': 'למשתמש כבר קיימת סיסמה. יש להשתמש באיפוס סיסמה במקום זאת',
+  'Password reset token is invalid or has expired': 'קישור איפוס הסיסמה אינו תקין או שפג תוקפו',
+  'Failed to reset password': 'אירעה שגיאה באיפוס הסיסמה',
+  'Activation link renewed successfully': 'קישור ההפעלה חודש בהצלחה',
+  'Failed to renew activation link': 'אירעה שגיאה בחידוש קישור ההפעלה',
   /*
    * ========================================
    * Network
@@ -180,10 +166,7 @@ export const ERROR_MESSAGES = {
   TIMEOUT_ERROR: 'הבקשה נמשכה זמן רב מדי, נסה שוב',
   UNKNOWN_ERROR: 'אירעה שגיאה לא צפויה, נסה שוב',
 };
-export const getAppErrorMessage = (
-  errorOrMessage,
-  fallback = 'אירעה שגיאה, נסה שוב',
-) => {
+export const getAppErrorMessage = (errorOrMessage, fallback = 'אירעה שגיאה, נסה שוב') => {
   if (typeof errorOrMessage === 'string') {
     return ERROR_MESSAGES[errorOrMessage] || errorOrMessage || fallback;
   }
@@ -197,8 +180,7 @@ export const getAppErrorMessage = (
   if (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') {
     return ERROR_MESSAGES.TIMEOUT_ERROR;
   }
-  const message =
-    error.response.data.message || error.response.data.error || error.message;
+  const message = error.response.data.message || error.response.data.error || error.message;
   console.error('Error:', message);
   if (!ERROR_MESSAGES[message]) {
     switch (error?.response?.status) {

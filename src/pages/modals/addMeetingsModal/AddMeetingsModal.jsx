@@ -29,8 +29,7 @@ const getPatientPhone = (patient) => {
   return patient?.userId?.phoneNumber || patient?.phoneNumber || '';
 };
 const AddMeetingsModal = ({ setOpen }) => {
-  const { patients, serviceGroups, loadAllAppointments } =
-    useContext(AppDataContext);
+  const { patients, serviceGroups, loadAllAppointments } = useContext(AppDataContext);
   const { token, user } = useContext(AuthContext);
   const [formData, setFormData] = useState(initialFormData);
   const [patientSearch, setPatientSearch] = useState('');
@@ -40,8 +39,10 @@ const AddMeetingsModal = ({ setOpen }) => {
   const [loading, setLoading] = useState(false);
   const filteredPatients = useMemo(() => {
     const q = patientSearch.trim().toLowerCase();
-    if (!q) return patients;
+    console.log('Filtering patients with search query:', patients);
     return patients.filter((patient) => {
+      if (patient.userId?.isActive !== true) return false;
+      if (!q) return true;
       const name = getPatientName(patient).toLowerCase();
       const phone = getPatientPhone(patient).toLowerCase();
       const id = getPatientId(patient).toLowerCase();
@@ -74,17 +75,12 @@ const AddMeetingsModal = ({ setOpen }) => {
       }
       if (!q) return true;
       return (
-        service.name?.toLowerCase().includes(q) ||
-        service.groupTitle?.toLowerCase().includes(q) ||
-        service.description?.toLowerCase().includes(q)
+        service.name?.toLowerCase().includes(q) || service.groupTitle?.toLowerCase().includes(q) || service.description?.toLowerCase().includes(q)
       );
     });
   }, [allServices, serviceSearch]);
   const selectedService = useMemo(() => {
-    return allServices.find(
-      (service) =>
-        String(service.serviceItemId) === String(formData.serviceItemId),
-    );
+    return allServices.find((service) => String(service.serviceItemId) === String(formData.serviceItemId));
   }, [allServices, formData.serviceItemId]);
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -175,27 +171,21 @@ const AddMeetingsModal = ({ setOpen }) => {
       toast.error('יש לבחור שעה');
       return false;
     }
-    if (
-      formData.requiresMultipleSessions === 'true' &&
-      Number(formData.totalSessions) < 2
-    ) {
+    if (formData.requiresMultipleSessions === 'true' && Number(formData.totalSessions) < 2) {
       toast.error('בטיפול עם מספר מפגשים יש לבחור לפחות 2 מפגשים');
       return false;
     }
     return true;
   };
   const buildPayload = () => {
-    const requiresMultipleSessions =
-      formData.requiresMultipleSessions === 'true';
+    const requiresMultipleSessions = formData.requiresMultipleSessions === 'true';
     return {
       patientId: formData.patientId,
       doctorId: formData.doctorId,
       serviceGroupId: formData.serviceGroupId,
       serviceItemId: formData.serviceItemId,
       requiresMultipleSessions,
-      totalSessions: requiresMultipleSessions
-        ? Number(formData.totalSessions)
-        : 1,
+      totalSessions: requiresMultipleSessions ? Number(formData.totalSessions) : 1,
       session: {
         date: normalizeDateOnly(formData.date),
         time: formData.time,
@@ -230,9 +220,7 @@ const AddMeetingsModal = ({ setOpen }) => {
       <div className="add-meeting-modal-section">
         <div className="add-meeting-modal-section-header">
           <span className="add-meeting-modal-section-title">בחירת מטופל</span>
-          <span className="add-meeting-modal-section-subtitle">
-            חפש לפי שם, טלפון או מזהה
-          </span>
+          <span className="add-meeting-modal-section-subtitle">חפש לפי שם, טלפון או מזהה</span>
         </div>
         <div className="add-meeting-modal-search-box">
           <input
@@ -254,9 +242,7 @@ const AddMeetingsModal = ({ setOpen }) => {
                 <button
                   type="button"
                   key={patientId}
-                  className={`add-meeting-modal-patient-card ${
-                    isSelected ? 'selected' : ''
-                  }`}
+                  className={`add-meeting-modal-patient-card ${isSelected ? 'selected' : ''}`}
                   onClick={() => handleSelectPatient(patient)}
                 >
                   <div className="add-meeting-modal-patient-avatar">
@@ -274,20 +260,14 @@ const AddMeetingsModal = ({ setOpen }) => {
               );
             })
           ) : (
-            <div className="add-meeting-modal-empty-state">
-              לא נמצאו מטופלים
-            </div>
+            <div className="add-meeting-modal-empty-state">לא נמצאו מטופלים</div>
           )}
         </div>
       </div>
       <div className="add-meeting-modal-section">
         <div className="add-meeting-modal-section-header">
-          <span className="add-meeting-modal-section-title">
-            בחירת סוג טיפול
-          </span>
-          <span className="add-meeting-modal-section-subtitle">
-            ניתן לחפש לפי שם טיפול או קטגוריה
-          </span>
+          <span className="add-meeting-modal-section-title">בחירת סוג טיפול</span>
+          <span className="add-meeting-modal-section-subtitle">ניתן לחפש לפי שם טיפול או קטגוריה</span>
         </div>
         <div className="add-meeting-modal-search-box">
           <input
@@ -301,29 +281,19 @@ const AddMeetingsModal = ({ setOpen }) => {
         <div className="add-meeting-modal-service-list">
           {filteredServices.length > 0 ? (
             filteredServices.map((service) => {
-              const isSelected =
-                String(formData.serviceItemId) ===
-                String(service.serviceItemId);
+              const isSelected = String(formData.serviceItemId) === String(service.serviceItemId);
               return (
                 <button
                   type="button"
                   key={service.serviceItemId}
-                  className={`add-meeting-modal-service-card ${
-                    isSelected ? 'selected' : ''
-                  }`}
+                  className={`add-meeting-modal-service-card ${isSelected ? 'selected' : ''}`}
                   onClick={() => handleSelectService(service)}
                 >
                   <div className="add-meeting-modal-service-image-wrap">
                     {service.photo ? (
-                      <img
-                        className="add-meeting-modal-service-image"
-                        src={service.photo}
-                        alt={service.name}
-                      />
+                      <img className="add-meeting-modal-service-image" src={service.photo} alt={service.name} />
                     ) : (
-                      <div className="add-meeting-modal-service-image-placeholder">
-                        +
-                      </div>
+                      <div className="add-meeting-modal-service-image-placeholder">+</div>
                     )}
                   </div>
                   <div className="add-meeting-modal-service-info">
@@ -337,9 +307,7 @@ const AddMeetingsModal = ({ setOpen }) => {
               );
             })
           ) : (
-            <div className="add-meeting-modal-empty-state">
-              לא נמצאו טיפולים
-            </div>
+            <div className="add-meeting-modal-empty-state">לא נמצאו טיפולים</div>
           )}
         </div>
         {selectedService && (
@@ -353,17 +321,11 @@ const AddMeetingsModal = ({ setOpen }) => {
       </div>
       <div className="add-meeting-modal-section">
         <div className="add-meeting-modal-section-header">
-          <span className="add-meeting-modal-section-title">
-            קביעת המפגש הראשון
-          </span>
-          <span className="add-meeting-modal-section-subtitle">
-            בחר רופא, תאריך ושעה למפגש הראשון
-          </span>
+          <span className="add-meeting-modal-section-title">קביעת המפגש הראשון</span>
+          <span className="add-meeting-modal-section-subtitle">בחר רופא, תאריך ושעה למפגש הראשון</span>
         </div>
         {!formData.serviceGroupId ? (
-          <div className="add-meeting-modal-empty-state">
-            יש לבחור טיפול תחילה
-          </div>
+          <div className="add-meeting-modal-empty-state">יש לבחור טיפול תחילה</div>
         ) : (
           <MeetingSchedulePicker
             serviceGroupId={formData.serviceGroupId}
@@ -408,18 +370,12 @@ const AddMeetingsModal = ({ setOpen }) => {
       <div className="add-meeting-modal-section">
         <div className="add-meeting-modal-section-header">
           <span className="add-meeting-modal-section-title">פרטי הטיפול</span>
-          <span className="add-meeting-modal-section-subtitle">
-            הגדר את מספר המפגשים והערות הטיפול
-          </span>
+          <span className="add-meeting-modal-section-subtitle">הגדר את מספר המפגשים והערות הטיפול</span>
         </div>
         <div className="add-meeting-modal-grid">
           <div className="add-meeting-modal-field">
             <label>האם הטיפול דורש יותר מפגישה אחת?</label>
-            <select
-              name="requiresMultipleSessions"
-              value={formData.requiresMultipleSessions}
-              onChange={handleChange}
-            >
+            <select name="requiresMultipleSessions" value={formData.requiresMultipleSessions} onChange={handleChange}>
               <option value="false">לא, טיפול חד פעמי</option>
               <option value="true">כן, טיפול עם מספר מפגשים</option>
             </select>
@@ -427,42 +383,20 @@ const AddMeetingsModal = ({ setOpen }) => {
           {formData.requiresMultipleSessions === 'true' && (
             <div className="add-meeting-modal-field">
               <label>מספר מפגשים</label>
-              <input
-                type="number"
-                name="totalSessions"
-                min="2"
-                max="60"
-                value={formData.totalSessions}
-                onChange={handleChange}
-                required
-              />
+              <input type="number" name="totalSessions" min="2" max="60" value={formData.totalSessions} onChange={handleChange} required />
             </div>
           )}
           <div className="add-meeting-modal-field add-meeting-modal-full">
             <label>הערות</label>
-            <textarea
-              name="note"
-              placeholder="כתוב הערה במידת הצורך..."
-              value={formData.note}
-              onChange={handleChange}
-            />
+            <textarea name="note" placeholder="כתוב הערה במידת הצורך..." value={formData.note} onChange={handleChange} />
           </div>
         </div>
       </div>
       <div className="add-meeting-modal-actions">
-        <button
-          type="button"
-          className="add-meeting-modal-cancel-btn"
-          onClick={() => setOpen(false)}
-          disabled={loading}
-        >
+        <button type="button" className="add-meeting-modal-cancel-btn" onClick={() => setOpen(false)} disabled={loading}>
           ביטול
         </button>
-        <button
-          type="submit"
-          className="add-meeting-modal-submit-btn"
-          disabled={loading}
-        >
+        <button type="submit" className="add-meeting-modal-submit-btn" disabled={loading}>
           {loading ? 'שומר...' : 'צור טיפול'}
         </button>
       </div>

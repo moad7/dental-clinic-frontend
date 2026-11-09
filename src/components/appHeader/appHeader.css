@@ -99,7 +99,7 @@
 } */
 .main-header {
   position: sticky;
-  top: 10px;
+  top: 1px;
   z-index: 1000;
   padding: 0 16px;
 }
@@ -114,9 +114,9 @@
   width: 100%;
   min-height: 82px;
   padding: 14px 18px;
-  background: rgba(255, 255, 255, 0.96);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: rgba(255, 255, 255, 0.434);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(226, 232, 240, 0.75);
   border-radius: 18px;
   box-shadow: 0 4px 22px rgba(15, 23, 42, 0.055);

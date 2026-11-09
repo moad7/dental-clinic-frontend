@@ -13,12 +13,16 @@ const DoctorsManagement = () => {
   const { doctors } = useContext(AppDataContext);
   const [open, setOpen] = useState(false);
   const [doctorsModalOpen, setDoctorsModalOpen] = useState(false);
-  const [doctor, setDoctor] = useState(null);
   const [query, setQuery] = useState('');
-
+  const [selectedDoctorId, setSelectedDoctorId] = useState(null);
+  const doctor = useMemo(() => {
+    if (!selectedDoctorId) return null;
+    return (Array.isArray(doctors) ? doctors : []).find((item) => String(item._id) === String(selectedDoctorId)) || null;
+  }, [doctors, selectedDoctorId]);
   const normalizedDoctors = useMemo(() => {
     return (Array.isArray(doctors) ? doctors : []).map((doctor) => ({
       _id: doctor._id,
+      idNumber: doctor.idNumber,
       name: doctor.name,
       initials:
         doctor.name
@@ -36,7 +40,6 @@ const DoctorsManagement = () => {
           ?.map((s) => s.groupId?.title)
           .filter(Boolean)
           .join(', ') || 'ללא התמחות',
-
       workingHours: doctor.doctor?.workingHours || [],
       raw: doctor,
     }));
@@ -49,10 +52,9 @@ const DoctorsManagement = () => {
       render: (item) => (
         <div className="appt-doctor">
           <div className="appt-doctor-avatar">{item.initials || 'AA'}</div>
-
           <div className="appt-doctor-info">
             <span className="appt-doctor-name">ד"ר {item.name}</span>
-            {/* <span className="appt-doctor-id">מזהה: #{item._id}</span> */}
+            <span className="appt-doctor-id">מזהה: {item.idNumber}#</span>
           </div>
         </div>
       ),
@@ -72,45 +74,30 @@ const DoctorsManagement = () => {
       key: 'gender',
       title: 'מיון',
       width: '1.2fr',
-      render: (item) => (
-        <div className="appt-gender">
-          {item.gender == 'male' ? 'זכר' : 'נקבה'}
-        </div>
-      ),
+      render: (item) => <div className="appt-gender">{item.gender == 'male' ? 'זכר' : 'נקבה'}</div>,
     },
     {
       key: 'typeWork',
       title: 'סוג העבודה',
       width: '1.2fr',
       render: (item) => {
-        const activeDays =
-          item.workingHours?.filter((day) => !day.isClosed).length || 0;
-
-        return (
-          <span>{activeDays == 7 ? 'כל הימים' : activeDays + ' ימים'}</span>
-        );
+        const activeDays = item.workingHours?.filter((day) => !day.isClosed).length || 0;
+        return <span>{activeDays == 7 ? 'כל הימים' : activeDays + ' ימים'}</span>;
       },
       // render: (item) => <div className="appt-typeWork">{item.typeWork}</div>,
     },
-
     {
       key: 'specialization',
       title: 'התמחות',
       width: '1.2fr',
-      render: (item) => (
-        <div className="appt-specialization">{item.specialization}</div>
-      ),
+      render: (item) => <div className="appt-specialization">{item.specialization}</div>,
     },
     {
       key: 'status',
       title: 'סטאטוס',
       width: '1.2fr',
       render: (item) => (
-        <span
-          className={`appt-status ${item.status === 'active' ? 'active' : 'inactive'}`}
-        >
-          {item.status === 'active' ? 'פעיל' : 'לא פעיל'}
-        </span>
+        <span className={`appt-status ${item.status === 'active' ? 'active' : 'inactive'}`}>{item.status === 'active' ? 'פעיל' : 'לא פעיל'}</span>
       ),
     },
     {
@@ -122,7 +109,7 @@ const DoctorsManagement = () => {
           className="appt-link"
           type="button"
           onClick={() => {
-            setDoctor(item.raw);
+            setSelectedDoctorId(item._id);
             setDoctorsModalOpen(true);
           }}
         >
@@ -131,7 +118,6 @@ const DoctorsManagement = () => {
       ),
     },
   ];
-
   const filteredDoctor = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return normalizedDoctors;
@@ -146,7 +132,6 @@ const DoctorsManagement = () => {
       );
     });
   }, [query, normalizedDoctors]);
-
   return (
     <div className="main-container" dir="rtl">
       <BoxHeader
@@ -159,31 +144,15 @@ const DoctorsManagement = () => {
         actionLabel={'הוסף רופא חדש'}
       />
       <DashboardStats items={secretaryDoctorsStats} />
-
-      <Modal
-        isOpen={open}
-        onClose={() => setOpen(false)}
-        title="הוספת רופא חדש"
-        size="xl"
-      >
+      <Modal isOpen={open} onClose={() => setOpen(false)} title="הוספת רופא חדש" size="xl">
         <AddDoctorModal setOpen={setOpen} open={open} />
       </Modal>
-      <Modal
-        isOpen={doctorsModalOpen}
-        onClose={() => setDoctorsModalOpen(false)}
-        title="פרטי רופא"
-        size="xl"
-      >
-        <DoctorDetailsModal
-          setOpen={setDoctorsModalOpen}
-          open={doctorsModalOpen}
-          doctor={doctor}
-        />
+      <Modal isOpen={doctorsModalOpen} onClose={() => setDoctorsModalOpen(false)} title="פרטי רופא" size="xl">
+        <DoctorDetailsModal setOpen={setDoctorsModalOpen} open={doctorsModalOpen} doctor={doctor} />
       </Modal>
       <div className="container-box">
         <div className="doctors-management-top">
           <span className="doctors-management-title"> הרופאים</span>
-
           <div className="toolbar">
             <div className="toolbar__left">
               <div className="search-box">
@@ -199,18 +168,9 @@ const DoctorsManagement = () => {
             </div>
           </div>
         </div>
-
-        <DataTable
-          columns={doctorColumns}
-          data={filteredDoctor}
-          rowKey="_id"
-          classPrefix="data-table"
-          emptyText="אין רופאים"
-          defaultPageSize={5}
-        />
+        <DataTable columns={doctorColumns} data={filteredDoctor} rowKey="_id" classPrefix="data-table" emptyText="אין רופאים" defaultPageSize={5} />
       </div>
     </div>
   );
 };
-
 export default DoctorsManagement;

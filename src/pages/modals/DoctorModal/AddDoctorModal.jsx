@@ -1,11 +1,12 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import './addDoctorModal.css';
 import { useState } from 'react';
 import { AppDataContext } from '../../../context/AppDataContext';
 import { createDoctorBySecretary } from '../../../api/secretaryApi';
 import { AuthContext } from '../../../context/AuthContext';
 import { toast } from 'react-toastify';
-
+import { cityOptions } from '../../../utils/functions';
+import Select from 'react-select';
 const days = [
   { key: 'sunday', label: 'יום ראשון' },
   { key: 'monday', label: 'יום שני' },
@@ -15,7 +16,6 @@ const days = [
   { key: 'friday', label: 'יום שישי' },
   { key: 'saturday', label: 'יום שבת' },
 ];
-
 const defaultWorkingHours = days.map((d) => ({
   day: d.key,
   isClosed: d.key === 'friday' || d.key === 'saturday',
@@ -28,6 +28,7 @@ const initialFormData = {
   phoneNumber: '',
   email: '',
   gender: '',
+  city: '',
   birth: '',
   avatar: '',
   yearsOfExperience: '',
@@ -36,70 +37,50 @@ const initialFormData = {
   servicesGroupIds: [],
   workingHours: defaultWorkingHours,
 };
-
 const AddDoctorModal = ({ setOpen, open }) => {
-  const { serviceGroups, clinics, addDoctorToState } =
-    useContext(AppDataContext);
+  const { serviceGroups, clinics, addDoctorToState } = useContext(AppDataContext);
   const { token } = useContext(AuthContext);
   const [formData, setFormData] = useState(initialFormData);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     if (name === 'yearsOfExperience') {
       let years = Number(value);
-
       if (years < 0) years = 0;
       if (years > 60) years = 60;
-
       setFormData((prev) => ({
         ...prev,
         yearsOfExperience: years,
       }));
-
       return;
     }
-
     setFormData((prev) => ({
       ...prev,
-      [name]:
-        name === 'idNumber' || name === 'phoneNumber'
-          ? value.replace(/\D/g, '')
-          : value,
+      [name]: name === 'idNumber' || name === 'phoneNumber' ? value.replace(/\D/g, '') : value,
     }));
   };
-
   const handleServiceChange = (e) => {
-    const selected = Array.from(e.target.selectedOptions).map(
-      (option) => option.value,
-    );
-
+    const selected = Array.from(e.target.selectedOptions).map((option) => option.value);
     setFormData((prev) => ({
       ...prev,
       servicesGroupIds: selected,
     }));
   };
-
   const handleWorkingHourChange = (index, field, value) => {
     setFormData((prev) => {
       const updatedHours = [...prev.workingHours];
-
       updatedHours[index] = {
         ...updatedHours[index],
         [field]: value,
       };
-
       return {
         ...prev,
         workingHours: updatedHours,
       };
     });
   };
-
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-
       const payload = {
         idNumber: formData.idNumber,
         name: formData.name,
@@ -112,10 +93,6 @@ const AddDoctorModal = ({ setOpen, open }) => {
         doctor: {
           servicesGroupIds: formData.servicesGroupIds,
           yearsOfExperience: Number(formData.yearsOfExperience),
-          // languages: formData.languages
-          //   .split(',')
-          //   .map((lang) => lang.trim())
-          //   .filter(Boolean),
           bio: formData.bio,
           clinic: formData.clinic,
           workingHours: formData.workingHours,
@@ -130,7 +107,6 @@ const AddDoctorModal = ({ setOpen, open }) => {
       toast.error(error.response?.data?.message || 'אירעה שגיאה, נסה שוב');
     }
   };
-
   return (
     <form className="doctor-form" onSubmit={handleSubmit}>
       <div className="doctor-form-grid">
@@ -148,55 +124,25 @@ const AddDoctorModal = ({ setOpen, open }) => {
             required
           />
         </div>
-
         <div className="form-field-add-doctor">
           <label>שם המלא של הרופא</label>
-          <input
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
+          <input name="name" value={formData.name} onChange={handleChange} required />
         </div>
-
         <div className="form-field-add-doctor">
           <label>הטלפון</label>
-          <input
-            name="phoneNumber"
-            maxLength={10}
-            value={formData.phoneNumber}
-            onChange={handleChange}
-            placeholder="+972 50 000 0000"
-            required
-          />
+          <input name="phoneNumber" maxLength={10} value={formData.phoneNumber} onChange={handleChange} placeholder="+972 50 000 0000" required />
         </div>
-
         <div className="form-field-add-doctor">
           <label>דוא"ל</label>
-          <input
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="doctor@email.com"
-          />
+          <input name="email" value={formData.email} onChange={handleChange} placeholder="doctor@email.com" />
         </div>
         <div className="form-field-add-doctor">
           <label>תאריך לידה</label>
-          <input
-            type="date"
-            name="birth"
-            value={formData.birth}
-            onChange={handleChange}
-          />
+          <input type="date" name="birth" value={formData.birth} onChange={handleChange} />
         </div>
         <div className="form-field-add-doctor">
           <label>מין</label>
-          <select
-            name="gender"
-            value={formData.gender}
-            onChange={handleChange}
-            required
-          >
+          <select name="gender" value={formData.gender} onChange={handleChange} required>
             <option value="">בחר מין</option>
             <option value="male">זכר</option>
             <option value="female">נקבה</option>
@@ -209,20 +155,36 @@ const AddDoctorModal = ({ setOpen, open }) => {
             name="yearsOfExperience"
             value={formData.yearsOfExperience}
             onChange={handleChange}
-
             // placeholder="5"
           />
         </div>
-
+        <div className="form-field-add-doctor">
+          <label>עיר</label>
+          <Select
+            options={cityOptions}
+            placeholder="חפש עיר..."
+            noOptionsMessage={() => 'לא נמצאו ערים'}
+            value={
+              formData.city
+                ? {
+                    value: formData.city,
+                    label: formData.city,
+                  }
+                : null
+            }
+            onChange={(selected) =>
+              setFormData((prev) => ({
+                ...prev,
+                city: selected?.value || '',
+              }))
+            }
+            classNamePrefix="add-patient-city-select"
+            isSearchable
+          />
+        </div>
         <div className="form-field-add-doctor">
           <label>שירותי רופא</label>
-
-          <select
-            multiple
-            value={formData.servicesGroupIds}
-            onChange={handleServiceChange}
-            required
-          >
+          <select multiple value={formData.servicesGroupIds} onChange={handleServiceChange} required>
             {serviceGroups.map((item) => (
               <option value={item._id} key={item._id}>
                 {item.title}
@@ -230,82 +192,49 @@ const AddDoctorModal = ({ setOpen, open }) => {
             ))}
           </select>
         </div>
-
         <div className="form-field-add-doctor full-width">
           <label>אודות הרופא</label>
-          <textarea
-            name="bio"
-            value={formData.bio}
-            onChange={handleChange}
-            placeholder="כתבו סיכום קצר על הרופא."
-          />
+          <textarea name="bio" value={formData.bio} onChange={handleChange} placeholder="כתבו סיכום קצר על הרופא." />
         </div>
         <div className="working-box full-width">
           <label className="section-label">שעות עבודה</label>
-
           {formData.workingHours?.map((item, index) => (
-            <div
-              className={`working-row ${item.isClosed ? 'closed' : ''}`}
-              key={item.day}
-            >
-              <div className="day-name">
-                {days.find((d) => d.key === item.day)?.label}
-              </div>
-
+            <div className={`working-row ${item.isClosed ? 'closed' : ''}`} key={item.day}>
+              <div className="day-name">{days.find((d) => d.key === item.day)?.label}</div>
               <label className="open-switch">
-                <input
-                  type="checkbox"
-                  checked={!item.isClosed}
-                  onChange={(e) =>
-                    handleWorkingHourChange(
-                      index,
-                      'isClosed',
-                      !e.target.checked,
-                    )
-                  }
-                />
+                <input type="checkbox" checked={!item.isClosed} onChange={(e) => handleWorkingHourChange(index, 'isClosed', !e.target.checked)} />
                 <span></span>
                 פתוח
               </label>
-
               <div className="time-field">
                 <span>מ־</span>
                 <input
                   type="time"
                   value={item.start}
                   disabled={item.isClosed}
-                  onChange={(e) =>
-                    handleWorkingHourChange(index, 'start', e.target.value)
-                  }
+                  onChange={(e) => handleWorkingHourChange(index, 'start', e.target.value)}
                 />
               </div>
-
               <div className="time-field">
                 <span>עד</span>
                 <input
                   type="time"
                   value={item.end}
                   disabled={item.isClosed}
-                  onChange={(e) =>
-                    handleWorkingHourChange(index, 'end', e.target.value)
-                  }
+                  onChange={(e) => handleWorkingHourChange(index, 'end', e.target.value)}
                 />
               </div>
             </div>
           ))}
         </div>
-
         <div className="form-field-add-doctor full-width">
           <label>מרפאה</label>
-
           <div className="clinic-cards">
-            {clinics.clinics?.map((clinic) => (
+            {clinics.map((clinic) => (
               <button
                 type="button"
                 key={clinic._id}
-                className={`clinic-card ${
-                  formData.clinic === clinic._id ? 'active' : ''
-                }`}
+                className={`clinic-card ${formData.clinic === clinic._id ? 'active' : ''}`}
                 onClick={() =>
                   setFormData((prev) => ({
                     ...prev,
@@ -315,21 +244,16 @@ const AddDoctorModal = ({ setOpen, open }) => {
               >
                 <h4>{clinic.name}</h4>
                 <p>{clinic.address}</p>
-
-                {clinic.phones?.length > 0 && (
-                  <span>{clinic.phones.join(' | ')}</span>
-                )}
+                {clinic.phones?.length > 0 && <span>{clinic.phones.join(' | ')}</span>}
               </button>
             ))}
           </div>
         </div>
       </div>
-
       <button className="submit-btn" type="submit">
         הוסף רופא
       </button>
     </form>
   );
 };
-
 export default AddDoctorModal;

@@ -2,17 +2,9 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { AuthContext } from './AuthContext';
 import { fetchServices } from '../api/serviceApi';
 import { fetchAllClincis } from '../api/clinicApi';
-import {
-  fetchAllDoctors,
-  fetchDoctorAppointments,
-  fetchDoctorDashboard,
-} from '../api/doctorApi';
+import { fetchAllDoctors, fetchDoctorAppointments, fetchDoctorDashboard } from '../api/doctorApi';
 import { fetchAllPatients } from '../api/patients';
-import {
-  fetchAllAppointments,
-  fetchAppointmentDay,
-  getPatientTreatmentPlans,
-} from '../api/appointmentApi';
+import { fetchAllAppointments, fetchAppointmentDay, getPatientTreatmentPlans } from '../api/appointmentApi';
 // import { getAllUsers } from '../api/userApi';
 export const AppDataContext = createContext(null);
 export const AppDataProvider = ({ children }) => {
@@ -45,6 +37,7 @@ export const AppDataProvider = ({ children }) => {
   };
   const loadDoctors = async () => {
     const res = await fetchAllDoctors(token);
+    console.log('loadDoctors res', res);
     setDoctors(res.doctors || []);
   };
   const loadDoctorDashboard = async () => {
@@ -69,28 +62,17 @@ export const AppDataProvider = ({ children }) => {
   };
   const loadPatientTreatmentPlans = async () => {
     const result = await getPatientTreatmentPlans(token);
-    setPatientTreatments(
-      Array.isArray(result?.treatments) ? result.treatments : [],
-    );
+    setPatientTreatments(Array.isArray(result?.treatments) ? result.treatments : []);
   };
   const loadInitialData = async () => {
     if (!token) return;
     try {
       setLoadingData(true);
       if (user && user.role === 'secretary') {
-        await Promise.all([
-          loadClinics(),
-          loadAllPatients(),
-          loadAllAppointments(),
-          loadAppointmentsDay(),
-        ]);
+        await Promise.all([loadClinics(), loadAllPatients(), loadAllAppointments(), loadAppointmentsDay()]);
       }
       if (user && user.role === 'doctor') {
-        await Promise.all([
-          loadDoctorDashboard(),
-          loadDoctorAppointments(),
-          loadAllPatients(),
-        ]);
+        await Promise.all([loadDoctorDashboard(), loadDoctorAppointments(), loadAllPatients()]);
       }
       if (user.role === 'patient') {
         loadPatientTreatmentPlans();
