@@ -1,18 +1,13 @@
 import { useContext, useMemo, useEffect, useState } from 'react';
 import BoxHeader from '../../../components/boxHeader/BoxHeader';
 import DashboardStats from '../../../components/dashboardStats/DashboardStats';
-import {
-  FiCheck,
-  FiCalendar,
-  FiFileText,
-  FiChevronLeft,
-  FiChevronRight,
-} from 'react-icons/fi';
+import { FiCheck, FiCalendar, FiFileText, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { patientDashboardStats } from '../../../../utils/dashboardDataStats/dataStats';
 import './dashboard.css';
 import { AppDataContext } from '../../../../context/AppDataContext';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../../../context/AuthContext';
+import { useDashboardStats } from '../../../../hooks/useDashboardStats';
 /* =========================
    Helpers
 ========================= */
@@ -69,24 +64,21 @@ const getSessionTimestamp = (date, time) => {
 const Dashboard = () => {
   const { user } = useContext(AuthContext);
   const { patientTreatments = [] } = useContext(AppDataContext);
+  const { items, loadingState } = useDashboardStats(patientDashboardStats, 'overview');
   const navigate = useNavigate();
   const [activeTreatmentIndex, setActiveTreatmentIndex] = useState(0);
   /* =========================
      Active Treatments
   ========================= */
   const activeTreatments = useMemo(() => {
-    const treatments = Array.isArray(patientTreatments)
-      ? patientTreatments
-      : [];
+    const treatments = Array.isArray(patientTreatments) ? patientTreatments : [];
     return treatments
       .filter((treatment) => {
         const totalSessions = Number(treatment?.totalSessions || 0);
         return treatment?.status === 'in_progress' && totalSessions > 1;
       })
       .sort((a, b) => {
-        return (
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-        );
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
       })
       .map((treatment) => ({
         _id: treatment._id,
@@ -109,12 +101,8 @@ const Dashboard = () => {
   ========================= */
   const recentAppointments = useMemo(() => {
     const sessions = [];
-    for (const treatment of Array.isArray(patientTreatments)
-      ? patientTreatments
-      : []) {
-      for (const session of Array.isArray(treatment?.sessions)
-        ? treatment.sessions
-        : []) {
+    for (const treatment of Array.isArray(patientTreatments) ? patientTreatments : []) {
+      for (const session of Array.isArray(treatment?.sessions) ? treatment.sessions : []) {
         sessions.push({
           _id: session._id,
           treatmentId: treatment._id,
@@ -136,12 +124,8 @@ const Dashboard = () => {
   ========================= */
   const recentActivities = useMemo(() => {
     const activities = [];
-    for (const treatment of Array.isArray(patientTreatments)
-      ? patientTreatments
-      : []) {
-      for (const session of Array.isArray(treatment?.sessions)
-        ? treatment.sessions
-        : []) {
+    for (const treatment of Array.isArray(patientTreatments) ? patientTreatments : []) {
+      for (const session of Array.isArray(treatment?.sessions) ? treatment.sessions : []) {
         const base = {
           timestamp: getSessionTimestamp(session.date, session.time),
         };
@@ -151,10 +135,7 @@ const Dashboard = () => {
             _id: `confirmed-${session._id}`,
             type: 'confirmed',
             title: 'המינוי אושר',
-            description: `${treatment.service?.name || 'טיפול'} - ${formatAppointmentDate(
-              session.date,
-              session.time,
-            )}`,
+            description: `${treatment.service?.name || 'טיפול'} - ${formatAppointmentDate(session.date, session.time)}`,
           });
         }
         if (session.status === 'completed') {
@@ -163,10 +144,7 @@ const Dashboard = () => {
             _id: `completed-${session._id}`,
             type: 'treatment',
             title: 'המפגש הושלם',
-            description: `${treatment.service?.name || 'טיפול'} - ${formatAppointmentDate(
-              session.date,
-              session.time,
-            )}`,
+            description: `${treatment.service?.name || 'טיפול'} - ${formatAppointmentDate(session.date, session.time)}`,
           });
         }
       }
@@ -225,11 +203,8 @@ const Dashboard = () => {
   const currentActiveTreatment = activeTreatments[activeTreatmentIndex] || null;
   return (
     <div className="main-container" dir="rtl">
-      <BoxHeader
-        title={'בוקר טוב, ' + user.name}
-        subtitle={'הנה סקירה כללית של ההזמנות שלך היום.'}
-      />
-      <DashboardStats items={patientDashboardStats} />
+      <BoxHeader title={'בוקר טוב, ' + user.name} subtitle={'הנה סקירה כללית של ההזמנות שלך היום.'} />
+      {loadingState ? <p>טוען נתונים...</p> : <DashboardStats items={items} />}
       <div className="patient-dashboard-overview">
         {/* =========================
             Recent Activity
@@ -241,8 +216,7 @@ const Dashboard = () => {
           <div className="recent-activity-list">
             {recentActivities.length > 0 ? (
               recentActivities.map((activity) => {
-                const config =
-                  activityConfig[activity.type] || activityConfig.reminder;
+                const config = activityConfig[activity.type] || activityConfig.reminder;
                 const Icon = config.icon;
                 return (
                   <div className="recent-activity-item" key={activity._id}>
@@ -251,9 +225,7 @@ const Dashboard = () => {
                     </div>
                     <div className="activity-content">
                       <span className="activity-title">{activity.title}</span>
-                      <span className="activity-description">
-                        {activity.description}
-                      </span>
+                      <span className="activity-description">{activity.description}</span>
                     </div>
                   </div>
                 );
@@ -276,13 +248,8 @@ const Dashboard = () => {
                 const treatment = currentActiveTreatment;
                 const completed = Number(treatment.completedSessions || 0);
                 const total = Number(treatment.totalSessions || 0);
-                const calculatedProgress =
-                  total > 0
-                    ? Math.min(Math.round((completed / total) * 100), 100)
-                    : 0;
-                const progress = Number.isFinite(treatment.progress)
-                  ? treatment.progress
-                  : calculatedProgress;
+                const calculatedProgress = total > 0 ? Math.min(Math.round((completed / total) * 100), 100) : 0;
+                const progress = Number.isFinite(treatment.progress) ? treatment.progress : calculatedProgress;
                 return (
                   <>
                     <div className="active-treatment-carousel">
@@ -296,19 +263,12 @@ const Dashboard = () => {
                           <FiChevronRight />
                         </button>
                       )}
-                      <div
-                        className="active-treatment-wrapper"
-                        key={treatment._id}
-                      >
+                      <div className="active-treatment-wrapper" key={treatment._id}>
                         <div className="active-treatment-card">
                           <div className="treatment-main-row">
                             <div className="treatment-title-area">
-                              <span className="treatment-name">
-                                {treatment.title}
-                              </span>
-                              <span className="treatment-service-group">
-                                {treatment.serviceGroup}
-                              </span>
+                              <span className="treatment-name">{treatment.title}</span>
+                              <span className="treatment-service-group">{treatment.serviceGroup}</span>
                             </div>
                             <span className="treatment-sessions">
                               {completed}/{total} מפגשים
@@ -335,17 +295,10 @@ const Dashboard = () => {
                           {treatment.nextSession ? (
                             <div className="treatment-next-session">
                               <span>המפגש הבא:</span>
-                              <strong>
-                                {formatAppointmentDate(
-                                  treatment.nextSession.date,
-                                  treatment.nextSession.time,
-                                )}
-                              </strong>
+                              <strong>{formatAppointmentDate(treatment.nextSession.date, treatment.nextSession.time)}</strong>
                             </div>
                           ) : (
-                            <div className="treatment-next-session treatment-next-session--empty">
-                              טרם נקבע מפגש נוסף
-                            </div>
+                            <div className="treatment-next-session treatment-next-session--empty">טרם נקבע מפגש נוסף</div>
                           )}
                         </div>
                         <button
@@ -380,11 +333,7 @@ const Dashboard = () => {
                             <button
                               key={item._id}
                               type="button"
-                              className={`treatment-carousel-dot ${
-                                index === activeTreatmentIndex
-                                  ? 'treatment-carousel-dot--active'
-                                  : ''
-                              }`}
+                              className={`treatment-carousel-dot ${index === activeTreatmentIndex ? 'treatment-carousel-dot--active' : ''}`}
                               onClick={() => setActiveTreatmentIndex(index)}
                               aria-label={`טיפול ${index + 1}`}
                             />
@@ -399,9 +348,7 @@ const Dashboard = () => {
                 );
               })()
             ) : (
-              <div className="dashboard-empty">
-                אין טיפולים פעילים עם מספר מפגשים
-              </div>
+              <div className="dashboard-empty">אין טיפולים פעילים עם מספר מפגשים</div>
             )}
           </div>
         </section>
@@ -433,24 +380,13 @@ const Dashboard = () => {
                   <tr key={appointment._id}>
                     <td>{appointment.serviceName}</td>
                     <td>
-                      <span
-                        className={`appointment-status appointment-status--${appointment.status}`}
-                      >
+                      <span className={`appointment-status appointment-status--${appointment.status}`}>
                         {statusLabels[appointment.status] || appointment.status}
                       </span>
                     </td>
                     <td>{appointment.doctorName}</td>
-                    <td>
-                      {appointment.sessionNumber
-                        ? `מפגש ${appointment.sessionNumber}`
-                        : '-'}
-                    </td>
-                    <td>
-                      {formatAppointmentDate(
-                        appointment.date,
-                        appointment.time,
-                      )}
-                    </td>
+                    <td>{appointment.sessionNumber ? `מפגש ${appointment.sessionNumber}` : '-'}</td>
+                    <td>{formatAppointmentDate(appointment.date, appointment.time)}</td>
                   </tr>
                 ))
               ) : (

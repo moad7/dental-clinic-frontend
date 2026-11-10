@@ -16,6 +16,15 @@ export const ERROR_MESSAGES = {
   'No token provided': 'נדרשת התחברות למערכת',
   /*
    * ========================================
+   * dashboard
+   * ========================================
+   */
+  'Invalid dashboard view': 'תצוגת לוח הבקרה אינה תקינה',
+  'Dashboard view not allowed': 'אין הרשאה לגשת לתצוגת לוח הבקרה',
+  'Unsupported user role': 'תפקיד המשתמש אינו נתמך',
+  'Failed to fetch dashboard stats': 'אירעה שגיאה בטעינת נתוני לוח הבקרה',
+  /*
+   * ========================================
    * ObjectId / Validation
    * ========================================
    */

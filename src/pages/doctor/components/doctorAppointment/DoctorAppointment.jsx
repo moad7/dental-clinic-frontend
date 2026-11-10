@@ -5,15 +5,13 @@ import BoxHeader from '../../../components/boxHeader/BoxHeader';
 import DashboardStats from '../../../components/dashboardStats/DashboardStats';
 import DataTable from '../../../components/dataTable/DataTable';
 import Modal from '../../../../components/modal/Modal';
-import { doctorDashboardStats } from '../../../../utils/dashboardDataStats/dataStats';
 import { AuthContext } from '../../../../context/AuthContext';
 import { AppDataContext } from '../../../../context/AppDataContext';
 import { confirmDateById } from '../../../../api/appointmentApi';
 import './doctorAppointment.css';
 import { showErrorToast } from '../../../../utils/errorMessages';
-// =========================================================
-// STATUS OPTIONS
-// =========================================================
+import { useDashboardStats } from '../../../../hooks/useDashboardStats';
+import { doctorDashboardStats } from '../../../../utils/dashboardDataStats/dataStats';
 const STATUS_OPTIONS = [
   { value: 'all', label: 'כל הסטטוסים' },
   { value: 'pending', label: 'ממתין' },
@@ -33,9 +31,6 @@ const DOCTOR_STATUS_OPTIONS = [
   { value: 'completed', label: 'הושלם' },
   { value: 'rejected', label: 'נדחה' },
 ];
-// =========================================================
-// HELPERS
-// =========================================================
 const formatDate = (value) => {
   if (!value) return '-';
   const [year, month, day] = String(value).slice(0, 10).split('-');
@@ -48,18 +43,10 @@ const normalizeAppointments = (data) => {
   }
   return [];
 };
-// =========================================================
-// COMPONENT
-// =========================================================
 const DoctorAppointment = () => {
-  // -------------------------------------------------------
-  // CONTEXT
-  // -------------------------------------------------------
   const { token } = useContext(AuthContext);
   const { doctorAppointments } = useContext(AppDataContext);
-  // -------------------------------------------------------
-  // STATE
-  // -------------------------------------------------------
+  const { items, loadingState } = useDashboardStats(doctorDashboardStats, 'overview');
   const [appointments, setAppointments] = useState(() => normalizeAppointments(doctorAppointments));
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState('');
@@ -68,24 +55,15 @@ const DoctorAppointment = () => {
   const [selectedSession, setSelectedSession] = useState(null);
   const [editStatus, setEditStatus] = useState('');
   const [editNote, setEditNote] = useState('');
-  // -------------------------------------------------------
-  // SYNC APPOINTMENTS FROM CONTEXT
-  // -------------------------------------------------------
   useEffect(() => {
     setAppointments(normalizeAppointments(doctorAppointments));
   }, [doctorAppointments]);
-  // -------------------------------------------------------
-  // SESSION STATUS
-  // -------------------------------------------------------
   const isCompleted = selectedSession?.status === 'completed';
   const isRejected = selectedSession?.status === 'rejected';
   const isCancelled = selectedSession?.status === 'cancelled';
   const isReadOnlyStatus = isCompleted || isRejected || isCancelled;
   const canEditNote = !isRejected && !isCancelled;
   const canSave = Boolean(selectedSession) && canEditNote;
-  // -------------------------------------------------------
-  // FILTER APPOINTMENTS
-  // -------------------------------------------------------
   const filteredAppointments = useMemo(() => {
     const query = search.trim().toLowerCase();
     return appointments.filter((appointment) => {
@@ -99,26 +77,17 @@ const DoctorAppointment = () => {
       return matchesSearch && matchesStatus && matchesDate;
     });
   }, [appointments, search, statusFilter, dateFilter]);
-  // -------------------------------------------------------
-  // OPEN SESSION MODAL
-  // -------------------------------------------------------
   const openSessionModal = (session) => {
     setSelectedSession(session);
     setEditStatus(session.status || '');
     setEditNote(session.note || '');
   };
-  // -------------------------------------------------------
-  // CLOSE SESSION MODAL
-  // -------------------------------------------------------
   const closeSessionModal = () => {
     if (saving) return;
     setSelectedSession(null);
     setEditStatus('');
     setEditNote('');
   };
-  // -------------------------------------------------------
-  // SAVE SESSION
-  // -------------------------------------------------------
   const handleSave = async (selectedSessionId) => {
     if (!selectedSession || saving) return;
     const currentStatus = selectedSession.status;
@@ -164,9 +133,6 @@ const DoctorAppointment = () => {
       setSaving(false);
     }
   };
-  // -------------------------------------------------------
-  // TABLE COLUMNS
-  // -------------------------------------------------------
   const columns = [
     {
       key: 'patient',
@@ -234,16 +200,10 @@ const DoctorAppointment = () => {
       ),
     },
   ];
-  // =======================================================
-  // RENDER
-  // =======================================================
   return (
     <div className="main-container doctor-appointment-page" dir="rtl">
       <BoxHeader title="לוח זמנים של הרופא" subtitle="סקירה כללית של הפגישות והטיפולים של הרופא" />
-      <DashboardStats items={doctorDashboardStats} />
-      {/* ===================================================
-          APPOINTMENTS PANEL
-      =================================================== */}
+      {loadingState ? <p>טוען נתונים...</p> : <DashboardStats items={items} />}
       <section className="doctor-appointment-panel">
         <div className="doctor-appointment-heading">
           <div>
@@ -252,9 +212,6 @@ const DoctorAppointment = () => {
           </div>
           <span className="doctor-appointment-total">{filteredAppointments.length} פגישות</span>
         </div>
-        {/* =================================================
-            FILTERS
-        ================================================= */}
         <div className="doctor-appointment-filters">
           <div className="doctor-appointment-search">
             <FiSearch />
@@ -291,9 +248,6 @@ const DoctorAppointment = () => {
             </button>
           )}
         </div>
-        {/* =================================================
-            TABLE
-        ================================================= */}
         <div className="doctor-appointment-table-wrap">
           <DataTable
             columns={columns}
@@ -305,15 +259,9 @@ const DoctorAppointment = () => {
           />
         </div>
       </section>
-      {/* ===================================================
-          SESSION MODAL
-      =================================================== */}
       <Modal isOpen={Boolean(selectedSession)} onClose={closeSessionModal} title="פרטי הפגישה" size="md">
         {selectedSession && (
           <div className="doctor-appointment-modal" dir="rtl">
-            {/* =============================================
-                SESSION INFORMATION
-            ============================================= */}
             <div className="doctor-appointment-modal-info">
               <div>
                 <span>מטופל</span>
@@ -332,9 +280,6 @@ const DoctorAppointment = () => {
                 <strong>{selectedSession.time || '-'}</strong>
               </div>
             </div>
-            {/* =============================================
-                SESSION STATUS
-            ============================================= */}
             <div className="doctor-appointment-modal-field">
               <label htmlFor="doctor-session-status">סטטוס הפגישה</label>
               {isReadOnlyStatus ? (
@@ -356,9 +301,6 @@ const DoctorAppointment = () => {
                 </select>
               )}
             </div>
-            {/* =============================================
-                DOCTOR NOTE
-            ============================================= */}
             <div className="doctor-appointment-modal-field">
               <label htmlFor="doctor-session-note">הערת הרופא</label>
               {canEditNote ? (
@@ -374,9 +316,6 @@ const DoctorAppointment = () => {
                 <div className="doctor-appointment-note-text">{selectedSession.note?.trim() || 'לא נוספה הערה למפגש זה'}</div>
               )}
             </div>
-            {/* =============================================
-                ACTION BUTTONS
-            ============================================= */}
             <div className="doctor-appointment-modal-actions">
               <button type="button" onClick={closeSessionModal} disabled={saving}>
                 סגירה

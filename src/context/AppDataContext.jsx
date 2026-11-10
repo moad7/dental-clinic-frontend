@@ -1,10 +1,12 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { AuthContext } from './AuthContext';
 import { fetchServices } from '../api/serviceApi';
 import { fetchAllClincis } from '../api/clinicApi';
 import { fetchAllDoctors, fetchDoctorAppointments, fetchDoctorDashboard } from '../api/doctorApi';
 import { fetchAllPatients } from '../api/patients';
 import { fetchAllAppointments, fetchAppointmentDay, getPatientTreatmentPlans } from '../api/appointmentApi';
+import { fetchDashboardStats } from '../api/dashboardApi';
+import { showErrorToast } from '../utils/errorMessages';
 // import { getAllUsers } from '../api/userApi';
 export const AppDataContext = createContext(null);
 export const AppDataProvider = ({ children }) => {
@@ -21,6 +23,90 @@ export const AppDataProvider = ({ children }) => {
   const [appointmentDay, setAppointmentDay] = useState([]);
   const [patientTreatments, setPatientTreatments] = useState([]);
   const [loadingData, setLoadingData] = useState(false);
+  const [dashboardStats, setDashboardStats] = useState({});
+  const [dashboardLoading, setDashboardLoading] = useState({});
+  const dashboardCacheRef = useRef({});
+  const dashboardRequestsRef = useRef({});
+  const dashboardSessionRef = useRef(null);
+  const sessionKey = token && user ? `${user._id ?? user.id ?? ''}:${token}` : null;
+  if (dashboardSessionRef.current !== sessionKey) {
+    dashboardSessionRef.current = sessionKey;
+    dashboardCacheRef.current = {};
+    dashboardRequestsRef.current = {};
+  }
+  if (dashboardSessionRef.current !== sessionKey) {
+    dashboardSessionRef.current = sessionKey;
+    dashboardCacheRef.current = {};
+    dashboardRequestsRef.current = {};
+  }
+  const loadDashboardStats = useCallback(
+    async (view = 'overview', force = false) => {
+      if (!token || !user) return null;
+      const role = user.role;
+      const allowedViews =
+        role === 'secretary'
+          ? ['overview', 'patients', 'doctors']
+          : role === 'doctor'
+            ? ['overview', 'patients']
+            : role === 'patient'
+              ? ['overview']
+              : [];
+      if (!allowedViews.includes(view)) {
+        return null;
+      }
+      const key = `${role}:${view}`;
+      const requestSession = sessionKey;
+      // Return cached data if available
+      if (!force && dashboardCacheRef.current[key] !== undefined) {
+        return dashboardCacheRef.current[key];
+      }
+      // Prevent duplicate requests
+      if (dashboardRequestsRef.current[key]) {
+        return dashboardRequestsRef.current[key];
+      }
+      setDashboardLoading((prev) => ({
+        ...prev,
+        [key]: true,
+      }));
+      const request = (async () => {
+        try {
+          const response = await fetchDashboardStats(view, token);
+          const stats = response.stats;
+          if (dashboardSessionRef.current === requestSession) {
+            dashboardCacheRef.current[key] = stats;
+            setDashboardStats((prev) => ({
+              ...prev,
+              [key]: stats,
+            }));
+          }
+          return stats;
+        } catch (error) {
+          if (dashboardSessionRef.current === requestSession) {
+            console.error('Dashboard stats error:', error);
+            showErrorToast(error, 'אירעה שגיאה בטעינת נתוני לוח הבקרה');
+          }
+          return null;
+        } finally {
+          if (dashboardSessionRef.current === requestSession) {
+            setDashboardLoading((prev) => ({
+              ...prev,
+              [key]: false,
+            }));
+          }
+          if (dashboardRequestsRef.current[key] === request) {
+            delete dashboardRequestsRef.current[key];
+          }
+        }
+      })();
+      dashboardRequestsRef.current[key] = request;
+      return request;
+    },
+    [token, user?._id, user?.role, sessionKey],
+  );
+  useEffect(() => {
+    setDashboardStats({});
+    setDashboardLoading({});
+  }, [sessionKey]);
   const addDoctorToState = (doctor) => {
     setDoctors((prev) => {
       const currentDoctors = Array.isArray(prev) ? prev : [];
@@ -37,7 +123,6 @@ export const AppDataProvider = ({ children }) => {
   };
   const loadDoctors = async () => {
     const res = await fetchAllDoctors(token);
-    console.log('loadDoctors res', res);
     setDoctors(res.doctors || []);
   };
   const loadDoctorDashboard = async () => {
@@ -58,7 +143,7 @@ export const AppDataProvider = ({ children }) => {
   };
   const loadAppointmentsDay = async () => {
     const res = await fetchAppointmentDay(token);
-    setAppointmentDay(res.data);
+    setAppointmentDay(res.appointments || []);
   };
   const loadPatientTreatmentPlans = async () => {
     const result = await getPatientTreatmentPlans(token);
@@ -96,6 +181,7 @@ export const AppDataProvider = ({ children }) => {
   return (
     <AppDataContext.Provider
       value={{
+        appointmentDay,
         serviceGroups,
         setServiceGroups,
         users,
@@ -114,6 +200,10 @@ export const AppDataProvider = ({ children }) => {
         loadDoctors,
         loadInitialData,
         loadDoctorDashboard,
+        // Dashboard stats
+        dashboardStats,
+        dashboardLoading,
+        loadDashboardStats,
       }}
     >
       {children}

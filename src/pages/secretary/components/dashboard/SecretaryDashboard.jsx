@@ -16,36 +16,17 @@ import { useContext, useState } from 'react';
 import AddMeetingsModal from '../../../modals/addMeetingsModal/AddMeetingsModal';
 import AddPatientModal from '../../../modals/patientModal/AddPatientModal';
 import { AuthContext } from '../../../../context/AuthContext';
+import { AppDataContext } from '../../../../context/AppDataContext';
+import { formatDateTime } from '../../../../utils/functions';
+import { useDashboardStats } from '../../../../hooks/useDashboardStats';
 const SecretaryDashboard = () => {
   const { user } = useContext(AuthContext);
-  const [Open, setOpen] = useState(false);
+  const { appointmentDay } = useContext(AppDataContext);
+  const { items, loadingState } = useDashboardStats(secretaryStats, 'overview');
   const [selectedAction, setSelectedAction] = useState(null);
-  // const [stats, setStats] = useState(null);
-  // const [todayAppointments, setTodayAppointments] = useState([]);
-  // const token = localStorage.getItem('token');
   const isConfirmed = (item) => {
-    return item.status === 'confirmed';
+    return item.sessionStatus === 'confirmed';
   };
-  const tableToday = [
-    {
-      _id: 1,
-      timingName: '9:00 בבוקר - אחמד מוחסן',
-      categoryDoctor: 'ניקיון קבוע • ד"ר גונסון',
-      status: 'confirmed',
-    },
-    {
-      _id: 2,
-      timingName: '10:30 בבוקר - מגיד איברהים',
-      categoryDoctor: 'טיפול שורש • ד"ר צן',
-      status: 'onHold',
-    },
-    {
-      _id: 3,
-      timingName: '14:00 - שרה דיב',
-      categoryDoctor: 'ייעוץ • ד"ר דיוויס',
-      status: 'confirmed',
-    },
-  ];
   const fastManagement = [
     {
       _id: 1,
@@ -76,11 +57,8 @@ const SecretaryDashboard = () => {
   ];
   return (
     <div className="main-container" dir="rtl">
-      <BoxHeader
-        title={'בוקר טוב, ' + user.name}
-        subtitle={'הנה סקירה כללית של ההזמנות שלך היום.'}
-      />
-      <DashboardStats items={secretaryStats} />
+      <BoxHeader title={'בוקר טוב, ' + user.name} subtitle={'הנה סקירה כללית של ההזמנות שלך היום.'} />
+      {loadingState ? <p>טוען נתונים...</p> : <DashboardStats items={items} />}
       <div className="container-box nivg-order">
         <div className="nivg-order-header">
           <span className="nivg-order-title">בקשות אישור ממתינות</span>
@@ -92,15 +70,9 @@ const SecretaryDashboard = () => {
               <BellRing size={27} />
             </div>
             <div className="nivg-order-texts">
-              <span className="nivg-order-mainText">
-                בקשות לפגישות דורשות את תשומת לבך
-              </span>
-              <span className="nivg-order-subText">
-                סקירה ואישור של הזמנות חדשות
-              </span>
-              <span className="nivg-order-metaText">
-                הזמנה אחרונה: לפני 15 דקות
-              </span>
+              <span className="nivg-order-mainText">בקשות לפגישות דורשות את תשומת לבך</span>
+              <span className="nivg-order-subText">סקירה ואישור של הזמנות חדשות</span>
+              <span className="nivg-order-metaText">הזמנה אחרונה: לפני 15 דקות</span>
             </div>
           </div>
           <div className="nivg-order-right">
@@ -112,48 +84,38 @@ const SecretaryDashboard = () => {
         <div className="container-box today-card">
           <div className="today-card-header">
             <span className="today-card-title">לוח הזמנים של היום</span>
-            <span className="today-card-date">15 בדצמבר, 2025</span>
+            <span className="today-card-date">{formatDateTime(Date.now())}</span>
           </div>
           <div className="today-card-list">
-            {tableToday.map((item) => {
-              const confirmed = isConfirmed(item);
-              return (
-                <div className="today-item" key={item._id}>
-                  <div className="today-item-right">
-                    <span
-                      className={`today-item-indicator ${
-                        confirmed ? 'is-confirmed' : 'is-pending'
-                      }`}
-                    />
-                    <div className="today-item-info">
-                      <span>{item.categoryDoctor}</span>
-                      <span>{item.timingName}</span>
+            {appointmentDay.length > 0 &&
+              appointmentDay.map((item) => {
+                const confirmed = isConfirmed(item);
+                return (
+                  <div className="today-item" key={item._id}>
+                    <div className="today-item-right">
+                      <span className={`today-item-indicator ${confirmed ? 'is-confirmed' : 'is-pending'}`} />
+                      <div className="today-item-info">
+                        <span>
+                          {item.service?.groupTitle || '-'} • {item.doctor?.name || '-'}
+                        </span>
+                        <span>
+                          {item.patient?.name || '-'} - {item.time || '-'}
+                        </span>
+                      </div>
+                    </div>
+                    <div className={`today-item-status ${confirmed ? 'is-confirmed' : 'is-pending'}`}>
+                      <span>{confirmed ? 'אושר' : 'בהמתנה'}</span>
                     </div>
                   </div>
-                  <div
-                    className={`today-item-status ${
-                      confirmed ? 'is-confirmed' : 'is-pending'
-                    }`}
-                  >
-                    <span>{confirmed ? 'אושר' : 'בהמתנה'}</span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          <div className="today-card-footer">
-            <button className="today-card-link">הצג את לוח השנה המלא</button>
+                );
+              })}
           </div>
         </div>
         <div className="container-box quick-mgmt">
           <span className="quick-mgmt-title">נהלים מהירים</span>
           <div className="quick-mgmt-list">
             {fastManagement.map((item) => (
-              <div
-                className="quick-mgmt-item"
-                key={item._id}
-                onClick={() => setSelectedAction(item)}
-              >
+              <div className="quick-mgmt-item" key={item._id} onClick={() => setSelectedAction(item)}>
                 <div className="quick-mgmt-left">
                   <span
                     className="quick-mgmt-icon"
@@ -176,12 +138,7 @@ const SecretaryDashboard = () => {
       </div>
       <MeetingTable headerTextTable={'בקשות אחרונות לפגישות'} moreBtn />
       {selectedAction && (
-        <Modal
-          isOpen
-          onClose={() => setSelectedAction(null)}
-          title={selectedAction.modalTitle}
-          size="xl"
-        >
+        <Modal isOpen onClose={() => setSelectedAction(null)} title={selectedAction.modalTitle} size="xl">
           {selectedAction.component}
         </Modal>
       )}

@@ -2,27 +2,15 @@ import axios from 'axios';
 import { auth } from '../utils/constants';
 const API_URL = 'http://localhost:3000/api/appointments';
 export const createAppointments = async (payload, token) => {
-  const res = await axios.post(
-    `${API_URL}/createAppointment`,
-    payload,
-    auth(token),
-  );
+  const res = await axios.post(`${API_URL}/createAppointment`, payload, auth(token));
   return res.data;
 };
 export const fetchAllAppointments = async (token) => {
   const res = await axios.get(`${API_URL}`, auth(token));
   return res.data;
 };
-export const updateAppointmentById = async (
-  updateData,
-  appointmentId,
-  token,
-) => {
-  const res = await axios.patch(
-    `${API_URL}/updateAppointment/${appointmentId}`,
-    updateData,
-    auth(token),
-  );
+export const updateAppointmentById = async (updateData, appointmentId, token) => {
+  const res = await axios.patch(`${API_URL}/updateAppointment/${appointmentId}`, updateData, auth(token));
   return res.data;
 };
 export const deleteAppointmentById = async (appointmentId, token) => {
@@ -30,21 +18,15 @@ export const deleteAppointmentById = async (appointmentId, token) => {
   return res.data;
 };
 export const confirmDateById = async (appointmentId, decision, note, token) => {
-  const res = await axios.patch(
-    `${API_URL}/decision/${appointmentId}`,
-    { decision, note },
-    auth(token),
-  );
+  const res = await axios.patch(`${API_URL}/decision/${appointmentId}`, { decision, note }, auth(token));
   return res.data;
 };
 export const fetchAppointmentDay = async (token) => {
   const res = await axios.get(`${API_URL}/today`, auth(token));
+  console.log('fetchAppointmentDay response:', res.data);
   return res.data;
 };
-export const getPatientAppointmentsCalendar = async (
-  { from, to, status, doctorId, serviceGroupId },
-  token,
-) => {
+export const getPatientAppointmentsCalendar = async ({ from, to, status, doctorId, serviceGroupId }, token) => {
   const params = {
     from,
     to,

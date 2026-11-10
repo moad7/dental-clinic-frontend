@@ -78,6 +78,7 @@ const DoctorDetailsModal = ({ open, setOpen, doctor }) => {
     try {
       setRenewingActivation(true);
       const response = await renewActivationLink(doctorProfile._id, token);
+      console.log('Renew activation response:', response);
       const newExpires = response?.activationTokenExpires;
       if (newExpires) {
         setActivationExpires(newExpires);

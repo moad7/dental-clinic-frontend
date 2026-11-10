@@ -9,8 +9,10 @@ import { secretaryDoctorsStats } from '../../../../utils/dashboardDataStats/data
 import DataTable from '../../../components/dataTable/DataTable';
 import './doctorsManagement.css';
 import { AppDataContext } from '../../../../context/AppDataContext';
+import { useDashboardStats } from '../../../../hooks/useDashboardStats';
 const DoctorsManagement = () => {
   const { doctors } = useContext(AppDataContext);
+  const { items, loadingState } = useDashboardStats(secretaryDoctorsStats, 'doctors');
   const [open, setOpen] = useState(false);
   const [doctorsModalOpen, setDoctorsModalOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -143,7 +145,7 @@ const DoctorsManagement = () => {
         actionIcon={<FiPlus size={20} />}
         actionLabel={'הוסף רופא חדש'}
       />
-      <DashboardStats items={secretaryDoctorsStats} />
+      {loadingState ? <p>טוען נתונים...</p> : <DashboardStats items={items} />}
       <Modal isOpen={open} onClose={() => setOpen(false)} title="הוספת רופא חדש" size="xl">
         <AddDoctorModal setOpen={setOpen} open={open} />
       </Modal>

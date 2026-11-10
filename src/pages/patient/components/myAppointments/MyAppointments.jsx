@@ -1,11 +1,5 @@
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  FiChevronLeft,
-  FiChevronRight,
-  FiClock,
-  FiMoreHorizontal,
-  FiX,
-} from 'react-icons/fi';
+import { FiChevronLeft, FiChevronRight, FiClock, FiMoreHorizontal, FiX } from 'react-icons/fi';
 import { AuthContext } from '../../../../context/AuthContext';
 import BoxHeader from '../../../components/boxHeader/BoxHeader';
 import './myAppointments.css';
@@ -14,15 +8,7 @@ const HOUR_HEIGHT = 128;
 const APPOINTMENT_PREVIEW_WIDTH = 370;
 const APPOINTMENT_PREVIEW_HEIGHT = 300;
 const WEEK_DAYS = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי'];
-const MINI_WEEK_DAYS = [
-  'שבת',
-  'ראשון',
-  'שני',
-  'שלישי',
-  'רביעי',
-  'חמישי',
-  'שישי',
-];
+const MINI_WEEK_DAYS = ['שבת', 'ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי'];
 const SESSION_STATUS_COLORS = {
   pending: 'blue',
   confirmed: 'green',
@@ -53,7 +39,7 @@ const formatAppointmentDate = (date) => {
   }).format(parsedDate);
 };
 const MyAppointments = () => {
-  const { token } = useContext(AuthContext);
+  const { token, user } = useContext(AuthContext);
   const calendarContentRef = useRef(null);
   const previewRef = useRef(null);
   const initialMonth = useMemo(() => {
@@ -123,9 +109,7 @@ const MyAppointments = () => {
         console.error('Failed to load patient appointments:', error);
         setAppointments([]);
         setUpcomingAppointments([]);
-        setAppointmentsError(
-          error?.response?.data?.message || 'אירעה שגיאה בטעינת התורים',
-        );
+        setAppointmentsError(error?.response?.data?.message || 'אירעה שגיאה בטעינת התורים');
       } finally {
         if (!ignore) {
           setAppointmentsLoading(false);
@@ -136,13 +120,7 @@ const MyAppointments = () => {
     return () => {
       ignore = true;
     };
-  }, [
-    token,
-    queryRange,
-    filters.status,
-    filters.doctorId,
-    filters.serviceGroupId,
-  ]);
+  }, [token, queryRange, filters.status, filters.doctorId, filters.serviceGroupId]);
   const monthLabel = useMemo(() => {
     return new Intl.DateTimeFormat('he-IL', {
       month: 'long',
@@ -155,18 +133,11 @@ const MyAppointments = () => {
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const firstJsDay = new Date(year, month, 1).getDay();
     const leadingEmptyCells = (firstJsDay + 1) % 7;
-    return [
-      ...Array.from({ length: leadingEmptyCells }, () => null),
-      ...Array.from({ length: daysInMonth }, (_, index) => index + 1),
-    ];
+    return [...Array.from({ length: leadingEmptyCells }, () => null), ...Array.from({ length: daysInMonth }, (_, index) => index + 1)];
   }, [sidebarDate]);
   const changeMonth = (offset) => {
     setCurrentDate((previous) => {
-      const next = new Date(
-        previous.getFullYear(),
-        previous.getMonth() + offset,
-        1,
-      );
+      const next = new Date(previous.getFullYear(), previous.getMonth() + offset, 1);
       setSidebarDate(next);
       return next;
     });
@@ -220,9 +191,7 @@ const MyAppointments = () => {
   const getMiniCalendarRangeClass = (day) => {
     if (day === null) return '';
     if (rangeStart !== null && rangeEnd === null) {
-      return day === rangeStart
-        ? 'mini-day-selected mini-range-start-only'
-        : '';
+      return day === rangeStart ? 'mini-day-selected mini-range-start-only' : '';
     }
     if (rangeStart === null || rangeEnd === null) {
       return '';
@@ -256,12 +225,8 @@ const MyAppointments = () => {
         endMinutes: 18 * 60,
       };
     }
-    const starts = appointments.map((appointment) =>
-      parseTimeToMinutes(appointment.startTime),
-    );
-    const ends = appointments.map((appointment) =>
-      parseTimeToMinutes(appointment.endTime),
-    );
+    const starts = appointments.map((appointment) => parseTimeToMinutes(appointment.startTime));
+    const ends = appointments.map((appointment) => parseTimeToMinutes(appointment.endTime));
     const earliestAppointment = Math.min(...starts);
     const latestAppointment = Math.max(...ends);
     return {
@@ -271,11 +236,7 @@ const MyAppointments = () => {
   }, [appointments]);
   const calendarTimeSlots = useMemo(() => {
     const slots = [];
-    for (
-      let minutes = calendarRange.startMinutes;
-      minutes <= calendarRange.endMinutes;
-      minutes += 30
-    ) {
+    for (let minutes = calendarRange.startMinutes; minutes <= calendarRange.endMinutes; minutes += 30) {
       slots.push(minutes);
     }
     return slots;
@@ -311,9 +272,7 @@ const MyAppointments = () => {
     return SESSION_STATUS_COLORS[appointment.sessionStatus] ?? 'blue';
   };
   const getAppointmentTitle = (appointment) => {
-    return (
-      appointment?.service?.name || appointment?.serviceGroup?.title || 'תור'
-    );
+    return appointment?.service?.name || appointment?.serviceGroup?.title || 'תור';
   };
   const handleAppointmentClick = (event, appointment) => {
     event.stopPropagation();
@@ -324,23 +283,15 @@ const MyAppointments = () => {
     }
     const appointmentRect = event.currentTarget.getBoundingClientRect();
     const calendarRect = calendarElement.getBoundingClientRect();
-    const appointmentCenter =
-      appointmentRect.left - calendarRect.left + appointmentRect.width / 2;
+    const appointmentCenter = appointmentRect.left - calendarRect.left + appointmentRect.width / 2;
     let left = appointmentCenter - APPOINTMENT_PREVIEW_WIDTH / 2;
     let top = appointmentRect.bottom - calendarRect.top + 16;
     const minimumLeft = 16;
-    const maximumLeft = Math.max(
-      minimumLeft,
-      calendarElement.scrollWidth - APPOINTMENT_PREVIEW_WIDTH - 16,
-    );
+    const maximumLeft = Math.max(minimumLeft, calendarElement.scrollWidth - APPOINTMENT_PREVIEW_WIDTH - 16);
     left = Math.max(minimumLeft, Math.min(left, maximumLeft));
     const availableBottom = calendarRect.bottom - appointmentRect.bottom;
     if (availableBottom < APPOINTMENT_PREVIEW_HEIGHT + 20) {
-      top =
-        appointmentRect.top -
-        calendarRect.top -
-        APPOINTMENT_PREVIEW_HEIGHT -
-        16;
+      top = appointmentRect.top - calendarRect.top - APPOINTMENT_PREVIEW_HEIGHT - 16;
     }
     setPreviewPosition({
       top: Math.max(16, top),
@@ -363,19 +314,11 @@ const MyAppointments = () => {
     };
   }, []);
   const now = new Date();
-  const isCurrentMonth =
-    currentDate.getFullYear() === now.getFullYear() &&
-    currentDate.getMonth() === now.getMonth();
+  const isCurrentMonth = currentDate.getFullYear() === now.getFullYear() && currentDate.getMonth() === now.getMonth();
   const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
-  const currentTimeTop =
-    ((currentTimeMinutes - calendarRange.startMinutes) / 30) * HALF_HOUR_HEIGHT;
-  const showCurrentTime =
-    isCurrentMonth &&
-    currentTimeMinutes >= calendarRange.startMinutes &&
-    currentTimeMinutes <= calendarRange.endMinutes;
-  const currentTimeLabel = `${String(now.getHours()).padStart(2, '0')}:${String(
-    now.getMinutes(),
-  ).padStart(2, '0')}`;
+  const currentTimeTop = ((currentTimeMinutes - calendarRange.startMinutes) / 30) * HALF_HOUR_HEIGHT;
+  const showCurrentTime = isCurrentMonth && currentTimeMinutes >= calendarRange.startMinutes && currentTimeMinutes <= calendarRange.endMinutes;
+  const currentTimeLabel = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
   const timezoneLabel = useMemo(() => {
     const timezonePart = new Intl.DateTimeFormat(undefined, {
       timeZoneName: 'short',
@@ -384,41 +327,24 @@ const MyAppointments = () => {
       .find((part) => part.type === 'timeZoneName');
     return timezonePart?.value ?? '';
   }, []);
-  const visibleUpcomingAppointments = showAllUpcoming
-    ? upcomingAppointments
-    : upcomingAppointments.slice(0, 2);
+  const visibleUpcomingAppointments = showAllUpcoming ? upcomingAppointments : upcomingAppointments.slice(0, 2);
   return (
     <div className="main-container my-appointments-page" dir="rtl">
-      <BoxHeader
-        title="בוקר טוב, מואד!"
-        subtitle="הנה סקירה כללית על המועדים שלך."
-      />
+      <BoxHeader title={`בוקר טוב, ${user?.name || ' אורח'}!`} subtitle="הנה סקירה כללית על המועדים שלך." />
       <div className="appointments-calendar-scroll">
         <div className="appointments-calendar-layout">
           <main className="appointments-calendar-main">
             <div className="calendar-toolbar">
               <div className="calendar-month-navigation">
-                <button
-                  type="button"
-                  className="today-button"
-                  onClick={handleToday}
-                >
+                <button type="button" className="today-button" onClick={handleToday}>
                   היום
                 </button>
                 <strong className="calendar-current-month">{monthLabel}</strong>
                 <div className="calendar-navigation-buttons">
-                  <button
-                    type="button"
-                    aria-label="Previous month"
-                    onClick={handlePreviousMonth}
-                  >
+                  <button type="button" aria-label="Previous month" onClick={handlePreviousMonth}>
                     <FiChevronRight />
                   </button>
-                  <button
-                    type="button"
-                    aria-label="Next month"
-                    onClick={handleNextMonth}
-                  >
+                  <button type="button" aria-label="Next month" onClick={handleNextMonth}>
                     <FiChevronLeft />
                   </button>
                 </div>
@@ -426,29 +352,19 @@ const MyAppointments = () => {
               <div className="calendar-filters">
                 <button
                   type="button"
-                  className={`calendar-filter ${
-                    filters.status === 'confirmed' ? 'active' : ''
-                  }`}
+                  className={`calendar-filter ${filters.status === 'confirmed' ? 'active' : ''}`}
                   onClick={() => setStatusFilter('confirmed')}
                 >
                   מאושר
                 </button>
                 <button
                   type="button"
-                  className={`calendar-filter ${
-                    filters.status === 'pending' ? 'active' : ''
-                  }`}
+                  className={`calendar-filter ${filters.status === 'pending' ? 'active' : ''}`}
                   onClick={() => setStatusFilter('pending')}
                 >
                   ממתין
                 </button>
-                <button
-                  type="button"
-                  className={`calendar-filter ${
-                    filters.status === '' ? 'active' : ''
-                  }`}
-                  onClick={() => setStatusFilter('')}
-                >
+                <button type="button" className={`calendar-filter ${filters.status === '' ? 'active' : ''}`} onClick={() => setStatusFilter('')}>
                   הכל
                 </button>
               </div>
@@ -463,11 +379,7 @@ const MyAppointments = () => {
                 }
               }}
             >
-              {appointmentsError && (
-                <div className="calendar-status-message calendar-status-message--error">
-                  {appointmentsError}
-                </div>
-              )}
+              {appointmentsError && <div className="calendar-status-message calendar-status-message--error">{appointmentsError}</div>}
               <div className="calendar-days-header">
                 {WEEK_DAYS.map((day) => (
                   <div className="calendar-day-name" key={day}>
@@ -491,10 +403,7 @@ const MyAppointments = () => {
                         <div key={minutes} className="calendar-time-cell" />
                       ))}
                       {appointments
-                        .filter(
-                          (appointment) =>
-                            getAppointmentDayIndex(appointment) === dayIndex,
-                        )
+                        .filter((appointment) => getAppointmentDayIndex(appointment) === dayIndex)
                         .map((appointment) => {
                           const color = getAppointmentColor(appointment);
                           return (
@@ -503,13 +412,9 @@ const MyAppointments = () => {
                               type="button"
                               className={`calendar-appointment calendar-appointment--${color}`}
                               style={getAppointmentPosition(appointment)}
-                              onClick={(event) =>
-                                handleAppointmentClick(event, appointment)
-                              }
+                              onClick={(event) => handleAppointmentClick(event, appointment)}
                             >
-                              <span className="calendar-appointment-title">
-                                {getAppointmentTitle(appointment)}
-                              </span>
+                              <span className="calendar-appointment-title">{getAppointmentTitle(appointment)}</span>
                               <span className="calendar-appointment-time">
                                 {appointment.startTime} - {appointment.endTime}
                               </span>
@@ -519,13 +424,8 @@ const MyAppointments = () => {
                     </div>
                   ))}
                   {showCurrentTime && (
-                    <div
-                      className="calendar-current-time"
-                      style={{ top: `${currentTimeTop}px` }}
-                    >
-                      <span className="current-time-label">
-                        {currentTimeLabel}
-                      </span>
+                    <div className="calendar-current-time" style={{ top: `${currentTimeTop}px` }}>
+                      <span className="current-time-label">{currentTimeLabel}</span>
                       <span className="current-time-dot" />
                       <span className="current-time-line" />
                     </div>
@@ -552,19 +452,13 @@ const MyAppointments = () => {
                       <strong>מספר תור</strong>
                       <span>#{selectedAppointment._id}</span>
                     </div>
-                    <button
-                      type="button"
-                      className="appointment-preview-close"
-                      onClick={closeAppointmentPreview}
-                    >
+                    <button type="button" className="appointment-preview-close" onClick={closeAppointmentPreview}>
                       <FiX />
                     </button>
                   </div>
                   <div className="appointment-preview-service">
                     <strong>{getAppointmentTitle(selectedAppointment)}</strong>
-                    <span>
-                      {selectedAppointment.serviceGroup?.title ?? '-'}
-                    </span>
+                    <span>{selectedAppointment.serviceGroup?.title ?? '-'}</span>
                     {selectedAppointment.note && (
                       <div className="appointment-clinic-note">
                         <strong>הערת המרפאה:</strong>
@@ -579,15 +473,12 @@ const MyAppointments = () => {
                     </div>
                     <div className="appointment-info-item">
                       <span>תאריך</span>
-                      <strong>
-                        {formatAppointmentDate(selectedAppointment.date)}
-                      </strong>
+                      <strong>{formatAppointmentDate(selectedAppointment.date)}</strong>
                     </div>
                     <div className="appointment-info-item appointment-info-time">
                       <span>זמן</span>
                       <strong>
-                        {selectedAppointment.startTime} -{' '}
-                        {selectedAppointment.endTime}
+                        {selectedAppointment.startTime} - {selectedAppointment.endTime}
                       </strong>
                     </div>
                   </div>
@@ -599,19 +490,10 @@ const MyAppointments = () => {
             <div className="appointments-sidebar-header">
               <h2>יומן תורים</h2>
               <div className="appointments-sidebar-navigation">
-                <button
-                  className="active"
-                  type="button"
-                  onClick={handleSidebarPreviousMonth}
-                  aria-label="Previous month"
-                >
+                <button className="active" type="button" onClick={handleSidebarPreviousMonth} aria-label="Previous month">
                   <FiChevronRight />
                 </button>
-                <button
-                  type="button"
-                  onClick={handleSidebarNextMonth}
-                  aria-label="Next month"
-                >
+                <button type="button" onClick={handleSidebarNextMonth} aria-label="Next month">
                   <FiChevronLeft />
                 </button>
               </div>
@@ -625,22 +507,11 @@ const MyAppointments = () => {
               <div className="mini-calendar-grid">
                 {sidebarCalendarCells.map((day, index) => {
                   if (day === null) {
-                    return (
-                      <span
-                        key={`empty-${index}`}
-                        className="mini-calendar-empty"
-                        aria-hidden="true"
-                      />
-                    );
+                    return <span key={`empty-${index}`} className="mini-calendar-empty" aria-hidden="true" />;
                   }
                   const rangeClass = getMiniCalendarRangeClass(day);
                   return (
-                    <button
-                      type="button"
-                      key={day}
-                      onClick={() => handleMiniDayClick(day)}
-                      className={rangeClass}
-                    >
+                    <button type="button" key={day} onClick={() => handleMiniDayClick(day)} className={rangeClass}>
                       {day}
                     </button>
                   );
@@ -659,10 +530,7 @@ const MyAppointments = () => {
                   <div className="upcoming-empty">אין תורים קרובים</div>
                 ) : (
                   visibleUpcomingAppointments.map((appointment) => (
-                    <div
-                      className="upcoming-appointment-item"
-                      key={appointment._id}
-                    >
+                    <div className="upcoming-appointment-item" key={appointment._id}>
                       <div className="upcoming-appointment-logo">+</div>
                       <div className="upcoming-appointment-content">
                         <strong>הזמנה מס׳ #{appointment._id}</strong>
@@ -679,11 +547,7 @@ const MyAppointments = () => {
                 )}
               </div>
               {upcomingAppointments.length > 2 && (
-                <button
-                  type="button"
-                  className="show-all-appointments"
-                  onClick={() => setShowAllUpcoming((previous) => !previous)}
-                >
+                <button type="button" className="show-all-appointments" onClick={() => setShowAllUpcoming((previous) => !previous)}>
                   {showAllUpcoming ? 'הצג פחות' : 'הצג הכל'}
                 </button>
               )}

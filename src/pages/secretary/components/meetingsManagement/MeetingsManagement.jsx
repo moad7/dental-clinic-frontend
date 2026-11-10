@@ -17,9 +17,11 @@ import { confirmDateById } from '../../../../api/appointmentApi';
 import { AuthContext } from '../../../../context/AuthContext';
 import { toast } from 'react-toastify';
 import { PillButton } from '../../../../utils/ButtonFanctions';
+import { useDashboardStats } from '../../../../hooks/useDashboardStats';
 const MeetingsManagement = () => {
   const { appointments, loadAllAppointments } = useContext(AppDataContext);
   const { token } = useContext(AuthContext);
+  const { items, loadingState } = useDashboardStats(secretaryStats, 'overview');
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
@@ -73,11 +75,7 @@ const MeetingsManagement = () => {
       key: 'date',
       title: 'תאריך הזמנה',
       width: '1fr',
-      render: (item) => (
-        <div className="appt-cell">
-          {formatAppointmentDate(item.requestDate, item.requestTime)}
-        </div>
-      ),
+      render: (item) => <div className="appt-cell">{formatAppointmentDate(item.requestDate, item.requestTime)}</div>,
     },
     {
       key: 'doctor',
@@ -89,17 +87,13 @@ const MeetingsManagement = () => {
       key: 'treatmentStatus',
       title: 'סטטוס טיפול',
       width: '1fr',
-      render: (item) => (
-        <StatusBadge type="treatment" status={item.treatmentStatus} />
-      ),
+      render: (item) => <StatusBadge type="treatment" status={item.treatmentStatus} />,
     },
     {
       key: 'sessionStatus',
       title: 'סטטוס מפגש',
       width: '1fr',
-      render: (item) => (
-        <StatusBadge type="session" status={item.sessionStatus} />
-      ),
+      render: (item) => <StatusBadge type="session" status={item.sessionStatus} />,
     },
     {
       key: 'sessions',
@@ -119,20 +113,10 @@ const MeetingsManagement = () => {
           <div className="appt-actions">
             {item.sessionStatus === 'pending' ? (
               <>
-                <PillButton
-                  bg="#DCFCE7"
-                  color="#166534"
-                  disabled={isLoading}
-                  onClick={() => confirmDate(item._id, 'approve')}
-                >
+                <PillButton bg="#DCFCE7" color="#166534" disabled={isLoading} onClick={() => confirmDate(item._id, 'approve')}>
                   {isApproving ? 'מאשר...' : 'הסכמה'}
                 </PillButton>
-                <PillButton
-                  bg="#FEE2E2"
-                  color="#991B1B"
-                  disabled={isLoading}
-                  onClick={() => confirmDate(item._id, 'reject')}
-                >
+                <PillButton bg="#FEE2E2" color="#991B1B" disabled={isLoading} onClick={() => confirmDate(item._id, 'reject')}>
                   {isRejecting ? 'דוחה...' : 'נדחה'}
                 </PillButton>
               </>
@@ -173,14 +157,11 @@ const MeetingsManagement = () => {
     try {
       setLoadingAction(loadingKey);
       await confirmDateById(appointmentId, decision, token);
-      toast.success(
-        decision === 'approve' ? 'התור אושר בהצלחה' : 'התור נדחה בהצלחה',
-      );
+      toast.success(decision === 'approve' ? 'התור אושר בהצלחה' : 'התור נדחה בהצלחה');
       await loadAllAppointments();
     } catch (error) {
       console.error('confirmDate error:', error);
-      const message =
-        error?.response?.data?.message || 'אירעה שגיאה בעדכון התור';
+      const message = error?.response?.data?.message || 'אירעה שגיאה בעדכון התור';
       toast.error(message);
     } finally {
       setLoadingAction(null);
@@ -197,26 +178,13 @@ const MeetingsManagement = () => {
           setOpen(true);
         }}
       />
-      <DashboardStats items={secretaryStats} />
-      <Modal
-        isOpen={open}
-        onClose={() => setOpen(false)}
-        title="הוספת בקשוה חדש"
-        size="xl"
-      >
+      {loadingState ? <p>טוען נתונים...</p> : <DashboardStats items={items} />}
+      <Modal isOpen={open} onClose={() => setOpen(false)} title="הוספת בקשוה חדש" size="xl">
         <AddMeetingsModal setOpen={setOpen} open={open} />
       </Modal>
       {selectedAppointment && (
-        <Modal
-          isOpen={Boolean(selectedAppointment)}
-          onClose={() => setSelectedAppointment(null)}
-          title="פרטי המפגש"
-          size="xl"
-        >
-          <MeetingsDetailsModal
-            appointment={selectedAppointment}
-            onClose={() => setSelectedAppointment(null)}
-          />
+        <Modal isOpen={Boolean(selectedAppointment)} onClose={() => setSelectedAppointment(null)} title="פרטי המפגש" size="xl">
+          <MeetingsDetailsModal appointment={selectedAppointment} onClose={() => setSelectedAppointment(null)} />
         </Modal>
       )}
       <div className="container-box">
