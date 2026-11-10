@@ -1,5 +1,3 @@
-// import { useEffect, useState } from 'react';
-// import axios from 'axios';
 import '../../secretary.css';
 import './secretaryDashboard.css';
 import { MdArrowBack } from 'react-icons/md';
@@ -12,21 +10,22 @@ import MeetingTable from '../../../components/meetingTable/meetingTable';
 import DashboardStats from '../../../components/dashboardStats/DashboardStats';
 import { secretaryStats } from '../../../../utils/dashboardDataStats/dataStats';
 import Modal from '../../../../components/modal/Modal';
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import AddMeetingsModal from '../../../modals/addMeetingsModal/AddMeetingsModal';
 import AddPatientModal from '../../../modals/patientModal/AddPatientModal';
 import { AuthContext } from '../../../../context/AuthContext';
 import { AppDataContext } from '../../../../context/AppDataContext';
 import { formatDateTime } from '../../../../utils/functions';
 import { useDashboardStats } from '../../../../hooks/useDashboardStats';
+import MeetingsDetailsModal from '../../../modals/addMeetingsModal/meetingsDetailsModal/MeetingsDetailsModal';
+import { SESSION_STATUS_CLASSES, SESSION_STATUS_OPTIONS } from '../../../../utils/constants';
 const SecretaryDashboard = () => {
   const { user } = useContext(AuthContext);
-  const { appointmentDay } = useContext(AppDataContext);
+  const { appointmentDay, appointments } = useContext(AppDataContext);
   const { items, loadingState } = useDashboardStats(secretaryStats, 'overview');
   const [selectedAction, setSelectedAction] = useState(null);
-  const isConfirmed = (item) => {
-    return item.sessionStatus === 'confirmed';
-  };
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
   const fastManagement = [
     {
       _id: 1,
@@ -55,8 +54,25 @@ const SecretaryDashboard = () => {
       navigat: '',
     },
   ];
+  useEffect(() => {
+    if (!selectedAppointmentId) {
+      setSelectedAppointment(null);
+      return;
+    }
+    const selected = appointments.find((appt) => String(appt._id) === String(selectedAppointmentId));
+    setSelectedAppointment(selected || null);
+  }, [selectedAppointmentId, appointments]);
+  const handleCloseAppointment = () => {
+    setSelectedAppointmentId(null);
+    setSelectedAppointment(null);
+  };
   return (
     <div className="main-container" dir="rtl">
+      {selectedAppointment && (
+        <Modal isOpen={Boolean(selectedAppointment)} onClose={handleCloseAppointment} title="פרטי המפגש" size="xl">
+          <MeetingsDetailsModal appointment={selectedAppointment} onClose={handleCloseAppointment} />
+        </Modal>
+      )}
       <BoxHeader title={'בוקר טוב, ' + user.name} subtitle={'הנה סקירה כללית של ההזמנות שלך היום.'} />
       {loadingState ? <p>טוען נתונים...</p> : <DashboardStats items={items} />}
       <div className="container-box nivg-order">
@@ -87,28 +103,37 @@ const SecretaryDashboard = () => {
             <span className="today-card-date">{formatDateTime(Date.now())}</span>
           </div>
           <div className="today-card-list">
-            {appointmentDay.length > 0 &&
+            {appointmentDay.length > 0 ? (
               appointmentDay.map((item) => {
-                const confirmed = isConfirmed(item);
+                const statusOption = SESSION_STATUS_OPTIONS.find((option) => option.value === item.sessionStatus);
+                const status = {
+                  label: statusOption?.label || 'לא ידוע',
+                  className: SESSION_STATUS_CLASSES[item.sessionStatus] || 'is-pending',
+                };
                 return (
-                  <div className="today-item" key={item._id}>
+                  <button type="button" className="today-item" key={item._id} onClick={() => setSelectedAppointmentId(item._id)}>
                     <div className="today-item-right">
-                      <span className={`today-item-indicator ${confirmed ? 'is-confirmed' : 'is-pending'}`} />
+                      <span className={`today-item-indicator ${status.className}`} />
                       <div className="today-item-info">
                         <span>
-                          {item.service?.groupTitle || '-'} • {item.doctor?.name || '-'}
+                          {item.service?.groupTitle || '-'} • ד'ר {item.doctor?.name || '-'}
                         </span>
                         <span>
                           {item.patient?.name || '-'} - {item.time || '-'}
                         </span>
                       </div>
                     </div>
-                    <div className={`today-item-status ${confirmed ? 'is-confirmed' : 'is-pending'}`}>
-                      <span>{confirmed ? 'אושר' : 'בהמתנה'}</span>
+                    <div className={`today-item-status ${status.className}`}>
+                      <span>{status.label}</span>
                     </div>
-                  </div>
+                  </button>
                 );
-              })}
+              })
+            ) : (
+              <div className="today-item no-appointments">
+                <span>אין פגישות להיום</span>
+              </div>
+            )}
           </div>
         </div>
         <div className="container-box quick-mgmt">

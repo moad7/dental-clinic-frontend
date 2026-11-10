@@ -118,7 +118,13 @@ const MeetingTable = ({ moreBtn, headerTextTable }) => {
                     </PillButton>
                   </>
                 ) : (
-                  <button className="appt-link" type="button" onClick={() => setSelectedAppointment(item)}>
+                  <button
+                    className="appt-link"
+                    type="button"
+                    onClick={() => {
+                      setSelectedAppointment(item);
+                    }}
+                  >
                     הצג פרטים
                   </button>
                 )}

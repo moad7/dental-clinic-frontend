@@ -19,3 +19,13 @@ export const CREATOR_ROLES = {
   doctor: 'רופא/ה',
   patient: 'מטופל/ת',
 };
+export const SESSION_STATUS_CLASSES = {
+  pending: 'is-pending',
+  confirmed: 'is-confirmed',
+  completed: 'is-completed',
+  cancelled: 'is-cancelled',
+  rejected: 'is-rejected',
+};
+export const getSessionStatusLabel = (status) => {
+  return SESSION_STATUS_OPTIONS.find((option) => option.value === status)?.label || status;
+};
