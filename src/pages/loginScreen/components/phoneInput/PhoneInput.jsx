@@ -1,74 +1,107 @@
-import React from 'react';
+import { useState } from 'react';
 import { MdOutlineArrowBackIosNew } from 'react-icons/md';
+import { FiPhone, FiSend } from 'react-icons/fi';
 import { toast } from 'react-toastify';
+import validator from 'validator';
 import textDictionary from '../../../../dictionary/text';
 import { checkPhoneAndSendCode } from '../../../../api/authApi';
+import './phoneInput.css';
 const PhoneInput = (props) => {
-  const sendMeOTPHandler = async () => {
-    if (!props.phone) {
+  const [loading, setLoading] = useState(false);
+  const sendMeOTPHandler = async (e) => {
+    e.preventDefault();
+    if (loading) return;
+    const phone = props.phone.trim();
+    if (!phone) {
       toast.error(textDictionary.phoneRequired);
       return;
     }
+    if (!validator.isMobilePhone(phone, 'he-IL')) {
+      toast.error(textDictionary.phoneInvalid);
+      return;
+    }
+    setLoading(true);
     try {
       props.setCodeValidation('');
-      const otp = await checkPhoneAndSendCode(props.phone, 'Password recovery');
-      if (otp.type == 'Password recovery') {
+      const otp = await checkPhoneAndSendCode(phone, 'Password recovery');
+      if (otp?.type === 'Password recovery' && otp?.otpId) {
         props.setOtpId(otp.otpId);
         props.setOtpType(otp.type);
         props.setView('otp');
+      } else {
+        toast.error('שליחת הקוד נכשלה');
       }
     } catch (error) {
-      switch (error.response.data.message) {
+      const message = error.response?.data?.message;
+      switch (message) {
         case 'User not found':
           toast.error(textDictionary.errorPhone);
           break;
-        default: {
-          console.log(error.response.data.message);
+        default:
+          toast.error(message || 'שליחת הקוד נכשלה');
           break;
-        }
       }
+    } finally {
+      setLoading(false);
     }
   };
+  const handleBack = () => {
+    if (loading) return;
+    props.setView('login');
+  };
   return (
-    <div className="login-card rounded-4 p-4 p-md-4 w-100 mx-auto">
-      <h3 className="fw-bold mb-4 text-center"></h3>
-      <p className="fw-semibold mb-2 text-center">הזן את מספר הטלפון </p>
-      {/* <p className="fw-light mb-3 text-center">
-                  שלחנו את הקוד למספר {phone}
-                </p> */}
-      <div className="login-card-inputs w-100">
-        <div className="mb-3">
-          <label htmlFor="phoneInput" className="form-label">
+    <div className="login-card phone-input-card" dir="rtl">
+      {/* HEADER */}
+      <div className="phone-input-header">
+        <div className="phone-input-header-icon">
+          <FiPhone size={25} />
+        </div>
+        <h2 className="phone-input-title">שחזור סיסמה</h2>
+        <p className="phone-input-subtitle">הזן את מספר הטלפון המשויך לחשבונך ונשלח אליך קוד אימות לשחזור הסיסמה</p>
+      </div>
+      {/* FORM */}
+      <form className="phone-input-form" onSubmit={sendMeOTPHandler}>
+        <div className="phone-input-field">
+          <label htmlFor="recoveryPhoneInput" className="phone-input-label">
             מספר נייד
           </label>
-          <input
-            type="tel"
-            className="form-control"
-            id="phoneInput"
-            onChange={(e) => props.setPhone(e.target.value)}
-          />
+          <div className="phone-input-wrapper">
+            <input
+              type="tel"
+              id="recoveryPhoneInput"
+              className="phone-input-control"
+              value={props.phone}
+              onChange={(e) => props.setPhone(e.target.value)}
+              placeholder="0501234567"
+              autoComplete="tel"
+              inputMode="tel"
+              dir="ltr"
+              disabled={loading}
+            />
+          </div>
         </div>
-        <button
-          className="btn btn-success w-100 mb-3 border-0"
-          style={{ backgroundColor: '#11D057' }}
-          onClick={sendMeOTPHandler}
-        >
-          שלח קוד
+        {/* SUBMIT */}
+        <button type="submit" className="phone-input-submit" disabled={loading}>
+          {loading ? (
+            <>
+              <span className="phone-input-spinner" />
+              שולח קוד...
+            </>
+          ) : (
+            <>
+              <FiSend size={17} />
+              <span>שלח קוד</span>
+            </>
+          )}
         </button>
-        <div className="d-flex w-100 justify-content-end">
-          <button
-            type="button"
-            className="btn p-0"
-            style={{ color: '#11D057' }}
-            onClick={() => {
-              props.setView('login');
-            }}
-          >
-            חזרה
-            <MdOutlineArrowBackIosNew />
+        {/* BACK */}
+        <div className="phone-input-back-wrapper">
+          <button type="button" className="phone-input-back" onClick={handleBack} disabled={loading}>
+            <MdOutlineArrowBackIosNew size={14} />
+            <span>חזרה להתחברות</span>
           </button>
         </div>
-      </div>
+      </form>
     </div>
   );
 };

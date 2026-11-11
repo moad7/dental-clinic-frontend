@@ -1,27 +1,25 @@
-import { RiToothLine } from 'react-icons/ri';
-import loginScreenImage from '../../assets/images/loginScreen.png';
-import './loginScreen.css';
-import { FcGoogle } from 'react-icons/fc';
-import { FaApple } from 'react-icons/fa';
 import { useEffect, useState } from 'react';
+import { RiToothLine } from 'react-icons/ri';
 import { toast } from 'react-toastify';
+import loginScreenImage from '../../assets/images/loginScreen.png';
 import { checkPhoneAndSendCode } from '../../api/authApi';
-import OtpInput from '../../components/OtpInput';
-import { AuthContext } from '../../context/AuthContext';
-import { MdOutlineArrowBackIosNew } from 'react-icons/md';
 import { validatePassword } from '../../utils/functions';
-import { SlReload } from 'react-icons/sl';
 import Login from './components/login/Login';
 import Signup from './components/signup/Signup';
 import Otp from './components/otp/Otp';
 import NewPassword from './components/newPassword/NewPassword';
 import PhoneInput from './components/phoneInput/PhoneInput';
+import './loginScreen.css';
 const LoginScreen = () => {
   const [view, setView] = useState('login');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
+  const [idNumber, setIdNumber] = useState('');
+  const [gender, setGender] = useState('');
+  const [city, setCity] = useState('');
+  const [birth, setBirth] = useState('');
   const [isPending, setIsPending] = useState(false);
   const [codeValidation, setCodeValidation] = useState('');
   const [otpId, setOtpId] = useState('');
@@ -45,51 +43,25 @@ const LoginScreen = () => {
       toast.error(error.response?.data?.message || 'שליחת הקוד נכשלה');
     }
   };
-  // Using useEffect to trigger validation when password changes
   useEffect(() => {
-    // Perform password validation when newPassword changes
     const results = validatePassword(password);
     setValidationResults(results);
-  }, [password]); // Dependency array: runs when `password` changes
+  }, [password]);
   return (
-    <div className="container-fluid min-vh-100 d-flex align-items-center justify-content-center main-login">
-      <div className="row g-0 w-100" style={{ maxWidth: '1200px' }}>
-        <div className="col-12 col-lg-5 p-5 d-flex flex-column justify-content-between">
-          <div className="d-flex justify-content-lg-start justify-content-center mb-3">
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-              }}
-            >
-              <span
-                style={{
-                  width: '40px',
-                  height: '40px',
-                  backgroundColor: '#EFFCF4',
-                  color: '#11D057',
-                  borderRadius: '12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <RiToothLine size={22} />
-              </span>
-              <span
-                style={{
-                  color: '#11D057',
-                  fontWeight: '700',
-                  fontSize: '25px',
-                }}
-              >
-                טיפול שיניים
-              </span>
-            </div>
+    <div className="main-login" dir="rtl">
+      <div className="login-layout">
+        {/* LEFT / FORM SECTION */}
+        <section className="login-form-section">
+          {/* LOGO */}
+          <div className="login-brand">
+            <span className="login-brand-icon">
+              <RiToothLine size={22} />
+            </span>
+            <span className="login-brand-name">טיפול שיניים</span>
           </div>
-          {view === 'login' ? (
-            <>
+          {/* FORM CONTENT */}
+          <main className="login-form-content">
+            {view === 'login' ? (
               <Login
                 setIsPending={setIsPending}
                 setPasswordConfirm={setPasswordConfirm}
@@ -103,25 +75,31 @@ const LoginScreen = () => {
                 setOtpId={setOtpId}
                 setCodeValidation={setCodeValidation}
               />
-            </>
-          ) : view === 'signup' ? (
-            <>
+            ) : view === 'signup' ? (
               <Signup
                 setIsPending={setIsPending}
-                setPasswordConfirm={setPasswordConfirm}
+                name={name}
                 setName={setName}
                 phone={phone}
                 setPhone={setPhone}
-                setPassword={setPassword}
                 password={password}
+                setPassword={setPassword}
+                passwordConfirm={passwordConfirm}
+                setPasswordConfirm={setPasswordConfirm}
+                idNumber={idNumber}
+                setIdNumber={setIdNumber}
+                gender={gender}
+                setGender={setGender}
+                city={city}
+                setCity={setCity}
+                birth={birth}
+                setBirth={setBirth}
                 setView={setView}
                 validationResults={validationResults}
                 setOtpType={setOtpType}
                 setOtpId={setOtpId}
               />
-            </>
-          ) : view === 'otp' ? (
-            <>
+            ) : view === 'otp' ? (
               <Otp
                 setIsPending={setIsPending}
                 phone={phone}
@@ -136,11 +114,13 @@ const LoginScreen = () => {
                 setName={setName}
                 setPassword={setPassword}
                 password={password}
+                idNumber={idNumber}
+                gender={gender}
+                birth={birth}
+                city={city}
                 resendOtp={resendOtp}
               />
-            </>
-          ) : view === 'newPassword' ? (
-            <>
+            ) : view === 'newPassword' ? (
               <NewPassword
                 phone={phone}
                 setIsPending={setIsPending}
@@ -151,34 +131,28 @@ const LoginScreen = () => {
                 passwordConfirm={passwordConfirm}
                 validationResults={validationResults}
               />
-            </>
-          ) : (
-            view === 'phoneInput' && (
-              <PhoneInput
-                phone={phone}
-                setPhone={setPhone}
-                setView={setView}
-                setCodeValidation={setCodeValidation}
-                setOtpId={setOtpId}
-                setOtpType={setOtpType}
-              />
-            )
-          )}
-          <div className="mt-3 text-center text-lg-end text-muted small">
-            Clinic Enterprises LTD 2025 ©
+            ) : (
+              view === 'phoneInput' && (
+                <PhoneInput
+                  phone={phone}
+                  setPhone={setPhone}
+                  setView={setView}
+                  setCodeValidation={setCodeValidation}
+                  setOtpId={setOtpId}
+                  setOtpType={setOtpType}
+                />
+              )
+            )}
+          </main>
+          {/* FOOTER */}
+          <footer className="login-footer">Clinic Enterprises LTD 2025 ©</footer>
+        </section>
+        {/* HERO SECTION */}
+        <aside className="login-hero">
+          <div className="login-hero-content">
+            <img src={loginScreenImage} alt="Clinic dashboard preview" className="login-hero-img" />
           </div>
-        </div>
-        <div className="col-12 col-lg-7">
-          <div className="login-hero h-100 p-md-5 d-flex flex-column justify-content-center">
-            <div className="mt-4 d-flex justify-content-center justify-content-lg-start">
-              <img
-                src={loginScreenImage}
-                alt="Clinic dashboard preview"
-                className="img-fluid login-hero-img"
-              />
-            </div>
-          </div>
-        </div>
+        </aside>
       </div>
     </div>
   );

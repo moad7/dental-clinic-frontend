@@ -1,15 +1,9 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useContext } from 'react';
 import { AuthContext } from './context/AuthContext';
 import PrivateRoute from './utils/PrivateRoute.jsx';
 import RedirectByRole from './components/RedirectByRole.jsx';
 import LoginScreen from './pages/loginScreen/LoginScreen.jsx';
-import Register from './pages/loginScreen/components/register/Register.jsx';
 // Pages
 import SecretaryDashboard from './pages/secretary/components/dashboard/SecretaryDashboard.jsx';
 import CalendarView from './pages/CalendarView.jsx';
@@ -39,7 +33,6 @@ function App() {
         {!user && (
           <>
             <Route path="/login" element={<LoginScreen />} />
-            <Route path="/register" element={<Register />} />
             <Route path="*" element={<Navigate to="/login" replace />} />
           </>
         )}
@@ -64,18 +57,9 @@ function App() {
               }
             >
               <Route path="/patient/dashboard" element={<Dashboard />} />
-              <Route
-                path="/patient/bookAppointment"
-                element={<BookAppointment />}
-              />
-              <Route
-                path="/patient/myAppointments"
-                element={<MyAppointments />}
-              />
-              <Route
-                path="/patient/treatmentPlans"
-                element={<TreatmentPlans />}
-              />
+              <Route path="/patient/bookAppointment" element={<BookAppointment />} />
+              <Route path="/patient/myAppointments" element={<MyAppointments />} />
+              <Route path="/patient/treatmentPlans" element={<TreatmentPlans />} />
             </Route>
             {/* Doctor layout */}
             <Route
@@ -86,10 +70,7 @@ function App() {
               }
             >
               <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
-              <Route
-                path="/doctor/appointments"
-                element={<DoctorAppointment />}
-              />
+              <Route path="/doctor/appointments" element={<DoctorAppointment />} />
               <Route path="/doctor/patients" element={<DoctorPatient />} />
             </Route>
             {/* Secretary layout */}
@@ -100,26 +81,11 @@ function App() {
                 </PrivateRoute>
               }
             >
-              <Route
-                path="/secretary/dashboard"
-                element={<SecretaryDashboard />}
-              />
-              <Route
-                path="/secretary/meetingsManagement"
-                element={<MeetingsManagement />}
-              />
-              <Route
-                path="/secretary/doctorsManagement"
-                element={<DoctorsManagement />}
-              />
-              <Route
-                path="/secretary/patientsManagement"
-                element={<PatientsManagement />}
-              />
-              <Route
-                path="/secretary/servicesManagement"
-                element={<ServicesManagement />}
-              />
+              <Route path="/secretary/dashboard" element={<SecretaryDashboard />} />
+              <Route path="/secretary/meetingsManagement" element={<MeetingsManagement />} />
+              <Route path="/secretary/doctorsManagement" element={<DoctorsManagement />} />
+              <Route path="/secretary/patientsManagement" element={<PatientsManagement />} />
+              <Route path="/secretary/servicesManagement" element={<ServicesManagement />} />
               {/* <Route
                 path="/secretary/appointments/create"
                 element={<CreateAppointment />}

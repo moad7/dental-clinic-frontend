@@ -1,21 +1,22 @@
 import axios from 'axios';
-
 const API_URL = 'http://localhost:3000/api/auth';
-
 export const loginUser = async (phoneNumber, password) => {
   const res = await axios.post(`${API_URL}/otp`, { phoneNumber, password });
   return res.data;
 };
-
 export const signInWithOtp = async (otpId, otp) => {
   const res = await axios.post(`${API_URL}/signinwithotp`, { otpId, otp });
   return res.data;
 };
-export const registerUser = async (name, phoneNumber, password) => {
+export const registerUser = async (name, phoneNumber, password, city, gender, birth, idNumber) => {
   const res = await axios.post(`${API_URL}/register`, {
     name,
     phoneNumber,
     password,
+    city,
+    gender,
+    birth,
+    idNumber,
   });
   return res.data;
 };
@@ -40,7 +41,6 @@ export const updatePassword = async (phoneNumber, newPassword) => {
   });
   return result.data;
 };
-
 export const setPassword = async (token, password) => {
   const result = await axios.post(`${API_URL}/setpassword/${token}`, {
     password,

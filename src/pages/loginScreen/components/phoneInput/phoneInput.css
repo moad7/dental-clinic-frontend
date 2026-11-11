@@ -1,0 +1,249 @@
+/* =========================================================
+   PHONE INPUT - CARD
+========================================================= */
+.phone-input-card {
+  width: 100%;
+  max-width: 620px;
+  padding: 28px;
+  background-color: #f7f9fb;
+  border: 1px solid #edf0f3;
+  border-radius: 20px;
+  direction: rtl;
+}
+/* =========================================================
+   HEADER
+========================================================= */
+.phone-input-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+.phone-input-header-icon {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+  background-color: #effcf4;
+  color: #11d057;
+  border: 1px solid #d8f8e3;
+  border-radius: 18px;
+}
+.phone-input-title {
+  margin: 0;
+  color: #17212b;
+  font-size: 27px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+.phone-input-subtitle {
+  max-width: 380px;
+  margin: 0;
+  color: #7b8794;
+  font-size: 14px;
+  line-height: 1.8;
+}
+/* =========================================================
+   FORM
+========================================================= */
+.phone-input-form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  width: 100%;
+}
+/* =========================================================
+   PHONE FIELD
+========================================================= */
+.phone-input-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+.phone-input-label {
+  color: #344054;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: right;
+}
+.phone-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+.phone-input-control {
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  border: 1px solid #e2e7ed;
+  border-radius: 11px;
+  background-color: #ffffff;
+  color: #17212b;
+  font-family: inherit;
+  font-size: 14px;
+  text-align: left;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+.phone-input-control::placeholder {
+  color: #a5aeb8;
+}
+.phone-input-control:focus {
+  border-color: #11d057;
+  box-shadow: 0 0 0 3px rgba(17, 208, 87, 0.12);
+}
+.phone-input-control:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+/* =========================================================
+   SUBMIT BUTTON
+========================================================= */
+.phone-input-submit {
+  width: 100%;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 11px;
+  background-color: #11d057;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+.phone-input-submit:hover:not(:disabled) {
+  background-color: #0fbd4e;
+  box-shadow: 0 5px 14px rgba(17, 208, 87, 0.2);
+  transform: translateY(-1px);
+}
+.phone-input-submit:active:not(:disabled) {
+  transform: translateY(0);
+}
+.phone-input-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+/* =========================================================
+   LOADING SPINNER
+========================================================= */
+.phone-input-spinner {
+  width: 17px;
+  height: 17px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: phone-input-spin 0.7s linear infinite;
+}
+@keyframes phone-input-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* =========================================================
+   BACK BUTTON
+========================================================= */
+.phone-input-back-wrapper {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+}
+.phone-input-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 4px 0;
+  border: none;
+  background: transparent;
+  color: #11d057;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.phone-input-back:hover:not(:disabled) {
+  color: #0da744;
+}
+.phone-input-back:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+/* =========================================================
+   ACCESSIBILITY
+========================================================= */
+.phone-input-card button:focus-visible {
+  outline: 2px solid #11d057;
+  outline-offset: 3px;
+}
+/* =========================================================
+   TABLET
+========================================================= */
+@media (max-width: 991.98px) {
+  .phone-input-card {
+    max-width: 100%;
+    padding: 28px;
+  }
+}
+/* =========================================================
+   MOBILE
+========================================================= */
+@media (max-width: 575.98px) {
+  .phone-input-card {
+    padding: 22px 18px;
+    border-radius: 16px;
+  }
+  .phone-input-header {
+    margin-bottom: 24px;
+  }
+  .phone-input-header-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 16px;
+  }
+  .phone-input-title {
+    font-size: 23px;
+  }
+  .phone-input-subtitle {
+    font-size: 13px;
+  }
+  .phone-input-form {
+    gap: 18px;
+  }
+  .phone-input-control,
+  .phone-input-submit {
+    height: 46px;
+  }
+}
+@media (max-width: 380px) {
+  .phone-input-card {
+    padding: 20px 14px;
+  }
+  .phone-input-subtitle {
+    font-size: 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .phone-input-card *,
+  .phone-input-card *::before,
+  .phone-input-card *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

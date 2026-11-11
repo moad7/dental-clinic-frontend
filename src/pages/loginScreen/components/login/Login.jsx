@@ -1,22 +1,20 @@
-// import { useState, useContext } from 'react';
-// import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { loginUser } from '../../../../api/authApi';
-import { AuthContext } from '../../../../context/AuthContext';
 import textDictionary from '../../../../dictionary/text';
 import { toast } from 'react-toastify';
 import validator from 'validator';
 import { FcGoogle } from 'react-icons/fc';
 import { FaApple } from 'react-icons/fa';
-
+import './login.css';
 const Login = (props) => {
-  // const { login } = useContext(AuthContext);
-  // const [error, setError] = useState('');
-
-  const logInHandler = async () => {
-    props.setIsPending(true);
-
-    const isPhone = validator.isMobilePhone(props.phone);
-    if (!props.phone) {
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const logInHandler = async (e) => {
+    e.preventDefault();
+    if (loading) return;
+    const phone = props.phone.trim();
+    const isPhone = validator.isMobilePhone(phone);
+    if (!phone) {
       toast.error(textDictionary.phoneRequired);
       return;
     }
@@ -24,11 +22,15 @@ const Login = (props) => {
       toast.error(textDictionary.phoneInvalid);
       return;
     }
-
+    if (!props.password) {
+      toast.error('יש להזין סיסמה');
+      return;
+    }
+    setLoading(true);
+    props.setIsPending(true);
     try {
-      const res = await loginUser(props.phone, props.password);
-
-      if (res?.type == 'Sign in') {
+      const res = await loginUser(phone, props.password);
+      if (res?.type === 'Sign in') {
         props.setOtpId(res.otpId);
         props.setOtpType(res.type);
         props.setCodeValidation('');
@@ -36,126 +38,135 @@ const Login = (props) => {
       }
     } catch (error) {
       const message = error.response?.data?.message;
-
       switch (message) {
         case 'User not exist':
           toast.error(textDictionary.phoneInvalid);
           break;
-
         case 'Incorrect password':
           toast.error(textDictionary.errorPasswordCode);
           break;
-
         case 'User is not activated':
           toast.error('המשתמש לא פעיל');
           break;
-
         default:
           toast.error(message || 'שגיאה בהתחברות');
           break;
       }
     } finally {
+      setLoading(false);
       props.setIsPending(false);
     }
   };
+  const handleForgotPassword = () => {
+    props.setView('phoneInput');
+    props.setOtpType('Sign in');
+  };
+  const handleSignup = () => {
+    props.setView('signup');
+    props.setPassword('');
+    props.setPhone('');
+    props.setName('');
+    props.setPasswordConfirm('');
+  };
   return (
-    <div className="login-card rounded-4 p-4 p-md-4 w-100 mx-auto">
-      <h3 className="fw-bold mb-2 text-center">ברוכים הבאים</h3>
-      <p className="text-muted mb-4 text-center">
-        הזן את כתובת הדוא"ל והסיסמה שלך כדי לגשת לחשבונך
-      </p>
-
-      <div className="login-card-inputs w-100">
-        <div className="mb-3">
-          <label htmlFor="phoneInput" className="form-label">
-            מספר נייד
-          </label>
-          <input
-            type="tel"
-            className="form-control"
-            id="phoneInput"
-            value={props.phone}
-            onChange={(e) => props.setPhone(e.target.value)}
-          />
-        </div>
-
-        <div className="mb-3">
-          <label htmlFor="passwordInput" className="form-label">
-            סיסמה
-          </label>
-          <input
-            type="password"
-            className="form-control"
-            id="passwordInput"
-            value={props.password}
-            onChange={(e) => props.setPassword(e.target.value)}
-          />
-        </div>
-
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <div className="form-check form-check-reverse">
-            <input
-              type="checkbox"
-              className="form-check-input"
-              id="rememberMe"
-            />
-            <label className="form-check-label" htmlFor="rememberMe">
-              זכור אותי
-            </label>
-          </div>
-          <button
-            type="button"
-            className="btn p-0"
-            style={{ color: '#11D057' }}
-            onClick={() => {
-              props.setView('phoneInput');
-              props.setOtpType('Sign in');
-            }}
-          >
-            שכחת את הסיסמה שלך?
-          </button>
-        </div>
-
-        <button
-          className="btn btn-success w-100 mb-3 border-0"
-          style={{ backgroundColor: '#11D057' }}
-          onClick={logInHandler}
-        >
-          התחברות
-        </button>
-
-        <div className="text-center text-muted mb-3">או התחבר באמצעות</div>
-
-        <div className="d-flex gap-3 mb-3 justify-content-center align-items-center ">
-          <button className="w-50 btn-google-apple ">
-            Google <FcGoogle />
-          </button>
-          <button className="w-50 btn-google-apple">
-            Apple
-            <FaApple />
-          </button>
-        </div>
-
-        <div className="text-center">
-          אין לך חשבון?
-          <button
-            type="button"
-            className="btn btn-link p-0"
-            style={{ color: '#11D057' }}
-            onClick={() => {
-              props.setView('signup');
-              props.setPassword('');
-              props.setPhone('');
-              props.setName('');
-              props.setPasswordConfirm('');
-            }}
-          >
-            הירשמו עכשיו
-          </button>
-        </div>
+    <div className="login-card" dir="rtl">
+      <div className="login-card-header">
+        <h2 className="login-card-title">ברוכים הבאים</h2>
+        <p className="login-card-subtitle">הזן את מספר הטלפון והסיסמה שלך כדי לגשת לחשבונך</p>
       </div>
+      <form className="login-card-form" onSubmit={logInHandler}>
+        <div className="login-card-inputs">
+          {/* PHONE */}
+          <div className="login-field">
+            <label htmlFor="phoneInput" className="login-field-label">
+              מספר נייד
+            </label>
+            <input
+              type="tel"
+              id="phoneInput"
+              className="login-field-input"
+              value={props.phone}
+              onChange={(e) => props.setPhone(e.target.value)}
+              placeholder="הזן מספר טלפון"
+              autoComplete="tel"
+              inputMode="tel"
+              maxLength={10}
+              dir="ltr"
+              disabled={loading}
+            />
+          </div>
+          {/* PASSWORD */}
+          <div className="login-field">
+            <label htmlFor="passwordInput" className="login-field-label">
+              סיסמה
+            </label>
+            <div className="login-password-wrapper">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                id="passwordInput"
+                className="login-field-input login-password-input"
+                value={props.password}
+                onChange={(e) => props.setPassword(e.target.value)}
+                placeholder="הזן סיסמה"
+                autoComplete="current-password"
+                disabled={loading}
+              />
+              <button
+                type="button"
+                className="login-password-toggle"
+                onClick={() => setShowPassword((prev) => !prev)}
+                aria-label={showPassword ? 'הסתר סיסמה' : 'הצג סיסמה'}
+              >
+                {showPassword ? 'הסתר' : 'הצג'}
+              </button>
+            </div>
+          </div>
+          {/* OPTIONS */}
+          <div className="login-options">
+            <label className="login-remember">
+              <input type="checkbox" className="login-remember-checkbox" />
+              <span>זכור אותי</span>
+            </label>
+            <button type="button" className="login-text-button" onClick={handleForgotPassword} disabled={loading}>
+              שכחת את הסיסמה שלך?
+            </button>
+          </div>
+          {/* SUBMIT */}
+          <button type="submit" className="login-submit-btn" disabled={loading}>
+            {loading ? (
+              <>
+                <span className="login-loading-spinner" />
+                מתחבר...
+              </>
+            ) : (
+              'התחברות'
+            )}
+          </button>
+          {/* DIVIDER */}
+          <div className="login-divider">
+            <span>או התחבר באמצעות</span>
+          </div>
+          {/* SOCIAL LOGIN */}
+          <div className="login-social-buttons">
+            <button type="button" className="login-social-btn">
+              <FcGoogle size={21} />
+              <span>Google</span>
+            </button>
+            <button type="button" className="login-social-btn">
+              <FaApple size={21} />
+              <span>Apple</span>
+            </button>
+          </div>
+          {/* SIGNUP */}
+          <div className="login-signup">
+            <span>אין לך חשבון?</span>
+            <button type="button" className="login-text-button login-signup-btn" onClick={handleSignup} disabled={loading}>
+              הירשמו עכשיו
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
   );
 };
-
 export default Login;

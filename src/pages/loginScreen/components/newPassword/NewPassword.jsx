@@ -1,110 +1,144 @@
-import React from 'react';
+import { useState } from 'react';
 import textDictionary from '../../../../dictionary/text';
 import { updatePassword } from '../../../../api/authApi';
 import { MdOutlineArrowBackIosNew } from 'react-icons/md';
+import { FiEye, FiEyeOff, FiCheck, FiX } from 'react-icons/fi';
 import { toast } from 'react-toastify';
+import './newPassword.css';
 const NewPassword = (props) => {
-  const modifyPasswordHandler = async () => {
-    props.setIsPending(true);
-    // Check if the password fields are not empty
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const modifyPasswordHandler = async (e) => {
+    e.preventDefault();
+    if (loading) return;
     if (!props.password || !props.passwordConfirm) {
       toast.error(textDictionary.passwordRequired);
       return;
     }
-    // Ensure the password meets the validation criteria
-    if (!props.validationResults.every((result) => result.isMet)) {
+    if (!props.validationResults?.length || !props.validationResults.every((result) => result.isMet)) {
       toast.warning(textDictionary.passwordCriteria);
       return;
     }
-    // Validate if passwords match
     if (props.password !== props.passwordConfirm) {
       toast.warning(textDictionary.passwordNotMatch);
       return;
     }
+    setLoading(true);
+    props.setIsPending(true);
     try {
-      props.setIsPending(true);
       await updatePassword(props.phone, props.passwordConfirm);
+      toast.success('הסיסמה עודכנה בהצלחה');
+      props.setPassword('');
+      props.setPasswordConfirm('');
       props.setView('login');
     } catch (error) {
-      console.log(error.response?.data?.message);
+      toast.error(error.response?.data?.message || 'אירעה שגיאה בעדכון הסיסמה');
     } finally {
+      setLoading(false);
       props.setIsPending(false);
     }
   };
+  const handleBack = () => {
+    if (loading) return;
+    props.setView('login');
+  };
+  const visibleValidationResults = (props.validationResults || []).filter((result) => result.message !== textDictionary.passwordCheckNoSpaces);
   return (
-    <div className="login-card rounded-4 p-4 p-md-4 w-100 mx-auto">
-      <h3 className="fw-bold mb-4 text-center"></h3>
-      <p className="fw-semibold mb-2 text-center">סיסמה חדשה</p>
-      <p className="fw-light mb-3 text-center">הזן את הסיסמה החדשה שלך</p>
-      <div className="login-card-inputs w-100">
-        <div className="mb-3">
-          <label htmlFor="passwordInput" className="form-label">
+    <div className="login-card new-password-card" dir="rtl">
+      {/* HEADER */}
+      <div className="new-password-header">
+        <h2 className="new-password-title">סיסמה חדשה</h2>
+        <p className="new-password-subtitle">הזן את הסיסמה החדשה שלך</p>
+      </div>
+      <form className="new-password-form" onSubmit={modifyPasswordHandler}>
+        {/* NEW PASSWORD */}
+        <div className="new-password-field">
+          <label htmlFor="newPasswordInput" className="new-password-label">
             {textDictionary.newPassword}
           </label>
-          <input
-            type="password"
-            className="form-control"
-            id="passwordInput"
-            onChange={(e) => props.setPassword(e.target.value)}
-            value={props.password}
-          />
+          <div className="new-password-input-wrapper">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              id="newPasswordInput"
+              className="new-password-input"
+              value={props.password}
+              onChange={(e) => props.setPassword(e.target.value)}
+              placeholder="הזן סיסמה חדשה"
+              autoComplete="new-password"
+              disabled={loading}
+            />
+            <button
+              type="button"
+              className="new-password-eye-btn"
+              onClick={() => setShowPassword((prev) => !prev)}
+              aria-label={showPassword ? 'הסתר סיסמה' : 'הצג סיסמה'}
+              disabled={loading}
+            >
+              {showPassword ? <FiEyeOff /> : <FiEye />}
+            </button>
+          </div>
         </div>
-        <div className="mb-3">
-          <label htmlFor="passwordInput" className="form-label">
+        {/* CONFIRM PASSWORD */}
+        <div className="new-password-field">
+          <label htmlFor="newPasswordConfirmInput" className="new-password-label">
             {textDictionary.newPasswordVerification}
           </label>
-          <input
-            type="password"
-            className="form-control"
-            id="passwordInputConfirm"
-            onChange={(e) => props.setPasswordConfirm(e.target.value)}
-            value={props.passwordConfirm}
-          />
+          <div className="new-password-input-wrapper">
+            <input
+              type={showConfirmPassword ? 'text' : 'password'}
+              id="newPasswordConfirmInput"
+              className="new-password-input"
+              value={props.passwordConfirm}
+              onChange={(e) => props.setPasswordConfirm(e.target.value)}
+              placeholder="הזן את הסיסמה שוב"
+              autoComplete="new-password"
+              disabled={loading}
+            />
+            <button
+              type="button"
+              className="new-password-eye-btn"
+              onClick={() => setShowConfirmPassword((prev) => !prev)}
+              aria-label={showConfirmPassword ? 'הסתר סיסמה' : 'הצג סיסמה'}
+              disabled={loading}
+            >
+              {showConfirmPassword ? <FiEyeOff /> : <FiEye />}
+            </button>
+          </div>
         </div>
-        <div>
-          <ul>
-            {props.validationResults.length > 0 ? (
-              props.validationResults
-                .filter(
-                  (result) =>
-                    result.message !== textDictionary.passwordCheckNoSpaces,
-                )
-                .map((result, index) => (
-                  <li
-                    key={index}
-                    style={{
-                      color: result.isMet ? 'green' : 'red',
-                    }}
-                  >
-                    {result.message}
-                  </li>
-                ))
-            ) : (
-              <p>No validation results yet</p>
-            )}
-          </ul>
-        </div>
-        <button
-          className="btn btn-success w-100 mb-3 border-0"
-          style={{ backgroundColor: '#11D057' }}
-          onClick={modifyPasswordHandler}
-        >
-          המשך
+        {/* PASSWORD VALIDATION */}
+        {visibleValidationResults.length > 0 && (
+          <div className="new-password-validation">
+            <p className="new-password-validation-title">דרישות הסיסמה</p>
+            <ul className="new-password-validation-list">
+              {visibleValidationResults.map((result, index) => (
+                <li key={index} className={`new-password-validation-item ${result.isMet ? 'is-valid' : 'is-invalid'}`}>
+                  <span className="new-password-validation-icon">{result.isMet ? <FiCheck /> : <FiX />}</span>
+                  <span>{result.message}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {/* SUBMIT */}
+        <button type="submit" className="new-password-submit" disabled={loading}>
+          {loading ? (
+            <>
+              <span className="new-password-spinner" />
+              מעדכן סיסמה...
+            </>
+          ) : (
+            'המשך'
+          )}
         </button>
-        <div className="d-flex w-100 justify-content-end">
-          <button
-            type="button"
-            className="btn p-0"
-            style={{ color: '#11D057' }}
-            onClick={() => {
-              props.setView('login');
-            }}
-          >
-            חזרה
-            <MdOutlineArrowBackIosNew />
+        {/* BACK */}
+        <div className="new-password-back-wrapper">
+          <button type="button" className="new-password-back" onClick={handleBack} disabled={loading}>
+            <MdOutlineArrowBackIosNew size={14} />
+            <span>חזרה</span>
           </button>
         </div>
-      </div>
+      </form>
     </div>
   );
 };
