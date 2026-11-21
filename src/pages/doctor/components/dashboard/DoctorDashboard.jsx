@@ -8,6 +8,7 @@ import { doctorDashboardStats } from '../../../../utils/dashboardDataStats/dataS
 import './doctorDashboard.css';
 import { AppDataContext } from '../../../../context/AppDataContext';
 import { useDashboardStats } from '../../../../hooks/useDashboardStats';
+import textDictionary from '../../../../dictionary/text';
 const formatDate = (value) => {
   if (!value) return '-';
   const date = String(value).slice(0, 10);
@@ -33,7 +34,7 @@ const getAge = (dateOfBirth) => {
 const getStatusLabel = (status) => {
   switch (status) {
     case 'completed':
-      return 'הושלם';
+      return textDictionary.completed;
     case 'confirmed':
       return 'מתוכנן';
     case 'pending':

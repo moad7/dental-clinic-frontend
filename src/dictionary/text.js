@@ -24,5 +24,8 @@ const textDictionary = {
   passwordCriteria: 'אנא ודא שכל קריטריוני הסיסמה מתקיימים',
 
   resendVerificattionCode: 'שלח שוב',
+
+  completed:'הושלם'
+
 };
 export default textDictionary;
