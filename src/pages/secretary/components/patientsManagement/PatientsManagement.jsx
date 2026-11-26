@@ -8,6 +8,7 @@ import DataTable from '../../../components/dataTable/DataTable';
 import { AppDataContext } from '../../../../context/AppDataContext';
 import Modal from '../../../../components/modal/Modal';
 import AddPatientModal from '../../../modals/patientModal/AddPatientModal';
+import AddMeetingsModal from '../../../modals/addMeetingsModal/AddMeetingsModal';
 import PatientModalSecretary from '../../../modals/patientModal/patientModalSevretary/PatientModalSecretary';
 import { useDashboardStats } from '../../../../hooks/useDashboardStats';
 const PatientsManagement = () => {
@@ -15,7 +16,8 @@ const PatientsManagement = () => {
   const { items, loadingState } = useDashboardStats(secretaryPatientsStats, 'patients');
   const [open, setOpen] = useState(false);
   const [openAddPatient, setOpenAddPatient] = useState(false);
-  const [patientId, setPatientId] = useState(null);
+  const [openAddAppointment, setOpenAddAppointment] = useState(false);
+  const [patient, setPatient] = useState(null);
   const [query, setQuery] = useState('');
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [filters, setFilters] = useState({
@@ -75,7 +77,7 @@ const PatientsManagement = () => {
               .join('') || 'AA',
           phone: patient.userId?.phoneNumber || '-',
           email: patient.userId?.email || '-',
-          city: patient.city || '-',
+          city: patient.userId?.city || '-',
           gender: patient.userId?.gender ? (patient.userId.gender === 'male' ? 'זכר' : 'נקבה') : '-',
           status: patient.userId?.isActive ? 'active' : 'inactive',
           lastVisit: patient.lastVisit ? new Date(patient.lastVisit).toLocaleDateString('he-IL') : '-',
@@ -90,7 +92,6 @@ const PatientsManagement = () => {
               ?.map((t) => t.serviceGroupId?.title)
               .filter(Boolean)
               .join(', ') || 'אין טיפולים',
-          raw: patient,
         };
       });
   }, [patients]);
@@ -124,14 +125,14 @@ const PatientsManagement = () => {
         <div
           className="appt-patient"
           onClick={() => {
-            setPatientId(item._id);
+            setPatient(item);
             setOpen(true);
           }}
         >
           <div className="appt-patient-avatar">{item.initials || 'AA'}</div>
           <div className="appt-patient-info">
             <span className="appt-patient-name">{item.name}</span>
-            <span className="appt-patient-id">מזהה: {item.idNumber ?? '-'}#</span>
+            <span className="appt-patient-id">{item.idNumber ?? '-'}#</span>
           </div>
         </div>
       ),
@@ -198,9 +199,23 @@ const PatientsManagement = () => {
       width: '1.9fr',
       render: (item) => (
         <div className="appt-patient-procedures">
-          <button className="appt-patient-procedures-btn" type="button" style={{ color: '#EA580C' }}>
-            תזמון
-          </button>
+          {item.status === 'active' ? (
+            <button
+              className="appt-patient-procedures-btn"
+              type="button"
+              style={{ color: '#EA580C' }}
+              onClick={() => {
+                setPatient(item);
+                setOpenAddAppointment(true);
+                setOpen(false);
+                console.log(item);
+              }}
+            >
+              תזמון
+            </button>
+          ) : (
+            <button className="appt-patient-procedures-btn" style={{ color: '#948d80', width: '47px' }}></button>
+          )}
           <button className="appt-patient-procedures-btn" type="button" style={{ color: '#4B5563' }}>
             עריכה
           </button>
@@ -209,7 +224,7 @@ const PatientsManagement = () => {
             type="button"
             style={{ color: '#2E90FA' }}
             onClick={() => {
-              setPatientId(item._id);
+              setPatient(item);
               setOpen(true);
             }}
           >
@@ -232,6 +247,9 @@ const PatientsManagement = () => {
       />
       <Modal isOpen={openAddPatient} onClose={() => setOpenAddPatient(false)} title="הוספת מטופל חדש" size="xl">
         <AddPatientModal setOpen={setOpenAddPatient} open={openAddPatient} />
+      </Modal>
+      <Modal isOpen={openAddAppointment} onClose={() => setOpenAddAppointment(false)} title={`הוספת בקשוה חדש ל ${patient.name}`} size="xl">
+        <AddMeetingsModal setOpen={setOpenAddAppointment} open={openAddAppointment} patient={patient} />
       </Modal>
       {loadingState ? <p>טוען נתונים...</p> : <DashboardStats items={items} />}
       <div className="container-box">
@@ -325,9 +343,9 @@ const PatientsManagement = () => {
           defaultPageSize={5}
         />
       </div>
-      {patientId && (
+      {patient && (
         <Modal isOpen={open} onClose={() => setOpen(false)} title="פרטי מטופל" size="xl">
-          <PatientModalSecretary patientId={patientId} />
+          <PatientModalSecretary patientId={patient._id} />
         </Modal>
       )}
     </div>

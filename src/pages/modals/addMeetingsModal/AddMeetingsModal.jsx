@@ -20,33 +20,51 @@ const initialFormData = {
   note: '',
 };
 const getPatientId = (patient) => {
-  return patient?.userId?._id || patient?._id || '';
+  return patient?.userId?._id ?? patient?._id ?? '';
 };
 const getPatientName = (patient) => {
-  return patient?.userId?.name || patient?.name || '';
+  return patient?.userId?.name ?? patient?.name ?? '';
 };
 const getPatientPhone = (patient) => {
-  return patient?.userId?.phoneNumber || patient?.phoneNumber || '';
+  return patient?.userId?.phoneNumber ?? patient?.phone ?? '';
 };
-const AddMeetingsModal = ({ setOpen }) => {
+const getPatientIdNumber = (patient) => {
+  return patient?.userId?.idNumber ?? patient?.idNumber ?? '';
+};
+const AddMeetingsModal = ({ patient = null, setOpen }) => {
   const { patients, serviceGroups, loadAllAppointments } = useContext(AppDataContext);
   const { token, user } = useContext(AuthContext);
-  const [formData, setFormData] = useState(initialFormData);
+  const [formData, setFormData] = useState(() => ({
+    ...initialFormData,
+    patientId: getPatientId(patient),
+  }));
   const [patientSearch, setPatientSearch] = useState('');
   const [serviceSearch, setServiceSearch] = useState('');
   const [availableSlots, setAvailableSlots] = useState([]);
   const [slotsLoading, setSlotsLoading] = useState(false);
   const [loading, setLoading] = useState(false);
+  const isPatientPreselected = Boolean(patient);
+  const preselectedPatientId = getPatientId(patient);
+  useEffect(() => {
+    if (!open) return;
+    setFormData({
+      ...initialFormData,
+      patientId: preselectedPatientId,
+    });
+    setPatientSearch('');
+    setServiceSearch('');
+    setAvailableSlots([]);
+  }, [open, preselectedPatientId]);
   const filteredPatients = useMemo(() => {
     const q = patientSearch.trim().toLowerCase();
-    console.log('Filtering patients with search query:', patients);
     return patients.filter((patient) => {
       if (patient.userId?.isActive !== true) return false;
       if (!q) return true;
       const name = getPatientName(patient).toLowerCase();
       const phone = getPatientPhone(patient).toLowerCase();
       const id = getPatientId(patient).toLowerCase();
-      return name.includes(q) || phone.includes(q) || id.includes(q);
+      const idNumber = getPatientIdNumber(patient).toLowerCase();
+      return name.includes(q) || phone.includes(q) || id.includes(q) || idNumber.includes(q);
     });
   }, [patients, patientSearch]);
   const allServices = useMemo(() => {
@@ -217,52 +235,111 @@ const AddMeetingsModal = ({ setOpen }) => {
   };
   return (
     <form className="add-meeting-modal-form" onSubmit={handleSubmit} dir="rtl">
+      {/* PATIENT SECTION */}
       <div className="add-meeting-modal-section">
         <div className="add-meeting-modal-section-header">
-          <span className="add-meeting-modal-section-title">בחירת מטופל</span>
-          <span className="add-meeting-modal-section-subtitle">חפש לפי שם, טלפון או מזהה</span>
+          <span className="add-meeting-modal-section-title">{isPatientPreselected ? 'פרטי המטופל' : 'בחירת מטופל'}</span>
+          <span className="add-meeting-modal-section-subtitle">
+            {isPatientPreselected ? 'הטיפול ייווצר עבור המטופל שנבחר' : 'חפש לפי שם, טלפון או מזהה'}
+          </span>
         </div>
-        <div className="add-meeting-modal-search-box">
-          <input
-            className="add-meeting-modal-search-input"
-            type="text"
-            placeholder="חפש מטופל..."
-            value={patientSearch}
-            onChange={(event) => setPatientSearch(event.target.value)}
-          />
-        </div>
-        <div className="add-meeting-modal-patient-list">
-          {filteredPatients.length > 0 ? (
-            filteredPatients.map((patient) => {
-              const patientId = getPatientId(patient);
-              const patientName = getPatientName(patient);
-              const patientPhone = getPatientPhone(patient);
-              const isSelected = formData.patientId === patientId;
-              return (
-                <button
-                  type="button"
-                  key={patientId}
-                  className={`add-meeting-modal-patient-card ${isSelected ? 'selected' : ''}`}
-                  onClick={() => handleSelectPatient(patient)}
-                >
-                  <div className="add-meeting-modal-patient-avatar">
-                    {patientName
-                      ?.split(' ')
-                      .slice(0, 2)
-                      .map((word) => word[0])
-                      .join('') || 'AA'}
-                  </div>
-                  <div className="add-meeting-modal-patient-info">
-                    <strong>{patientName}</strong>
-                    <span>{patientPhone || 'ללא טלפון'}</span>
-                  </div>
-                </button>
-              );
-            })
-          ) : (
-            <div className="add-meeting-modal-empty-state">לא נמצאו מטופלים</div>
-          )}
-        </div>
+        {isPatientPreselected ? (
+          /* PRESELECTED PATIENT */
+          <div className="add-meeting-modal-fixed-patient">
+            <div className="add-meeting-modal-fixed-patient-header">
+              <div className="add-meeting-modal-patient-avatar">
+                {patient.initials ||
+                  getPatientName(patient)
+                    .split(' ')
+                    .filter(Boolean)
+                    .slice(0, 2)
+                    .map((word) => word[0])
+                    .join('') ||
+                  'AA'}
+              </div>
+              <div className="add-meeting-modal-patient-info">
+                <strong>{getPatientName(patient)}</strong>
+                <span>מטופל שנבחר מראש</span>
+              </div>
+              <span className="add-meeting-modal-patient-selected-badge">✓ נבחר</span>
+            </div>
+            <div className="add-meeting-modal-fixed-patient-grid">
+              <div className="add-meeting-modal-patient-detail">
+                <span>תעודת זהות</span>
+                <strong>{getPatientIdNumber(patient) || '-'}</strong>
+              </div>
+              <div className="add-meeting-modal-patient-detail">
+                <span>מספר טלפון</span>
+                <strong>{getPatientPhone(patient) || '-'}</strong>
+              </div>
+              <div className="add-meeting-modal-patient-detail">
+                <span>עיר מגורים</span>
+                <strong>{patient.city || '-'}</strong>
+              </div>
+              <div className="add-meeting-modal-patient-detail">
+                <span>מין</span>
+                <strong>{patient.gender || '-'}</strong>
+              </div>
+              <div className="add-meeting-modal-patient-detail">
+                <span>דואר אלקטרוני</span>
+                <strong>{patient.email || '-'}</strong>
+              </div>
+              <div className="add-meeting-modal-patient-detail">
+                <span>ביקור אחרון</span>
+                <strong>{patient.lastVisit || '-'}</strong>
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* PATIENT SEARCH AND SELECTION */
+          <>
+            <div className="add-meeting-modal-search-box">
+              <input
+                className="add-meeting-modal-search-input"
+                type="text"
+                placeholder="חפש מטופל..."
+                value={patientSearch}
+                onChange={(event) => setPatientSearch(event.target.value)}
+              />
+            </div>
+            <div className="add-meeting-modal-patient-list">
+              {filteredPatients.length > 0 ? (
+                filteredPatients.map((item) => {
+                  const patientId = getPatientId(item);
+                  const patientName = getPatientName(item);
+                  const patientPhone = getPatientPhone(item);
+                  const idNumber = getPatientIdNumber(item);
+                  const isSelected = formData.patientId === patientId;
+                  return (
+                    <button
+                      type="button"
+                      key={patientId}
+                      className={`add-meeting-modal-patient-card ${isSelected ? 'selected' : ''}`}
+                      onClick={() => handleSelectPatient(item)}
+                    >
+                      <div className="add-meeting-modal-patient-avatar">
+                        {patientName
+                          .split(' ')
+                          .filter(Boolean)
+                          .slice(0, 2)
+                          .map((word) => word[0])
+                          .join('') || 'AA'}
+                      </div>
+                      <div className="add-meeting-modal-patient-info">
+                        <strong>{patientName}</strong>
+                        <span>
+                          ת"ז {idNumber || '-'} - מספר טלפון {patientPhone || '-'}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })
+              ) : (
+                <div className="add-meeting-modal-empty-state">לא נמצאו מטופלים</div>
+              )}
+            </div>
+          </>
+        )}
       </div>
       <div className="add-meeting-modal-section">
         <div className="add-meeting-modal-section-header">

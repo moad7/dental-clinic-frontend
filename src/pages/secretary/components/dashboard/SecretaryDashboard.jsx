@@ -75,7 +75,7 @@ const SecretaryDashboard = () => {
       )}
       <BoxHeader title={'בוקר טוב, ' + user.name} subtitle={'הנה סקירה כללית של ההזמנות שלך היום.'} />
       {loadingState ? <p>טוען נתונים...</p> : <DashboardStats items={items} />}
-      <div className="container-box nivg-order">
+      {/* <div className="container-box nivg-order">
         <div className="nivg-order-header">
           <span className="nivg-order-title">בקשות אישור ממתינות</span>
           <span className="nivg-order-badge">15 ממתינים</span>
@@ -95,7 +95,7 @@ const SecretaryDashboard = () => {
             <button className="nivg-order-btn">בקשות סקירה</button>
           </div>
         </div>
-      </div>
+      </div> */}
       <div className="today-layout">
         <div className="container-box today-card">
           <div className="today-card-header">

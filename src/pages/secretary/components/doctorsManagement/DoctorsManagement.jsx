@@ -56,7 +56,7 @@ const DoctorsManagement = () => {
           <div className="appt-doctor-avatar">{item.initials || 'AA'}</div>
           <div className="appt-doctor-info">
             <span className="appt-doctor-name">ד"ר {item.name}</span>
-            <span className="appt-doctor-id">מזהה: {item.idNumber}#</span>
+            <span className="appt-doctor-id">{item.idNumber}#</span>
           </div>
         </div>
       ),

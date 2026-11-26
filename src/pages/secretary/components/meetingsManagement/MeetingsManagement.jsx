@@ -30,7 +30,7 @@ const MeetingsManagement = () => {
     return (Array.isArray(appointments) ? appointments : []).map((appt) => ({
       _id: appt._id,
       patientName: appt.treatmentId?.userId?.name || '-',
-      patientPhone: appt.treatmentId?.userId?.phoneNumber || '-',
+      patientIdNumber: appt.treatmentId?.userId?.idNumber || '-',
       initials:
         appt.initials ||
         appt.treatmentId.userId.name
@@ -49,7 +49,6 @@ const MeetingsManagement = () => {
       raw: appt,
     }));
   }, [appointments]);
-  console.log('Normalized Appointments:', normalizedAppointments);
   const appointmentColumns = [
     {
       key: 'patient',
@@ -60,7 +59,7 @@ const MeetingsManagement = () => {
           <div className="appt-patient-avatar">{item.initials || 'AA'}</div>
           <div className="appt-patient-info">
             <span className="appt-patient-name">{item.patientName}</span>
-            <span className="appt-patient-phone">{item.patientPhone}</span>
+            <span className="appt-patient-id">{item.patientIdNumber ?? '-'}#</span>
           </div>
         </div>
       ),
@@ -141,6 +140,7 @@ const MeetingsManagement = () => {
     if (!q) return normalizedAppointments;
     return normalizedAppointments.filter((appt) => {
       return (
+        (appt.patientIdNumber || '').toLowerCase().includes(q) ||
         (appt.patientName || '').toLowerCase().includes(q) ||
         (appt.patientPhone || '').toLowerCase().includes(q) ||
         (appt.serviceName || '').toLowerCase().includes(q) ||
@@ -197,7 +197,7 @@ const MeetingsManagement = () => {
                 <input
                   className="search-input"
                   type="text"
-                  placeholder="למצוא את הרופא..."
+                  placeholder="למצוא את הפגישה..."
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                 />
