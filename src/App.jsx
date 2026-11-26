@@ -6,7 +6,6 @@ import RedirectByRole from './components/RedirectByRole.jsx';
 import LoginScreen from './pages/loginScreen/LoginScreen.jsx';
 // Pages
 import SecretaryDashboard from './pages/secretary/components/dashboard/SecretaryDashboard.jsx';
-import CalendarView from './pages/CalendarView.jsx';
 import Dashboard from './pages/patient/components/dashboard/Dashboard.jsx';
 import BookAppointment from './pages/patient/components/bookAppointment/BookAppointment.jsx';
 import MyAppointments from './pages/patient/components/myAppointments/MyAppointments.jsx';
