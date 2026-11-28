@@ -248,7 +248,12 @@ const PatientsManagement = () => {
       <Modal isOpen={openAddPatient} onClose={() => setOpenAddPatient(false)} title="הוספת מטופל חדש" size="xl">
         <AddPatientModal setOpen={setOpenAddPatient} open={openAddPatient} />
       </Modal>
-      <Modal isOpen={openAddAppointment} onClose={() => setOpenAddAppointment(false)} title={`הוספת בקשוה חדש ל ${patient.name}`} size="xl">
+      <Modal
+        isOpen={openAddAppointment}
+        onClose={() => setOpenAddAppointment(false)}
+        title={`הוספת בקשוה חדש ל ${patient && patient.name}`}
+        size="xl"
+      >
         <AddMeetingsModal setOpen={setOpenAddAppointment} open={openAddAppointment} patient={patient} />
       </Modal>
       {loadingState ? <p>טוען נתונים...</p> : <DashboardStats items={items} />}

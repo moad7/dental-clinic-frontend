@@ -94,7 +94,6 @@ function App() {
                 path="/secretary/appointments/edit/:id"
                 element={<EditAppointment />}
               /> */}
-              <Route path="/secretary/calendar" element={<CalendarView />} />
               {/* <Route path="/secretary/patients" element={<Patients />} /> */}
               {/* <Route
                 path="/secretary/patients/edit/:id"
